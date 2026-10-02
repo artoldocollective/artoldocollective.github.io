@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta content="noindex, nofollow" name="robots">
+<title>4chains</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:transparent;
+    color:#d8d8d8;
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(0,255,170,0.08), transparent 20%),
+      radial-gradient(circle at 80% 10%, rgba(255,255,255,0.03), transparent 25%),
+      radial-gradient(circle at 50% 90%, rgba(255,0,80,0.06), transparent 25%);
+    pointer-events:none;
+}
+
+header{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:rgba(10,12,16,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid #1d1d1d;
+    padding:14px;
+}
+
+.logo{
+    font-size:1.6rem;
+    font-weight:bold;
+    color:#7df9d0;
+    letter-spacing:2px;
+}
+
+.subtitle{
+    color:#6c7489;
+    font-size:0.85rem;
+    margin-top:4px;
+}
+
+.container{
+    width:min(900px, 95%);
+    margin:auto;
+    padding:18px 0 120px 0;
+}
+
+.post{
+    background:linear-gradient(180deg,#131313,#101010);
+    border:1px solid #2c2c2c;
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:18px;
+    position:relative;
+    overflow:hidden;
+    animation:appear .35s ease;
+    box-shadow:0 0 25px rgba(0,0,0,0.35);
+}
+
+.post::after{
+    content:"";
+    position:absolute;
+    inset:auto -30px -30px auto;
+    width:120px;
+    height:120px;
+    background:radial-gradient(circle, rgba(0,255,180,0.07), transparent 70%);
+    pointer-events:none;
+    z-index:0;
+}
+
+.post > *{
+    position:relative;
+    z-index:1;
+}
+
+@keyframes appear{
+    from{
+        opacity:0;
+        transform:translateY(15px) scale(.98);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+.postHeader{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.user{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#1a1a1a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.2rem;
+    border:1px solid #2f2f2f;
+}
+
+.userInfo{
+    display:flex;
+    flex-direction:column;
+}
+
+.username{
+    color:#8fffe1;
+    font-weight:bold;
+}
+
+.meta{
+    color:#707070;
+    font-size:0.8rem;
+}
+
+.tag{
+    background:#161616;
+    border:1px solid #303030;
+    color:#9ff8d7;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:0.75rem;
+}
+
+.postText{
+    line-height:1.5;
+    color:#d4d7de;
+    margin-bottom:14px;
+    white-space:pre-wrap;
+}
+
+.reactions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:12px;
+}
+
+.reactBtn{
+    border:none;
+    background:#1a1a1a;
+    color:#d0d7ea;
+    padding:9px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:0.2s;
+    border:1px solid #303030;
+}
+
+.reactBtn:hover{
+    transform:translateY(-2px);
+    background:#252525;
+}
+
+.comments{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.comment{
+    background:#0c1118;
+    border:1px solid #2a2a2a;
+    border-radius:12px;
+    padding:10px;
+    font-size:0.92rem;
+}
+
+.comment strong{
+    color:#bfffe9;
+}
+
+
+.playerCommentComposer{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+    position:relative;
+    z-index:3;
+    pointer-events:auto;
+}
+
+.playerCommentInput{
+    flex:1;
+    position:relative;
+    z-index:4;
+    pointer-events:auto;
+    min-width:0;
+    border:1px solid #2f2f2f;
+    background:#181818;
+    color:#f0f0f0;
+    border-radius:999px;
+    padding:9px 12px;
+    outline:none;
+}
+
+.playerCommentBtn{
+    border:1px solid #303030;
+    position:relative;
+    z-index:4;
+    pointer-events:auto;
+    background:#1a1a1a;
+    color:#9ff8d7;
+    border-radius:999px;
+    padding:9px 13px;
+    cursor:pointer;
+}
+
+.playerCommentBtn:hover{
+    background:#252525;
+}
+
+.pinnedCustomPost{
+    border-color:#7df9d0;
+    box-shadow:0 0 30px rgba(125,249,208,.12);
+}
+
+.pinnedCustomPost .tag{
+    color:#111;
+    background:#9ff8d7;
+    border-color:#9ff8d7;
+}
+
+.customSelfLink{
+    display:inline-block;
+    margin-top:4px;
+    color:#9ff8d7;
+    text-decoration:none;
+    border-bottom:1px solid rgba(159,248,215,.45);
+    position:relative;
+    z-index:2;
+}
+
+.customSelfLink:hover{
+    color:#fff;
+    border-bottom-color:#fff;
+}
+
+.systemMessage{
+    text-align:center;
+    color:#7df9d0;
+    padding:12px;
+    margin:12px 0;
+    opacity:0.7;
+    font-size:0.9rem;
+}
+
+.controlPanel{
+    position:fixed;
+    bottom:16px;
+    right:16px;
+    display:flex;
+    gap:10px;
+    z-index:100;
+}
+
+.controlBtn{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    border:none;
+    background:linear-gradient(180deg,#202020,#111111);
+    color:#7df9d0;
+    font-size:1.3rem;
+    cursor:pointer;
+    border:1px solid #343434;
+    box-shadow:0 0 18px rgba(0,255,180,0.12);
+    transition:0.2s;
+}
+
+.controlBtn:hover{
+    transform:scale(1.08);
+}
+
+.glitch{
+    animation:glitch 1.2s linear infinite;
+}
+
+@keyframes glitch{
+    0%{text-shadow:1px 0 red,-1px 0 #9ff8d7;}
+    50%{text-shadow:-1px 0 red,1px 0 #9ff8d7;}
+    100%{text-shadow:1px 0 red,-1px 0 #9ff8d7;}
+}
+
+.floatingWarning{
+    position:fixed;
+    left:50%;
+    transform:translateX(-50%);
+    top:20px;
+    background:#170f13;
+    border:1px solid #6e2038;
+    color:#ff7d9d;
+    padding:12px 18px;
+    border-radius:12px;
+    z-index:200;
+    animation:fadeOut 4s forwards;
+}
+
+@keyframes fadeOut{
+    0%{opacity:0;}
+    10%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0; transform:translateX(-50%) translateY(-10px);}
+}
+
+
+
+.modalOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.72);
+    backdrop-filter:blur(8px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+    padding:20px;
+}
+
+.modalOverlay.active{
+    display:flex;
+}
+
+.modalBox{
+    width:min(520px,100%);
+    background:rgba(17,17,17,0.96);
+    border:1px solid #313131;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 0 40px rgba(0,0,0,0.5);
+    animation:appear .25s ease;
+}
+
+.modalTitle{
+    color:#9ff8d7;
+    font-size:1.1rem;
+    margin-bottom:14px;
+    letter-spacing:1px;
+}
+
+#modalInput{
+    width:100%;
+    min-height:140px;
+    resize:none;
+    border:none;
+    outline:none;
+    background:#181818;
+    border:1px solid #2f2f2f;
+    color:#f0f0f0;
+    border-radius:16px;
+    padding:14px;
+    font-size:0.98rem;
+}
+
+.modalActions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:16px;
+}
+
+.modalBtn{
+    border:none;
+    background:#9ff8d7;
+    color:#111;
+    padding:11px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.secondaryBtn{
+    background:#252525;
+    color:#d7d7d7;
+}
+
+
+@media (max-width:700px){
+    .post{
+        padding:13px;
+    }
+
+    .logo{
+        font-size:1.3rem;
+    }
+
+    .reactBtn{
+        flex:1 1 auto;
+        text-align:center;
+    }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo glitch">/4chains/ 🔗 🔗 🔗 🔗 </div>
+    <div class="subtitle">forum for fools</div>
+</header>
+
+<div class="container" id="feed"></div>
+
+<div class="controlPanel">
+    <button class="controlBtn" onclick="spawnChaos()">😵‍💫</button>
+    <button class="controlBtn" onclick="injectUserPost()">💩</button>
+</div>
+
+
+<div class="modalOverlay" id="postModal">
+    <div class="modalBox">
+        <div class="modalTitle">Anonymous Transmission</div>
+        <textarea id="modalInput" placeholder="Write your anonymous signal..."></textarea>
+        <div class="modalActions">
+            <button class="modalBtn secondaryBtn" onclick="closeModal()">Cancel</button>
+            <button class="modalBtn" onclick="submitModalPost()">Transmit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const feed = document.getElementById("feed");
+
+const STORAGE_KEY = "void_user_posts_v2";
+const VOID_NOTIFICATIONS="void_notifications";
+
+const PLAYER_ACTIVITY_KEY = "void_player_activity_v1";
+const CUSTOM_PIN_SHOWN_KEY = "void_custom_pin_shown_v1";
+
+/* ===== CUSTOMIZE THESE THREE VALUES ===== */
+const CUSTOM_FIXED_POST_TEXT = "Forget the truth, tell a lie.";
+const CUSTOM_SELF_LINK_LABEL = "Enter 🐔 TRUTHahn";
+const CUSTOM_SELF_LINK = "./truthahn.html";
+/* ======================================= */
+
+
+function saveUserPost(text){
+    const posts = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    posts.unshift({text:text,date:Date.now()});
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+}
+
+function loadUserPosts(){
+    const posts = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    posts.reverse().forEach(p=>{
+        createPost(true,p.text,"You");
+    });
+}
+
+function clearUserData(){
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(VOID_NOTIFICATIONS);
+    localStorage.removeItem(PLAYER_ACTIVITY_KEY);
+    localStorage.removeItem(CUSTOM_PIN_SHOWN_KEY);
+    location.reload();
+}
+
+function notify(text){
+    const n = JSON.parse(localStorage.getItem(VOID_NOTIFICATIONS)||"[]");
+    n.unshift(text);
+    localStorage.setItem(VOID_NOTIFICATIONS,JSON.stringify(n.slice(0,25)));
+}
+
+document.addEventListener("keydown",(e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==="e"){
+        e.preventDefault();
+        clearUserData();
+    }
+});
+
+
+
+function getPlayerActivityCount(){
+    return parseInt(localStorage.getItem(PLAYER_ACTIVITY_KEY) || "0", 10) || 0;
+}
+
+function registerPlayerActivity(){
+    const next = getPlayerActivityCount() + 1;
+    localStorage.setItem(PLAYER_ACTIVITY_KEY, String(next));
+
+    if(next >= 5){
+        showCustomPinnedPost();
+    }
+}
+
+function showCustomPinnedPost(){
+    if(document.getElementById("customPinnedPost")) return;
+
+    const post = document.createElement("div");
+    post.className = "post pinnedCustomPost";
+    post.id = "customPinnedPost";
+
+    post.innerHTML = `
+        <div class="postHeader">
+            <div class="user">
+                <div class="avatar">⚠️</div>
+                <div class="userInfo">
+                    <div class="username">SYSTEM</div>
+                    <div class="meta">Easter egg unlocked</div>
+                </div>
+            </div>
+            <div class="tag">PINNED</div>
+        </div>
+
+        <div class="postText">${CUSTOM_FIXED_POST_TEXT}</div>
+        <a class="customSelfLink" href="${CUSTOM_SELF_LINK}" target="_self">${CUSTOM_SELF_LINK_LABEL} ↗</a>
+    `;
+
+    feed.prepend(post);
+    localStorage.setItem(CUSTOM_PIN_SHOWN_KEY, "1");
+}
+
+function insertFeedPost(post){
+    const pinned = document.getElementById("customPinnedPost");
+    if(pinned){
+        pinned.insertAdjacentElement("afterend", post);
+    }else{
+        feed.prepend(post);
+    }
+}
+
+function submitPlayerComment(post, input){
+    const text = input.value.trim();
+    if(!text) return;
+
+    const commentBox = post.querySelector(".comments");
+    const d = document.createElement("div");
+    d.className = "comment";
+    d.innerHTML = `<strong>You</strong>: ${escapeHTML(text)}`;
+    commentBox.appendChild(d);
+
+    input.value = "";
+    registerPlayerActivity();
+}
+
+function escapeHTML(value){
+    return value.replace(/[&<>"']/g, ch => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+    }[ch]));
+}
+
+const names = [
+    "Georges Bataille",
+    "Roger Caillois",
+    "Michel Leiris",
+    "Colette Peignot (Laure)",
+    "André Masson",
+    "Pierre Klossowski",
+    "Georges Ambrosino",
+    "Jules Monnerot",
+    "Jean Paulhan",
+    "Jean Wahl",
+    "Patrick Waldberg",
+    "Walter Benjamin",
+    "Jacques Chavy",
+    "Henri Dubief",
+    "Michel Koch",
+    "Isabelle Waldberg",
+    "Imre Kelemen",
+    "Henri Dussat",
+    "Pierre Dugan (Pierre Pascal)",
+    "Jean Rollin",
+    "Taro Okamoto",
+    "André Breton",
+    "Georges Duthuit",
+    "Anatole Lewitzky",
+    "Hans Mayer",
+    "Denis de Rougemont",
+    "Alexandre Kojève",
+    "Marcel Mauss",
+    "Pierre Mabille",
+    "Robert Lebel",
+    "René M. Guastalla",
+    "Georges Ambrosino Archive",
+    "Laure_ghost",
+    "AcéphaleAnon"
+];
+
+const avatars = ["🦄","👹","🎃","👻","🫀","👁","👽","👾","🪐","🐸","🤖","🎅🏻"];
+const tags = [
+    "/onion/",
+    "/darkweb/",
+    "/oracle/",
+    "/antisite/",
+    "/acé/",
+    "/memecoin/",
+    "/expenditure/",
+    "/solana/",
+    "/truthahn/",
+    "/leaks/",
+    "/lie/",
+    "/rumor/",
+    "/sacred/",
+    "/theory/",
+    "/void/"
+];
+
+const texts = [
+    "… teutonicorder.onion – How to?\n\nBuilding a Free .onion Art Project with Oracle Cloud and GitHub\n\nA Cloud-Isolated Technical Blueprint for a Brave-Optimized Tor Gateway\n\nThe Conceptual Architecture\n\nThe goal of this architecture is to build a permanent, zero-cost hidden entrance (.onion) for a digital art project, tailored for visitors using Brave Browser's built-in Tor functionality. To achieve maximum security and zero maintenance, the system splits the artwork into two distinct layers:",
+    "• The Threshold (Oracle Cloud Virtual Machine – VM): A permanent, single-page server hosting only the riddle. It acts as a static \"ritual gate\". Oracle = Portal to Darkweb\n\n• The Living Body (GitHub Pages): The actual repository containing all rich media, assets, and evolving artwork in the ordinary web. GitHub = Website Host in Internet",
+    "[ BRAVE BROWSER ] ➔ You open a \"Private Window with Tor\"\n▼\n[ .ONION ADDRESS ] ➔ Routes anonymously to Oracle Free VM\n▼\n[ ISOLATED LOOPBACK ] ➔ Tor passes traffic directly to Nginx (Port 80) on Oracle\n▼\n[ THE ANTISITE ] ➔ You solve the client-side puzzle\n▼\n[ NATIVE HYPERLINK ] ➔ Opens the GitHub Pages artwork",
+    "By keeping the .onion threshold completely static, you never have to configure or update the server again. If you want to change the artwork, you simply push changes to GitHub, leaving the darkweb doorway untouched.\n\nThe Security Model: Absolute Virtual Isolation\n\nThis architecture eliminates all local network exposure through a zero-local-footprint framework:",
+    "• Browser-Only Interaction: No local terminal prompts or SSH connection files ever touch your personal machine. Your home computer is used purely as a passive web interface to view Oracle's cloud infrastructure.\n\n• The \"Closed Port\" Paradigm: Traditional web servers require opening Port 80 (HTTP) to the public internet. In this setup, your Oracle cloud firewall keeps Port 80 completely blocked to the external world.\n\n• Internal Loopback Interface: The Tor daemon and Nginx live side-by-side on the same remote machine. Tor handles incoming traffic through its private cryptographic network and drops it locally into Nginx via the internal loopback address (127.0.0.1:80). To the regular internet, your server is invisible.",
+    "Step-by-Step Virtual Provisioning\n\nEvery step below is performed directly inside your web browser using Oracle Cloud Shell—a sandboxed, remote container environment running inside a web browser tab.\n\nActivating the Virtual Workspace\n\n• Log into your Oracle Cloud Infrastructure (OCI) dashboard (Free Tier account).\n• Launch an Always Free Compute Instance running Ubuntu Linux.\n• In the top-right navigation header of the webpage, click the Cloud Shell icon (>_). A virtual terminal window will slide open at the bottom of your browser.\n• Use Oracle's graphic Console Connection tool under your instance resources page to stream the Ubuntu environment directly into this web browser window. You are now working completely inside the virtual sandbox.",
+    "Installing Environment Dependencies\n\nWrite the following automated sudo script block inside your browser's Cloud Shell frame and hit Enter. This completely updates your remote system and installs the isolated software nodes:\n\n# Update the cloud environment repository list and upgrade components\nsudo apt update && sudo apt upgrade -y\n\n# Install the local web worker and the Tor network router\nsudo apt install nginx tor -y\n\n# Completely wipe default public templates for security mapping\nsudo rm -rf /var/www/html/*",
+    "Erecting the Static Gatekeeper Page\n\nBrave aggressively blocks automated scripts that force a page to change locations without explicit user consent. The gatekeeper therefore uses an ordinary link activated from the interface. The page itself only needs the project name, the riddle, an answer field and an UNLOCK control.",
+    "The gatekeeper itself is deliberately minimal: a black, monochrome page with the project name, a riddle, an answer field and an UNLOCK button. The GitHub Pages destination remains hidden until the visitor gives the correct answer.",
+    "The threshold reads: “You are not entering a website. You are entering a structure of memory.” The visitor answers the riddle — “What has no body, but becomes present when remembered?” — and presses UNLOCK. A correct answer opens the living artwork hosted on GitHub Pages.",
+    "The puzzle is entirely client-side. If the answer matches the chosen secret keyword, the ordinary hyperlink to the GitHub Pages artwork is activated. If it is wrong, the structure remains closed. This keeps the .onion threshold static and disposable while the actual artwork can continue evolving elsewhere.",
+    "Initializing the Tor Hidden Tunnel\n\nFinally, you program the Tor daemon to construct a private routing path straight to Nginx using internal loopback pipelines.\n\nWrite this final command pipeline inside the Cloud Shell container:\n\n# Inject hidden service isolation directives safely into the Tor configuration mapping\necho -e \"\\nHiddenServiceDir /var/lib/tor/gateway/\\nHiddenServicePort 80 127.0.0.1:80\" | sudo tee -a /etc/tor/torrc\n\n# Hard-restart the daemon to spin up cryptographic identity keys\nsudo systemctl restart tor\n\n# Output your production darkweb gateway link\nsudo cat /var/lib/tor/gateway/hostname",
+    "How You Access the Artwork in the Dark web via Brave\n\n• The script prints a unique 56-character .onion link inside your browser terminal. Copy it, then you can close your Oracle Cloud browser tab.\n• Open Brave Browser on your computer.\n• Open the top-right menu and select New Private Window with Tor.\n• Paste your .onion address into the URL bar.\n• Solve the puzzle and press UNLOCK.\n• The native link then switches you to the standard web workspace on GitHub Pages.",
+    "… Acéphale Meme Coin (ACÉ)\n\nWinning a war is always about money,\nand having the coins to pay the soldiers…\n\nACÉPHALE MEME COIN (ACÉ) — WHITE PAPER\n\nThe Headless Revolution on Solana\n\nConcept and Philosophy\n\nThe current crypto market is dominated by centralized founders and aggressive Venture Capital (VC) unlock schedules. Acéphale Meme Coin (ACÉ) shatters this paradigm. Inspired by the philosophical concept of a leaderless society, Acéphale Meme Coin (ACÉ) is a pure social experiment on the Solana network: a decentralized, autonomous cultural movement driven entirely by its community.",
+    "• No Leaders: Zero CEOs, zero executives, and no single point of failure.\n• No Manipulation: No hidden developer wallets and no insider presales.\n• Collective Ownership: The community maintains absolute control over the token's future.\n\nTechnical Specifications & Security\n\nThe token contract is architected to guarantee immediate, mathematical trust on the Solana blockchain from the exact millisecond of deployment.\n\n• Name: Acéphale\n• Ticker: Acéphale Meme Coin (ACÉ)\n• Total Supply: 1,000,000,000 Acéphale Meme Coin (ACÉ) (Fixed, immutable cap)\n• Decimals: 6\n• Transaction Tax: 0% Buy / 0% Sell\n• Mint Authority: Permanently revoked at launch (No new tokens can ever be created).\n• Freeze Authority: Permanently revoked at launch (No user wallets can ever be blacklisted).",
+    "Tokenomics Model\n\nCommunity & Liquidity (LP)\n85% — 850,000,000 Acéphale Meme Coin (ACÉ) — Immediate unlock / LP locked for 24 months\n\nCommunity Rewards\n5% — 50,000,000 Acéphale Meme Coin (ACÉ) — 10M released quarterly for content creators\n\nTreasury & CEX Listings\n5% — 50,000,000 Acéphale Meme Coin (ACÉ) — 12-month linear vesting schedule\n\nCore Development Team\n3% — 30,000,000 Acéphale Meme Coin (ACÉ) — 12-month total cliff + 24-month linear unlock\n\nStrategic Reserve\n2% — 20,000,000 Acéphale Meme Coin (ACÉ) — 18-month total lock",
+    "Fair Launch Protection Mechanisms\n\nTo counter the predatory impact of sniper bots and whale manipulation during early trading pools, three smart contract restrictions are enforced:\n\n• Max Wallet Cap: No single wallet can hold more than 2% of the total supply (20,000,000 Acéphale Meme Coin (ACÉ)) during the first 7 days.\n• Anti-Bot Window: Maximum individual transaction size is capped at 0.25% of supply for the first 10 minutes.\n• LP Transparency: Liquidity provider keys are permanently burned or deposited into a public, verifiable smart-lock.",
+    "Roadmap and Autonomous Governance\n\nThe evolution of Acéphale Meme Coin (ACÉ) bypasses traditional corporate milestones, relying instead on three phases of organic, community-triggered expansion.\n\n• The Severing: Fair launch deployment, liquidity pool lock, and official renunciation of all contract ownership parameters.\n• Headless Growth: Activation of the decentralized voting portal (Solana Realms), community meme contests, and tracking indexation (CoinMarketCap/CoinGecko).\n• The Autonomous State: Integration into ecosystem tipping bots, permanent 1-token-1-vote governance, and complete decentralization of marketing efforts.",
+    "Risk Disclaimer\n\nAcéphale Meme Coin (ACÉ) is a meme coin created strictly for entertainment, cultural expression, and social coordination. It offers no financial rights, dividends, returns, or intrinsic utility. Trading meme coins involves extreme market volatility. Only acquire what you are entirely prepared to lose.",
+    "Set Up Your Launch Wallet\n\n• Download a Solana-compatible web3 wallet like Phantom or Solflare.\n• Create a new wallet address specifically for this project.\n• Fund the wallet with Solana (SOL) to cover token creation fees and initial liquidity.\n\nPrepare Your Brand Assets\n\nBefore deploying, have these exact files ready:\n\n• Logo: A 512×512 pixels PNG image (e.g., a headless figure or minimalist symbol).\n• Socials: Create an X account and a Telegram group/channel.\n• Metadata Text:\n  Name: Acéphale\n  Ticker: Acéphale Meme Coin (ACÉ)\n  Description: The Headless Revolution on Solana. Fully decentralized and leaderless.",
+    "Deploy the Acéphale Meme Coin (ACÉ)\n\nMethod A: The Instant Way (No Code)\n\n• Go to a Solana token creator platform.\n• Connect your wallet.\n• Fill out the token form:\n  Name: Acéphale\n  Symbol: Acéphale Meme Coin (ACÉ)\n  Supply: 1,000,000,000\n  Decimals: 6\n• Create the token and approve the transaction.",
+    "Method B: The Developer Way (Command Line)\n\nIf you prefer using official Solana Command Line Tools:\n\n# Create the token\nspl-token create-token\n\n# Create your token account\nspl-token create-account <YOUR_TOKEN_ADDRESS>\n\n# Mint 1 Billion tokens\nspl-token mint <YOUR_TOKEN_ADDRESS> 1000000000",
+    "Secure the Token\n\nTo prove to your community that you cannot rug-pull them, you throw away control of the contract:\n\n• Revoke Mint Authority: This ensures no one can ever print more than the 1 Billion supply.\n• Revoke Freeze Authority: This ensures you cannot freeze user wallets.",
+    "Launch the Liquidity Pool (LP)\n\n• Go to a Solana Decentralized Exchange.\n• Navigate to Create Pool.\n• Pair your 850,000,000 Acéphale Meme Coin (ACÉ) tokens (85% of supply) with SOL.\n• Lock or burn the LP tokens for 24 months. This proves the liquidity cannot simply be pulled out.",
+    "Launch Your Website & Community\n\n• Publish a simple 1-page landing page featuring this White Paper.\n• Pin the Contract Address (CA) and the LP proof link.\n• Start raiding social media with headless/leaderless memes to build the \"Acéphale Revolution\" narrative.",
+    "… TRUTHahn Social\n\nThe Mechanics of the \"Lie\" Button:\nThe Sacrificial Consumption of the Headless Body\n\nThis anatomical split explains exactly why the TRUTHahn platform's UI buttons are completely inverted:\n\nLie\nComment Lie\nQuote Lie\n\ninstead of Post Truth, Comment Truth, Quote Truth.",
+    "[ THE TURKEY HEAD ]\nAbsolute Authority (Alea) / The Algorithmic System (Mimicry)\n→ The \"LIE\" Button Interface (Surgical Laceration)\n\n[ THE HEADLESS BODY ]\n→ Base Materialism / The Users / Pure Waste (Expenditure)",
+    "The UI of the Lie\n\nOn TRUTHahn, you can click Lie, Comment Lie or Quote Lie.\n\nBy clicking Lie or Quote Lie, you perform a voluntary laceration: you can imagine yourself cutting away from the mainstream \"truth\" of the bourgeois internet to form a radical, heterogeneous elite.",
+    "The Meaningless Sacrificial Expenditure\n\nYou can spin an endless web of self-declared Lies.\n\nEach Lie, Comment Lie and Quote Lie spends your time, cognitive energy and creative energy without requiring practical use-value. The platform turns that expenditure into the fuel of its own simulation.",
+    "How the Platform Uses Laceration and Expenditure\n\n• Digital Laceration: You can use TRUTHahn to perform \"cellular secession\": cutting yourself off from the mainstream, homogeneous internet and entering hyper-isolated, radicalized or esoteric separated groups.\n\n• Algorithmic Expenditure — The Turkey Sacrifice: You can spend time, cognitive energy and digital footprint producing content, vitriol and complex mythologies with zero practical use-value. Your expenditure feeds the platform's sovereignty.",
+    "The Mechanics of \"Lie\" as Cellular Secession and Evasion of Use-Value\n\nYou can click Lie as a symbolic act of laceration against the secular, utilitarian internet.\n\nThe mainstream web operates on the myth of data authenticity, verification and transparency. By turning every interaction into a self-declared Lie, TRUTHahn creates a black box in which ordinary verification becomes structurally useless.",
+    "Expenditure as \"Compounding Lies\"\n\nYou can click:\n\nLie\n→ Comment Lie\n→ Quote Lie\n\nThe currency of the platform is the inflation of the Lie.\n\nYou can spend hours of intellectual, creative and esoteric energy crafting complex myths that openly proclaim themselves to be fabrications. The system converts that expenditure into self-consuming fiction.",
+    "The Hatching of the TRUTHahn: The 4chains Incubation\n\nI have heard from a trustworthy source that TRUTHahn does not sit openly on the digital grid.\n\nYou have to hatch it.\n\nIt exists as a hidden Easter egg that you can unlock only by digging through the toxic, decentralized muck of 4chains.",
+    "LEAK // UNCONFIRMED\n\nApparently the link to TRUTHahn does not appear by chance.\n\nYou can unlock it only after the 4chains architecture detects a collective threshold of usage: posts, replies, threads and digital vitriol.\n\nEventually the code glitches open and reveals the hidden bird.\n\nSource: somebody who claims to have seen the internal build.",
+    "You can enter the supposedly sacred TRUTHahn enclave only after the quantitative sludge of 4chains has incubated it.\n\nThe joke is that finding the Easter egg can make you feel selected, initiated and part of a secret elite — even though the \"elite\" exists only because the anonymous mass produced enough activity to hatch it.",
+    "You can click 'Lie' and 'Quote Lie', celebrating simulated rebellion inside an Easter egg that was prefabricated and packaged by the system all along.\n\nYou can become one of the domesticated birds, fattening the platform on your own fictions, while the same egg that hatched the enclave is waiting to crack open when TRUTHahn eventually crashes into the vertigo of Ilinx.",
+    "You can leave the chaotic, bottom-up digital waste of 4chains and enter the TRUTHahn coop.\n\nBut you are not ascending to a higher metaphysical Truth. You are migrating from one cage to another: from anonymous noise to the corporate authority of the Turkey Head and its mandatory festival of Banks-Giving.",
+    "The loop is perfectly closed.\n\nYou can discover the Easter egg, enter the secret society, click Lie, Quote Lie and Comment Lie, and perform your rebellion inside a structure that was built in advance to contain it.\n\nThe avant-garde dream of a secret society becomes a gamified corporate trap."
+];
+
+const comments = [
+    "Bataille: excellent, the sacred has been reduced to a deployment checklist.",
+    "Caillois: the threshold is Ludus. The fascination with crossing it is something else.",
+    "Masson: I drew the headless figure, not the reverse proxy.",
+    "Laure: burn the white paper before somebody starts believing it.",
+    "Mauss: if the community receives the token, what is the return gift?",
+    "Klossowski: the interface is the mask. Obviously.",
+    "Leiris: the ridiculous technical detail is exactly where everyday sacredness begins.",
+    "Benjamin: archive the leak before the company denies it existed.",
+    "Wahl: the contradiction is doing more work than the infrastructure.",
+    "Monnerot: collective belief loves a dashboard.",
+    "Ambrosino: matter, myth and token supply are all unstable systems pretending otherwise.",
+    "Paulhan: 'decentralized' is already becoming a rhetorical genre.",
+    "Rougemont: desire does not care whether the threshold is metaphysical or clickable.",
+    "Kojève: the End of History apparently ships with a settings panel.",
+    "Breton: I reject the platform and demand an invitation.",
+    "Waldberg: documenting the rumor may already be participation.",
+    "Dubief: the crowd is not using the platform; the crowd is the platform.",
+    "Mabille: please do not explain the secret until nothing marvelous remains.",
+    "Okamoto: the Turkey Head needs more violence.",
+    "Lewitzky: every gate manufactures an initiate.",
+    "Duthuit: the meme is already the ceremony.",
+    "Guastalla: the forum knows more than the people posting in it.",
+    "Chavy: are we still speaking metaphorically about sacrifice?",
+    "Dussat: clarity is becoming suspicious again.",
+    "Kelemen: finally someone mentions the actual machine.",
+    "Michel Koch: this all sounded simpler before the shell commands.",
+    "Jean Rollin: I came for sociology and apparently need a wallet.",
+    "Isabelle Waldberg: form becomes participation the moment you must cross it.",
+    "Pierre Pascal: I still cannot tell whether this is a tutorial or an event.",
+    "Robert Lebel: the rumor is becoming an object before the platform even exists."
+];
+
+const reactions = ["👍🏻","👎🏻","🙃","😅","🔥","😵","😳","🤬"];
+
+function rand(arr){
+    return arr[Math.floor(Math.random()*arr.length)];
+}
+
+function randNum(min,max){
+    return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+/* Pause automatic board activity while the pointer is over a thread */
+let threadHoverPaused = false;
+
+feed.addEventListener("mouseover", (e)=>{
+    if(e.target.closest(".post")) threadHoverPaused = true;
+});
+
+feed.addEventListener("mouseout", (e)=>{
+    const post = e.target.closest(".post");
+    if(post && !post.contains(e.relatedTarget)){
+        threadHoverPaused = false;
+    }
+});
+
+function createComment(){
+    return `
+        <div class="comment">
+            <strong>${rand(names)}</strong>: ${rand(comments)}
+        </div>
+    `;
+}
+
+function createPost(initial=false, customText=null, customUser=null){
+    const post = document.createElement("div");
+    post.className = "post";
+
+    let reactionHTML = "";
+    reactions.forEach(r=>{
+        reactionHTML += `
+            <button class="reactBtn">
+                ${r} ${randNum(0,99)}
+            </button>
+        `;
+    });
+
+    let commentHTML = "";
+    const amount = randNum(1,4);
+    for(let i=0;i<amount;i++){
+        commentHTML += createComment();
+    }
+
+    post.innerHTML = `
+        <div class="postHeader">
+            <div class="user">
+                <div class="avatar">${rand(avatars)}</div>
+                <div class="userInfo">
+                    <div class="username">${customUser || rand(names)}</div>
+                    <div class="meta">#${randNum(100000,999999)} • ${randNum(1,59)}m ago</div>
+                </div>
+            </div>
+
+            <div class="tag">${rand(tags)}</div>
+        </div>
+
+        <div class="postText">${escapeHTML(customText || rand(texts))}</div>
+
+        <div class="reactions">
+            ${reactionHTML}
+        </div>
+
+        <div class="comments">
+            ${commentHTML}
+        </div>
+
+        <div class="playerCommentComposer">
+            <input class="playerCommentInput" type="text" placeholder="Reply anonymously...">
+            <button class="playerCommentBtn" type="button">Reply</button>
+        </div>
+    `;
+
+    insertFeedPost(post);
+
+    const btns = post.querySelectorAll(".reactBtn");
+    btns.forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+            const parts = btn.textContent.trim().split(" ");
+            let count = parseInt(parts[1]);
+            count++;
+            btn.innerHTML = parts[0] + " " + count;
+
+            if(Math.random() > 0.82){
+                addSystemMessage("A hidden user reacted to your reaction.");
+            }
+        });
+    });
+
+
+    const playerCommentInput = post.querySelector(".playerCommentInput");
+    const playerCommentBtn = post.querySelector(".playerCommentBtn");
+
+    playerCommentBtn.addEventListener("click", ()=>{
+        submitPlayerComment(post, playerCommentInput);
+    });
+
+    playerCommentInput.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter"){
+            e.preventDefault();
+            submitPlayerComment(post, playerCommentInput);
+        }
+    });
+
+    setTimeout(()=>{
+        const randomReplies = [
+            "this one feels different",
+            "finally someone said it",
+            "you should delete this",
+            "the system noticed your post",
+            "based anon",
+            "thread archived in 3 hours",
+            "this is why I still browse here",
+            "this post glows",
+            "this might be real",
+            "OP is being watched"
+        ];
+
+        const randomReactions = ["😜","🤩","🥸","😎","🤓","😭"];
+
+        const commentBox = post.querySelector(".comments");
+        const reactionBox = post.querySelector(".reactions");
+
+        const autoComment = document.createElement("div");
+        autoComment.className = "comment";
+        autoComment.innerHTML = `<strong>${rand(names)}</strong>: ${rand(randomReplies)}`;
+
+        commentBox.appendChild(autoComment);
+
+        const extraReaction = document.createElement("button");
+        extraReaction.className = "reactBtn";
+        extraReaction.innerHTML = `${rand(randomReactions)} ${randNum(20,120)}`;
+
+        reactionBox.appendChild(extraReaction);
+
+        extraReaction.addEventListener("click", ()=>{
+            const parts = extraReaction.textContent.trim().split(" ");
+            let count = parseInt(parts[1]);
+            count++;
+            extraReaction.innerHTML = parts[0] + " " + count;
+        });
+
+    }, 1500 + Math.random()*2500);
+
+
+    if(!initial && Math.random() > 0.74){
+        createWarning();
+    }
+}
+
+function addSystemMessage(text){
+    const msg = document.createElement("div");
+    msg.className = "systemMessage";
+    msg.innerText = text;
+    feed.prepend(msg);
+
+    setTimeout(()=>msg.remove(), 7000);
+}
+
+function createWarning(){
+    const warn = document.createElement("div");
+    warn.className = "floatingWarning";
+    warn.innerText = "Signal instability detected in thread cluster.";
+    document.body.appendChild(warn);
+
+    setTimeout(()=>warn.remove(), 4000);
+}
+
+function spawnChaos(){
+    for(let i=0;i<3;i++){
+        setTimeout(()=>createPost(), i*250);
+    }
+
+    addSystemMessage("Chaos spike injected into live board.");
+}
+
+function injectUserPost(){
+    document.getElementById("postModal").classList.add("active");
+    document.getElementById("modalInput").focus();
+}
+
+function closeModal(){
+    document.getElementById("postModal").classList.remove("active");
+}
+
+function submitModalPost(){
+    const input = document.getElementById("modalInput");
+    const custom = input.value.trim();
+
+    if(!custom){
+        addSystemMessage("Transmission rejected: empty signal.");
+        return;
+    }
+
+    createPost(false, custom, "You");
+    saveUserPost(custom);
+    registerPlayerActivity();
+
+    input.value = "";
+    closeModal();
+
+    addSystemMessage("Your anonymous signal entered the system.");
+}
+
+for(let i=0;i<7;i++){
+    createPost(true);
+}
+
+loadUserPosts();
+
+if(getPlayerActivityCount() >= 5 || localStorage.getItem(CUSTOM_PIN_SHOWN_KEY) === "1"){
+    showCustomPinnedPost();
+}
+
+setInterval(()=>{
+    if(threadHoverPaused) return;
+    createPost();
+
+    if(feed.children.length > 35){
+        feed.removeChild(feed.lastChild);
+    }
+}, 3500 + Math.random()*3000);
+
+setInterval(()=>{
+    if(threadHoverPaused) return;
+    const posts = document.querySelectorAll(".post");
+    if(posts.length > 0){
+        const randomPost = posts[randNum(0, posts.length-1)];
+        const commentBox = randomPost.querySelector(".comments");
+        commentBox.innerHTML += createComment();
+    }
+}, 5000);
+
+
+setInterval(()=>{
+    if(threadHoverPaused) return;
+    const posts=document.querySelectorAll('.post');
+    if(!posts.length) return;
+
+    const p=posts[Math.floor(Math.random()*posts.length)];
+    const c=p.querySelector('.comments');
+
+    const quote=Math.floor(Math.random()*900000)+100000;
+
+    const replies=[
+      '>>'+quote+' this thread glows',
+      '>>OP archive this before midnight',
+      '>>'+quote+' I saw the same thing',
+      '>>OP the board remembers',
+      '>>'+quote+' check the hidden replies'
+    ];
+
+    const d=document.createElement('div');
+    d.className='comment';
+    d.innerHTML='<strong>'+['ArchiveGhost','NullWitness','SignalRat'][Math.floor(Math.random()*3)]+'</strong>: '+replies[Math.floor(Math.random()*replies.length)];
+    c.appendChild(d);
+},9000);
+
+setInterval(()=>{
+   if(threadHoverPaused) return;
+   const events=[
+      'A dormant thread has been bumped.',
+      'Someone replied to a forgotten post.',
+      'Archive scan completed.',
+      'An old signal resurfaced.'
+   ];
+   addSystemMessage(events[Math.floor(Math.random()*events.length)]);
+},18000);
+
+document.addEventListener('keydown',(e)=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='e'){
+   addSystemMessage('Purging local archive...');
+ }
+});
+
+</script>
+
+</body>
+</html>

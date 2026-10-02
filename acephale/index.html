@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Acéphale Intelligence - The Virtual Ritual of Sociology</title>
+    <meta charset="utf-8" />
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="author" content="ARTOLDO - Sara Ferro & Chris Weil">
+    <meta property="og:image" content="./game/images/mask.jpeg" />
+    <link rel="icon" type="image/png" href="./game/images/mask.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    font-family: Arial, sans-serif;
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+}
+
+/* Centering the container */
+.container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Typography */
+h1 { font-size: 4rem; }
+h2 { font-size: 3rem; }
+h3 { font-size: 2.5rem; }
+
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.8rem; }
+    h3 { font-size: 1.5rem; }
+
+    .accordion-header {
+        font-size: 1.2rem;
+    }
+}
+
+a {
+    color: #c3b597;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #e6d98a;
+}
+
+/* Button */
+.button {
+    background-color: #111;
+    color: #fff;
+    padding: 15px 30px;
+    border: 1px solid #c3b597;
+    border-radius: 25px;
+    cursor: pointer;
+    margin: 20px 0;
+    font-size: 1.2rem;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: #c3b597;
+    color: #000;
+}
+
+/* Accordion */
+.accordion {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+.accordion-item {
+    border: 1px solid #c3b597;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    background-color: transparent;
+    color: #fff;
+    cursor: pointer;
+    padding: 15px;
+    text-align: left;
+    font-size: 1.5rem;
+    position: relative;
+}
+
+@media (max-width: 480px) {
+    .accordion-header {
+        font-size: 1rem;
+        padding: 10px;
+    }
+}
+
+/* Arrow */
+.accordion-header::after {
+    content: '☠️';
+    font-size: 2.2rem;
+    position: absolute;
+    right: 20px;
+    bottom:7px;
+    transition: transform 0.3s ease;
+    color: #c3b597;
+    transform: rotate(45deg);
+}
+
+.accordion-header.active::after {
+    transform: rotate(0deg);
+}
+
+/* Content */
+.accordion-content {
+    display: none;
+    padding: 15px;
+    background-color: #000;
+    color: #fff;
+    font-size: 1rem;
+    text-align: justify;
+}
+
+/* Touchscreen visibility */
+.hide-on-touchscreen {
+    display: inline;
+}
+
+@media (pointer: coarse) {
+    .hide-on-touchscreen {
+        display: none;
+    }
+}
+
+/* Tap highlight removal */
+html {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* Floating images container */
+.image-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.floating-container {
+    position: absolute;
+}
+
+.floating-container.left {
+    top: 50%;
+    left: -300px;
+    transform: translateY(-50%);
+    animation: moveInOutLeft 3s ease-in-out infinite alternate;
+}
+
+.floating-container.right {
+    top: 30%;
+    right: -300px;
+    transform: translateY(-50%);
+    animation: moveInOutRight 3s ease-in-out infinite alternate;
+}
+
+@keyframes moveInOutLeft {
+    0% { transform: translateY(-50%) translateX(0); }
+    100% { transform: translateY(-50%) translateX(500px); }
+}
+
+@keyframes moveInOutRight {
+    0% { transform: translateY(-50%) translateX(0); }
+    100% { transform: translateY(-50%) translateX(-400px); }
+}
+
+.floating-image {
+    animation: rotate 3s linear infinite alternate;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(30deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Prevent selection */
+body {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+
+:root{
+  --bg: transparent;
+  --neon: yellow;
+  --glow: yellow;
+  --glow2: red;
+
+  --size: 72px;
+  --sizeMin: 24px;
+
+  --weight: 700;
+  --letter: 0.08em;
+  --line: 1.05;
+
+  --blur: 18px;
+  --blur2: 36px;
+
+  --flickerStrength: 1;
+  --animSpeed: 1800ms;
+
+  --skew: 0deg;
+  --rotate: 0deg;
+
+  --pad: 32px;
+}
+
+
+.neon{
+  font-family: "Caveat", cursive;
+  font-size: clamp(var(--sizeMin), 7vw, var(--size));
+  font-weight: var(--weight);
+  letter-spacing: var(--letter);
+  line-height: var(--line);
+  margin:auto;
+  color:#fff;
+  text-align:center;
+  transform: skewX(var(--skew)) rotate(var(--rotate));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+
+  text-shadow:
+    0 0 6px color-mix(in srgb, var(--neon) 80%, white 20%),
+    0 0 calc(var(--blur) * 0.6) var(--glow),
+    0 0 var(--blur) var(--glow),
+    0 0 var(--blur2) var(--glow),
+    0 0 calc(var(--blur2) * 1.3) var(--glow2),
+    0 0 calc(var(--blur2) * 1.8) var(--glow2);
+}
+
+
+
+    @keyframes randomLetterBlink{
+      0%, 96%, 100%{
+        opacity:1;
+      }
+
+      97%{
+        opacity:.02;
+      }
+
+      98%{
+        opacity:1;
+      }
+
+      99%{
+        opacity:.15;
+      }
+    }
+
+  2%{ opacity:.08; }
+  4%{ opacity:1; }
+  17%{ opacity:.15; }
+  19%{ opacity:1; }
+  31%{ opacity:.05; }
+  33%{ opacity:1; }
+  52%{ opacity:.2; }
+  54%{ opacity:1; }
+  71%{ opacity:.1; }
+  73%{ opacity:1; }
+  88%{ opacity:.18; }
+  90%{ opacity:1; }
+}
+
+.char{
+  display:inline;
+}
+
+.neon.anim-singleblink .char{
+  display:inline-block;
+  white-space:pre;
+  animation:randomLetterBlink calc(8.5s + (var(--rand) * 9s)) infinite;
+  animation-delay:calc(var(--rand) * -21s);
+}
+
+
+.word{
+  display:inline-block;
+  white-space:nowrap;
+}
+
+.neon.anim-singleblink{
+  word-break:keep-all;
+  overflow-wrap:normal;
+  white-space:normal;
+}
+
+/* Animations */
+
+.anim-none{
+  animation:none;
+}
+
+.anim-pulse{
+  animation:pulse var(--animSpeed) ease-in-out infinite;
+  will-change:transform, opacity, filter;
+}
+
+@keyframes pulse{
+  0%,100%{
+    opacity:1;
+
+    transform:
+      skewX(var(--skew))
+      rotate(var(--rotate))
+      scale(1);
+
+    filter:brightness(1);
+  }
+
+  50%{
+    opacity:.82;
+
+    transform:
+      skewX(var(--skew))
+      rotate(var(--rotate))
+      scale(1.045);
+
+    filter:brightness(1.35);
+  }
+}
+
+.anim-flicker{
+  animation:flicker calc(var(--animSpeed) * 1.3) linear infinite;
+}
+
+@keyframes flicker{
+  0%{
+    opacity:1;
+  }
+
+  3%{
+    opacity:calc(0.75 * var(--flickerStrength));
+  }
+
+  6%{
+    opacity:1;
+  }
+
+  7%{
+    opacity:calc(0.55 * var(--flickerStrength));
+  }
+
+  8%{
+    opacity:1;
+  }
+
+  10%{
+    opacity:calc(0.85 * var(--flickerStrength));
+  }
+
+  11%{
+    opacity:1;
+  }
+
+  14%{
+    opacity:calc(0.65 * var(--flickerStrength));
+  }
+
+  16%{
+    opacity:1;
+  }
+
+  31%{
+    opacity:calc(0.6 * var(--flickerStrength));
+  }
+
+  32%{
+    opacity:1;
+  }
+
+  71%{
+    opacity:calc(0.7 * var(--flickerStrength));
+  }
+
+  72%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:1;
+  }
+}
+
+.anim-huerotate{
+  animation:hue calc(var(--animSpeed) * 2.2) linear infinite;
+  filter:hue-rotate(0deg);
+}
+
+@keyframes hue{
+  from{
+    filter:hue-rotate(0deg);
+  }
+
+  to{
+    filter:hue-rotate(360deg);
+  }
+}
+
+.anim-breath{
+  animation:verticalFlow calc(var(--animSpeed) * 1.2) linear infinite;
+}
+
+@keyframes verticalFlow{
+
+  0%{
+    transform:
+      translateY(-12px)
+      skewX(var(--skew))
+      rotate(var(--rotate));
+
+    filter:brightness(.8);
+  }
+
+  50%{
+    transform:
+      translateY(12px)
+      skewX(var(--skew))
+      rotate(var(--rotate));
+
+    filter:brightness(1.4);
+  }
+
+  100%{
+    transform:
+      translateY(-12px)
+      skewX(var(--skew))
+      rotate(var(--rotate));
+
+    filter:brightness(.8);
+  }
+}
+
+</style>
+  </head>
+  <body>
+
+    <div class="image-wrapper">
+        <div class="floating-container left">
+            <img class="floating-image" src="./game/images/1.webp" alt="Acéphale" width="300px">
+        </div>
+        <div class="floating-container right">
+            <img class="floating-image" src="./game/images/2.webp" alt="Acéphale" width="300px">
+        </div>
+    </div>
+
+    <div class="container">
+      <img src="./game/images/mask.webp" alt="Acéphale" width="20%" />
+
+
+
+
+    <div class="neon anim-singleblink"><span class="word"><span class="char" style="--rand:0.67">A</span><span class="char" style="--rand:0.55">c</span><span class="char" style="--rand:0.48">é</span><span class="char" style="--rand:0.03">p</span><span class="char" style="--rand:0.03">h</span><span class="char" style="--rand:0.63">a</span><span class="char" style="--rand:0.33">l</span><span class="char" style="--rand:0.07">e</span></span> <span class="word"><span class="char" style="--rand:0.80">I</span><span class="char" style="--rand:0.06">n</span><span class="char" style="--rand:0.50">t</span><span class="char" style="--rand:0.14">e</span><span class="char" style="--rand:0.69">l</span><span class="char" style="--rand:0.10">l</span><span class="char" style="--rand:0.68">i</span><span class="char" style="--rand:0.64">g</span><span class="char" style="--rand:0.72">e</span><span class="char" style="--rand:0.04">n</span><span class="char" style="--rand:0.70">c</span><span class="char" style="--rand:0.45">e</span></span></div>
+
+
+
+
+
+
+      <h1 style="display:none;">Acéphale Intelligence</h1>
+      <h2>The Virtual Ritual of Sociology</h2>
+      <h3>Featuring Georges Bataille and many more</h3>
+      <br>
+      <a href="./game/" class="button">Play Now</a>
+      <a href="https://www.amazon.it/dp/B0HKG6Z46V?binding=paperback" target="_blank" class="button">Read Book</a>
+
+<div id="lightbox"
+     onclick="closeLightbox(event)"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:10000;">
+  
+  <span class="close-btn"
+        onclick="closeLightbox(event)"
+        style="position:absolute; top:15px; right:25px; font-size:30px; color:#fff; cursor:pointer;">&times;</span>
+  
+  <iframe id="videoFrame"
+          allowfullscreen
+          style="width:90%; height:70%; border:none; border-radius: 25px; box-shadow:0 0 20px #000;"></iframe>
+</div>
+
+<script>
+  function openLightbox(e, url) {
+    e.preventDefault();
+    const videoId = url.split("youtu.be/")[1]; 
+    document.getElementById("videoFrame").src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+    document.getElementById("lightbox").style.display = "flex";
+  }
+  function closeLightbox(e) {
+    if (e.target.id === "lightbox" || e.target.className === "close-btn" || e.target.tagName === "SPAN") {
+      document.getElementById("videoFrame").src = "";
+      document.getElementById("lightbox").style.display = "none";
+    }
+  }
+</script>
+                           
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header">Acéphale wtf?</div>
+          <div class="accordion-content">
+            <p>Becoming Bataille: Become the Head of a Headless revolution – Acéphale Intelligence is a playable universe built from game theory, reconstructed intellectual characters, platform parody, sacred sociology and a deliberately unstable alternate-reality fiction. You do not need to know Bataille, Caillois or the Collège de Sociologie before playing. This server is here to teach you while the characters argue about it. Before Acéphale Intelligence, there was Acéphale. Acéphale was both a journal and the name attached to Bataille’s secret-society experiment. Its emblem was the headless human figure: a refusal of the sovereign Head — God, Führer, State, single leader, rational command — and an attempt to imagine an intense sacred community that would not simply reproduce ordinary political authority. The journal was not just commentary: myth, Nietzsche, the sacred, expenditure, death and ritual were treated as things to be lived, invoked and collectively tested.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">Collège de Sociologie wtf?</div>
+          <div class="accordion-content">
+            <p>
+Acéphale and the Collège were never a tidy superhero team with one official roster. Think of this thread as the game’s cast page: founders, collaborators, artists, participants, auditors, guests and orbiting intellectuals. In Disorder they return as synthetic characters — tutorial staff, enemies of consensus, unreliable narrators and recurring fandom personalities.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">Disclaimer</div>
+          <div class="accordion-content">
+            <p>This Alternate Reality Game (ARG) is a speculative docufiction and mockumentary inspired by true events,
+historical documents, and the writings of real historical figures. Certain passages
+are algorithmic pastiches that imagine, reconstruct, distort, or extend historical
+voices within the project’s fictional and artistic framework. While history provides
+the source material, these passages belong to the fiction and should not be
+understood as authentic quotations, statements, or historical documents.
+Real persons, institutions, organizations, products, and brands may appear, be
+referenced, fictionalized, exaggerated, or otherwise transformed for purposes of
+parody, satire, commentary, criticism, and artistic expression. Any fictional words,
+actions, opinions, affiliations, or circumstances attributed to identifiable persons
+are part of the narrative device and should not be taken as statements of fact.
+No endorsement, sponsorship, association, or authorization by any person, estate,
+institution, organization, or brand mentioned or depicted is implied.
+Any resemblance between fictional characters or situations and persons or
+events not explicitly identified as historical or real-world references is
+coincidental. Nothing in this publication is intended to defame, impersonate,
+misrepresent, or cause personal, professional, reputational, or commercial harm.
+Trademarks, names, logos, and other identifying references remain the property
+of their respective owners and are used solely within the game’s fictional, parodic,
+critical, documentary, or artistic context.
+</p>
+          </div>
+        </div>
+      </div>
+
+<p style="padding: 20px;">Created by <a href="https://artoldo.github.io" target="_blank" style="color: #c3b597;">ARTOLDO</a>
+
+    </div>
+
+<!-- Accordion functionality with arrow toggle -->
+
+    <script>
+      
+      const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', function () {
+          const content = this.nextElementSibling;
+          const isActive = this.classList.contains('active');
+
+          // Close all open accordions
+          accordionHeaders.forEach(item => {
+            item.classList.remove('active');
+            item.nextElementSibling.style.display = 'none';
+          });
+
+          // Toggle the clicked accordion
+          if (!isActive) {
+            this.classList.add('active');
+            content.style.display = 'block';
+          }
+        });
+      });
+    </script>
+
+<!-- Prevent dragging -->
+
+<script>
+document.querySelectorAll('img').forEach((img) => {
+    img.addEventListener('dragstart', (e) => e.preventDefault());
+});
+</script>
+
+<!-- Disable right-click -->
+
+<script>
+  // Disable right-click
+  document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+  });
+
+  // Disable text selection using JavaScript (extra layer of protection)
+  document.addEventListener('selectstart', function(event) {
+    event.preventDefault();
+  });
+</script>
+
+<script>
+
+const emoticons = [
+    "⚔️","🦄","👹","👻","🤖","👁️","💀","🔥",
+    "💥","🩸","🕸️","✨","🥷🏻","👾","👽","💩"
+];
+
+function createEmoticonRain(){
+
+    const drop = document.createElement("div");
+
+    drop.innerHTML = emoticons[Math.floor(Math.random()*emoticons.length)];
+
+    drop.style.position = "fixed";
+    drop.style.top = "-50px";
+    drop.style.left = Math.random()*100 + "vw";
+    drop.style.fontSize = (20 + Math.random()*40) + "px";
+    drop.style.zIndex = "9999";
+    drop.style.pointerEvents = "none";
+    drop.style.userSelect = "none";
+
+    const duration = 3 + Math.random()*5;
+
+    drop.animate(
+        [
+            {
+                transform:"translateY(0) rotate(0deg)",
+                opacity:1
+            },
+            {
+                transform:
+                `translateY(110vh) rotate(${Math.random()*720-360}deg)`,
+                opacity:0.2
+            }
+        ],
+        {
+            duration: duration*1000,
+            easing:"linear"
+        }
+    );
+
+    document.body.appendChild(drop);
+
+    setTimeout(()=>{
+        drop.remove();
+    }, duration*1000);
+
+}
+
+
+// rain intensity
+setInterval(createEmoticonRain, 150);
+
+
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,2658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta content="noindex, nofollow" name="robots">
+<title>Acéphale Game</title>
+<script src="assets/engine.js"></script>
+<style>
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #f5f5f5;
+    font-family: Arial, sans-serif;
+}
+
+canvas {
+    display: block;
+    background: #transparent;
+}
+
+#ui {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    background: rgba(255,255,255,0.92);
+    padding: 14px;
+    border-radius: 10px;
+    z-index: 20;
+    width: 260px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#ui h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+#autoModeBtn {
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 7px;
+    background: #111;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#autoModeBtn.active {
+    background: #555;
+}
+
+#lightbox {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.45); /* lower opacity if you want more visibility */
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+#lightboxContent {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    position: relative;
+}
+
+#contentFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#closeBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 5;
+
+    width: 80px;
+    height: 80px;
+
+    border: none;
+    border-radius: 0 0 0 30px; /* only bottom-left rounded */
+
+    background: black;
+    color: white;
+
+    font-size: 48px;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    padding-left: 6px;   
+
+    padding-top: 0;
+
+    padding-right: 0;
+
+    padding-bottom: 6px;
+}
+
+.legend {
+    margin-top: 10px;
+}
+
+.legend div {
+    margin-bottom: 5px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.enabled {
+    background: #c3b597;
+}
+
+.disabled {
+    background: #111;
+}
+
+.current {
+    background: #666;
+}
+
+#bgScene {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: transparent; /* important */
+}
+
+#ui {
+    z-index: 20;
+}
+
+a-enter-vr-button,
+.a-enter-ar-button,
+.a-enter-vr,
+.a-enter-ar {
+  display: none !important;
+}
+
+
+/* MOBILE GAME CAMERA */
+@media (max-width:700px){
+    html,body{
+        overflow:hidden!important;
+        width:100%;
+        height:100%;
+        touch-action:none;
+    }
+
+    #game{
+        position:fixed;
+        inset:0;
+        width:100vw;
+        height:100vh;
+        touch-action:none;
+    }
+
+    /* Mobile intro text overlay: centered both ways, then dismissed */
+    #ui{
+        position:fixed;
+        top:50%;
+        left:50%;
+        right:auto;
+        bottom:auto;
+        transform:translate(-50%,-50%);
+        width:calc(100vw - 40px);
+        max-width:520px;
+        max-height:calc(100vh - 40px);
+        box-sizing:border-box;
+        z-index:1000;
+        margin:0;
+        overflow:auto;
+        transition:opacity .35s ease, visibility .35s ease, transform .35s ease;
+    }
+
+    #ui.mobile-dismissed{
+        opacity:0;
+        visibility:hidden;
+        pointer-events:none;
+        transform:translate(-50%,-50%) scale(.98);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<a-scene
+    id="bgScene"
+    loading-screen="dotsColor: black; backgroundColor: #000"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    embedded>
+
+  <a-assets>
+    <video id="v1" src="video/1.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v2" src="video/2.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v3" src="video/3.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v4" src="video/4.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v5" src="video/5.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v6" src="video/6.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v7" src="video/7.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v8" src="video/8.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="v9" src="video/9.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+  </a-assets>
+
+  <a-camera position="0 0 0"></a-camera>
+
+  <!-- Rail directly in front of camera -->
+  <a-entity
+    position="0 0 -6"
+    video-rail="speed:2">
+
+    <!-- Set 1 -->
+
+<a-video src="#v1" position="-36 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v2" position="-31.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v3" position="-27 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v4" position="-22.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v5" position="-18 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v6" position="-13.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v7" position="-9 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v8" position="-4.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v9" position="0 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+    <!-- Duplicate Set -->
+
+<a-video src="#v1" position="4.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v2" position="9 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v3" position="13.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v4" position="18 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v5" position="22.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v6" position="27 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v7" position="31.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v8" position="36 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+<a-video src="#v9" position="40.5 0 0" width="3.75" height="5"
+         material="transparent: true; opacity: 0.7"></a-video>
+
+  </a-entity>
+
+<a-sky color="#000"></a-sky>
+
+<a-cylinder
+  material="src: images/cylinder1.png; side: double; transparent: true; opacity: 1; depthWrite: false;"
+  open-ended="true"
+  scale="80 50 80"
+  position="0 0 0"
+  animation="property: rotation; to: 0 -360 0; loop: true; dur: 20000; easing: linear">
+</a-cylinder>
+
+<a-image src="./images/logo.png" position="0 0 -15" width="13.161" height="3" rotation="25 0 0" animation="property:rotation; to: 0 0 0; easing: easeOutQuad; dir: alternate; loop: true; dur: 4000;">
+</a-image>
+
+</a-scene>
+
+<div id="ui">
+
+    <h2>Acéphale Intelligence</h2>
+
+    <button id="autoModeBtn" type="button">▶ AUTO MODE</button>
+
+    <strong>Mission:</strong> Become the Head <br>of a headless Revolution!
+
+    <p>
+        <strong>Rules:</strong> Click only enabled nodes.<br>
+        <strong>Advice:</strong> Movement follows the arrows.
+    </p>
+
+    <div class="legend">
+        <div><span class="dot current"></span> Current Node</div>
+        <div><span class="dot enabled"></span> Reachable</div>
+        <div><span class="dot disabled"></span> Locked</div>
+    </div>
+
+</div>
+
+<canvas id="game"></canvas>
+
+<div id="lightbox">
+
+    <div id="lightboxContent">
+
+        <button id="closeBtn">✘</button>
+
+        <iframe id="contentFrame"></iframe>
+
+    </div>
+
+</div>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+/* Mobile intro overlay: visible on load, dismissible by tap/click,
+   and automatically hidden after 10 seconds. */
+const mobileIntro = document.getElementById("ui");
+let mobileIntroTimer = null;
+
+function dismissMobileIntro() {
+    if (!mobileIntro || !window.matchMedia("(max-width:700px)").matches) return;
+    mobileIntro.classList.add("mobile-dismissed");
+    if (mobileIntroTimer) {
+        clearTimeout(mobileIntroTimer);
+        mobileIntroTimer = null;
+    }
+}
+
+if (mobileIntro && window.matchMedia("(max-width:700px)").matches) {
+    mobileIntro.addEventListener("click", dismissMobileIntro);
+    mobileIntroTimer = setTimeout(dismissMobileIntro, 10000);
+}
+
+
+
+const playerImg = new Image();
+playerImg.src = "images/mask.png";
+
+let isMobile = window.matchMedia("(max-width:700px)").matches;
+let cameraX = 0, cameraY = 0, cameraZoom = 1;
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    isMobile = window.matchMedia("(max-width:700px)").matches;
+    cameraZoom = 1;
+}
+resizeCanvas();
+
+const WORLD_W = 1200;
+const WORLD_H = 900;
+const centerX = isMobile ? WORLD_W / 2 : canvas.width / 2;
+const centerY = isMobile ? WORLD_H / 2 : canvas.height / 2;
+
+
+/*
+=====================================================
+NODES
+=====================================================
+*/
+
+const nodes = {
+
+    center: {
+        x: centerX,
+        y: centerY,
+        label: "?",
+        url: "disorder.html"
+    },
+
+    agon: {
+        x: centerX - 250,
+        y: centerY - 150,
+        label: "Agôn",
+        url: "chess.html"
+    },
+
+    alea: {
+        x: centerX + 250,
+        y: centerY - 150,
+        label: "Alea",
+        url: "slot.html"
+    },
+
+    mimicry: {
+        x: centerX - 250,
+        y: centerY + 150,
+        label: "Mimicry",
+        url: "toytonic.html"
+    },
+
+    ilinx: {
+        x: centerX + 250,
+        y: centerY + 150,
+        label: "Ilinx",
+        url: "onlyfanatics.html"
+    },
+
+    ludus: {
+        x: centerX,
+        y: centerY - 330,
+        label: "Ludus",
+        url: "college.html"
+    },
+
+    paidia: {
+        x: centerX,
+        y: centerY + 330,
+        label: "Paidia",
+        url: "acephale.html"
+    },
+
+    positive: {
+        x: centerX - 520,
+        y: centerY,
+        label: "Light",
+        url: "hotler.html"
+    },
+
+    negative: {
+        x: centerX + 520,
+        y: centerY,
+        label: "Dark",
+        url: "chains.html"
+    }
+};
+
+
+/*
+=====================================================
+DIRECTIONAL CONNECTION GRAPH
+=====================================================
+*/
+
+const connections = {
+
+    center: [
+        "agon",
+        "alea",
+        "mimicry",
+        "ilinx"
+    ],
+
+    agon: [
+        "center",
+        "alea",
+        "mimicry",
+        "ludus",
+        "positive"
+    ],
+
+    alea: [
+        "center",
+        "agon",
+        "ilinx",
+        "ludus",
+        "negative"
+    ],
+
+    mimicry: [
+        "center",
+        "ilinx",
+        "agon",
+        "paidia",
+        "positive"
+    ],
+
+    ilinx: [
+        "center",
+        "mimicry",
+        "alea",
+        "paidia",
+        "negative"
+    ],
+
+    ludus: [
+        "agon",
+        "alea"
+    ],
+
+    paidia: [
+        "mimicry",
+        "ilinx"
+    ],
+
+    positive: [
+        "agon",
+        "mimicry"
+    ],
+
+    negative: [
+        "alea",
+        "ilinx"
+    ]
+};
+
+
+/*
+=====================================================
+GAME STATE
+=====================================================
+*/
+
+let currentNode = "center";
+
+let enabledNodes = connections[currentNode];
+
+const player = {
+
+    x: nodes.center.x,
+    y: nodes.center.y,
+
+    radius: 18,
+
+    speed: 0.07,
+
+    target: null,
+
+    moving: false
+};
+
+
+/*
+=====================================================
+ENABLE NODES
+=====================================================
+*/
+
+function updateEnabledNodes() {
+
+    enabledNodes = connections[currentNode];
+}
+
+
+/*
+=====================================================
+DRAW ARROW
+=====================================================
+*/
+
+function updateCamera(){
+    if(!isMobile){ cameraX=0; cameraY=0; return; }
+    const tx=player.x-canvas.width/(2*cameraZoom);
+    const ty=player.y-canvas.height/(2*cameraZoom);
+    cameraX += (tx-cameraX)*0.10;
+    cameraY += (ty-cameraY)*0.10;
+    cameraX=Math.max(0,Math.min(WORLD_W-canvas.width/cameraZoom,cameraX));
+    cameraY=Math.max(0,Math.min(WORLD_H-canvas.height/cameraZoom,cameraY));
+}
+function worldPoint(x,y){
+    const r=canvas.getBoundingClientRect();
+    return {x:(x-r.left)/cameraZoom+cameraX,y:(y-r.top)/cameraZoom+cameraY};
+}
+
+function drawArrow(from, to) {
+
+    const start = nodes[from];
+    const end = nodes[to];
+
+    const angle = Math.atan2(
+        end.y - start.y,
+        end.x - start.x
+    );
+
+    const nodeRadius = 42;
+
+    const startX = start.x + Math.cos(angle) * nodeRadius;
+    const startY = start.y + Math.sin(angle) * nodeRadius;
+
+    const endX = end.x - Math.cos(angle) * nodeRadius;
+    const endY = end.y - Math.sin(angle) * nodeRadius;
+
+
+    /*
+    LINE
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(startX, startY);
+
+    ctx.lineTo(endX, endY);
+
+    ctx.strokeStyle = "#fff";
+
+    ctx.lineWidth = 2.5;
+
+    ctx.stroke();
+
+
+    /*
+    ARROWHEAD
+    */
+
+    const headLength = 14;
+
+    ctx.beginPath();
+
+    ctx.moveTo(endX, endY);
+
+    ctx.lineTo(
+        endX - headLength * Math.cos(angle - Math.PI / 7),
+        endY - headLength * Math.sin(angle - Math.PI / 7)
+    );
+
+    ctx.lineTo(
+        endX - headLength * Math.cos(angle + Math.PI / 7),
+        endY - headLength * Math.sin(angle + Math.PI / 7)
+    );
+
+    ctx.closePath();
+
+    ctx.fillStyle = "#fff";
+
+    ctx.fill();
+}
+
+
+/*
+=====================================================
+DRAW CONNECTIONS
+=====================================================
+*/
+
+function drawConnections() {
+
+    for (const from in connections) {
+
+        for (const to of connections[from]) {
+
+            drawArrow(from, to);
+        }
+    }
+}
+
+
+/*
+=====================================================
+DRAW NODES
+=====================================================
+*/
+
+function drawNodes() {
+
+    for (const key in nodes) {
+
+        const node = nodes[key];
+
+        const enabled = enabledNodes.includes(key);
+
+        /*
+        NODE CIRCLE
+        */
+
+        ctx.beginPath();
+
+        ctx.arc(
+            node.x,
+            node.y,
+            42,
+            0,
+            Math.PI * 2
+        );
+
+        if (key === currentNode) {
+
+            ctx.fillStyle = "#666";
+
+        } else if (enabled) {
+
+            ctx.fillStyle = "#c3b597";
+
+        } else {
+
+            ctx.fillStyle = "#111";
+        }
+
+        ctx.fill();
+
+        ctx.strokeStyle = "#fff";
+
+        ctx.lineWidth = 3;
+
+        ctx.stroke();
+
+
+        /*
+        LABEL
+        */
+
+        ctx.fillStyle = "white";
+
+        ctx.font = "bold 16px Arial";
+
+        ctx.textAlign = "center";
+
+        ctx.fillText(
+            node.label,
+            node.x,
+            node.y + 5
+        );
+    }
+}
+
+
+/*
+=====================================================
+DRAW PLAYER
+=====================================================
+*/
+
+function drawPlayer() {
+
+    const size = 300; // control dot size
+
+    ctx.drawImage(
+        playerImg,
+        player.x - size / 2,
+        player.y - size / 2,
+        size,
+        size
+    );
+}
+
+
+/*
+=====================================================
+AUTO MODE
+=====================================================
+*/
+
+const autoModeBtn = document.getElementById("autoModeBtn");
+let autoMode = false;
+let autoTimer = null;
+let autoLightboxTimer = null;
+let autoScrollFrame = null;
+
+function getRandomReachableNode() {
+    const choices = enabledNodes.filter(key => key !== currentNode);
+    if (!choices.length) return null;
+    return choices[Math.floor(Math.random() * choices.length)];
+}
+
+function stopAutoMode() {
+    autoMode = false;
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    if (autoLightboxTimer) { clearTimeout(autoLightboxTimer); autoLightboxTimer = null; }
+    if (autoScrollFrame) { cancelAnimationFrame(autoScrollFrame); autoScrollFrame = null; }
+    if (autoModeBtn) {
+        autoModeBtn.classList.remove("active");
+        autoModeBtn.textContent = "▶ AUTO MODE";
+    }
+}
+
+function autoScrollLightbox() {
+    // Auto Mode no longer scrolls pages.
+    // The lightbox simply closes after 10 seconds with no mouse interaction.
+    if (!autoMode || lightbox.style.display !== "flex") return;
+
+    if (autoLightboxTimer) clearTimeout(autoLightboxTimer);
+
+    autoLightboxTimer = setTimeout(() => {
+        if (autoMode && lightbox.style.display === "flex") {
+            closeLightbox();
+        }
+    }, 10000);
+}
+
+function resetAutoLightboxTimer() {
+    if (!autoMode || lightbox.style.display !== "flex") return;
+    autoScrollLightbox();
+}
+
+// Mouse interaction outside the iframe.
+["mousemove", "pointermove", "mousedown", "wheel"].forEach(type => {
+    window.addEventListener(type, resetAutoLightboxTimer, { passive: true });
+});
+
+// Mouse interaction inside the original page, when the iframe allows access.
+function bindIframeAutoInteraction() {
+    if (!autoMode || lightbox.style.display !== "flex") return;
+
+    try {
+        const win = frame.contentWindow;
+        if (!win) return;
+
+        ["mousemove", "pointermove", "mousedown", "wheel"].forEach(type => {
+            win.addEventListener(type, resetAutoLightboxTimer, { passive: true });
+        });
+    } catch (_) {
+        // If the browser blocks iframe access, the normal 10-second timer remains.
+    }
+}
+
+window.addEventListener("message", () => {
+    // AUTO_BOTTOM messages are intentionally ignored now: Auto Mode does not scroll.
+});
+
+function startAutoMode() {
+    if (autoMode) {
+        stopAutoMode();
+        return;
+    }
+
+    autoMode = true;
+    if (autoModeBtn) {
+        autoModeBtn.classList.add("active");
+        autoModeBtn.textContent = "■ AUTO MODE";
+    }
+    runAutoStep();
+}
+
+function runAutoStep() {
+    if (!autoMode || player.moving || lightbox.style.display === "flex") return;
+
+    const next = getRandomReachableNode();
+    if (!next) {
+        autoTimer = setTimeout(runAutoStep, 1000);
+        return;
+    }
+
+    player.target = next;
+    player.moving = true;
+}
+
+/*
+=====================================================
+ANIMATION LOOP
+=====================================================
+*/
+
+function animate() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    if (isMobile) {
+        updateCamera();
+        ctx.save();
+        ctx.translate(-cameraX * cameraZoom, -cameraY * cameraZoom);
+        ctx.scale(cameraZoom, cameraZoom);
+
+        drawConnections();
+        drawNodes();
+        drawPlayer();
+
+        ctx.restore();
+    } else {
+        drawConnections();
+        drawNodes();
+        drawPlayer();
+    }
+
+
+    /*
+    PLAYER MOVEMENT
+    */
+
+    if (player.moving && player.target) {
+
+        const targetNode = nodes[player.target];
+
+        player.x += (
+            targetNode.x - player.x
+        ) * player.speed;
+
+        player.y += (
+            targetNode.y - player.y
+        ) * player.speed;
+
+        const dist = Math.hypot(
+            targetNode.x - player.x,
+            targetNode.y - player.y
+        );
+
+        if (dist < 1) {
+
+            player.x = targetNode.x;
+            player.y = targetNode.y;
+
+            player.moving = false;
+
+            currentNode = player.target;
+
+            updateEnabledNodes();
+
+            openLightbox(targetNode.url, autoMode);
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+
+/*
+=====================================================
+CLICK HANDLING
+=====================================================
+*/
+
+let pointerDown=false, pointerDragged=false, pointerStartX=0, pointerStartY=0;
+
+function trySelectNode(clientX,clientY){
+    if(player.moving) return;
+    const {x:mx,y:my}=worldPoint(clientX,clientY);
+    for(const key in nodes){
+        if(!enabledNodes.includes(key)) continue;
+        const node=nodes[key];
+        if(Math.hypot(mx-node.x,my-node.y)<42){
+            player.target=key;
+            player.moving=true;
+            return;
+        }
+    }
+}
+
+canvas.addEventListener("pointerdown",e=>{
+    pointerDown=true; pointerDragged=false;
+    pointerStartX=e.clientX; pointerStartY=e.clientY;
+    canvas.setPointerCapture?.(e.pointerId);
+});
+canvas.addEventListener("pointermove",e=>{
+    if(!pointerDown || player.moving) return;
+    const dx=e.clientX-pointerStartX, dy=e.clientY-pointerStartY;
+    if(Math.abs(dx)>4 || Math.abs(dy)>4){
+        pointerDragged=true;
+        if(isMobile){
+            cameraX-=dx/cameraZoom;
+            cameraY-=dy/cameraZoom;
+            cameraX=Math.max(0,Math.min(WORLD_W-canvas.width/cameraZoom,cameraX));
+            cameraY=Math.max(0,Math.min(WORLD_H-canvas.height/cameraZoom,cameraY));
+            pointerStartX=e.clientX; pointerStartY=e.clientY;
+        }
+    }
+});
+canvas.addEventListener("pointerup",e=>{
+    if(pointerDown && !pointerDragged) trySelectNode(e.clientX,e.clientY);
+    pointerDown=false;
+    canvas.releasePointerCapture?.(e.pointerId);
+});
+canvas.addEventListener("pointercancel",()=>pointerDown=false);
+
+/*
+=====================================================
+LIGHTBOX
+=====================================================
+*/
+
+const lightbox = document.getElementById("lightbox");
+
+const frame = document.getElementById("contentFrame");
+
+const closeBtn = document.getElementById("closeBtn");
+
+
+function openLightbox(url, fromAuto = false) {
+
+    if (autoLightboxTimer) {
+        clearTimeout(autoLightboxTimer);
+        autoLightboxTimer = null;
+    }
+
+    if (autoScrollFrame) {
+        cancelAnimationFrame(autoScrollFrame);
+        autoScrollFrame = null;
+    }
+
+    lightbox.style.display = "flex";
+
+    // Always open the original page. No Auto Mode replacement pages,
+    // query parameters, or automatic scrolling.
+    frame.onload = null;
+    frame.src = url;
+
+    if (fromAuto) {
+        frame.onload = () => {
+            bindIframeAutoInteraction();
+            autoScrollLightbox();
+        };
+
+        // Also start immediately in case the page is already cached.
+        autoScrollLightbox();
+    }
+}
+function closeLightbox() {
+    if (autoLightboxTimer) {
+        clearTimeout(autoLightboxTimer);
+        autoLightboxTimer = null;
+    }
+
+    if (autoScrollFrame) {
+        cancelAnimationFrame(autoScrollFrame);
+        autoScrollFrame = null;
+    }
+
+    frame.onload = null;
+    lightbox.style.display = "none";
+    frame.src = "about:blank";
+
+    if (autoMode) {
+        autoTimer = setTimeout(runAutoStep, 900);
+    }
+}
+
+closeBtn.addEventListener("click", () => {
+    closeLightbox();
+    if (autoMode) stopAutoMode();
+});
+
+if (autoModeBtn) {
+    autoModeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        startAutoMode();
+    });
+}
+
+
+/*
+=====================================================
+START
+=====================================================
+*/
+
+animate();
+
+
+/*
+=====================================================
+RESIZE
+=====================================================
+*/
+
+window.addEventListener("resize", () => {
+    resizeCanvas();
+});
+
+
+/*
+=====================================================
+CURSOR
+=====================================================
+*/
+
+canvas.addEventListener("mousemove", (e) => {
+
+    if (player.moving) {
+        canvas.style.cursor = "default";
+        return;
+    }
+
+    const {x:mx,y:my}=worldPoint(e.clientX,e.clientY);
+
+    let hoveringEnabledNode = false;
+
+    for (const key in nodes) {
+
+        if (!enabledNodes.includes(key)) continue;
+
+        const node = nodes[key];
+
+        const dist = Math.hypot(
+            mx - node.x,
+            my - node.y
+        );
+
+        if (dist < 42) {
+            hoveringEnabledNode = true;
+            break;
+        }
+    }
+
+    canvas.style.cursor = hoveringEnabledNode
+        ? "pointer"
+        : "default";
+});
+
+</script>
+
+<script>
+AFRAME.registerComponent('video-rail', {
+  schema: {
+    speed: { default: 2.0 }
+  },
+
+  init() {
+    this.cards = Array.from(this.el.children);
+    this.spacing = 4.5;
+
+    this.minX = Math.min(...this.cards.map(c => c.object3D.position.x));
+    this.maxX = Math.max(...this.cards.map(c => c.object3D.position.x));
+
+    this.loopWidth = (this.maxX - this.minX) + this.spacing;
+  },
+
+  tick(time, delta) {
+    const move = this.data.speed * delta / 1000;
+
+    this.cards.forEach(card => {
+      card.object3D.position.x -= move;
+
+      if (card.object3D.position.x < this.minX - this.spacing) {
+        card.object3D.position.x += this.loopWidth;
+      }
+    });
+  }
+});
+
+function playAllVideos() {
+  document.querySelectorAll('video').forEach(video => {
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    const promise = video.play();
+
+    if (promise !== undefined) {
+      promise.catch(() => {});
+    }
+  });
+
+  const btn = document.getElementById('startButton');
+  if (btn) btn.style.display = 'none';
+}
+
+window.addEventListener('load', () => {
+  playAllVideos();
+
+  document.addEventListener('click', playAllVideos);
+  document.addEventListener('touchstart', playAllVideos);
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // =========================
+  // SPEAKER BUTTON
+  // =========================
+  const speakerBtn = document.createElement("button");
+  speakerBtn.id = "speakerToggle";
+
+  speakerBtn.style.position = "fixed";
+  speakerBtn.style.left = "12px";
+  speakerBtn.style.bottom = "20%";
+  speakerBtn.style.width = "60px";
+  speakerBtn.style.height = "60px";
+  speakerBtn.style.borderRadius = "50%";
+  speakerBtn.style.border = "none";
+  speakerBtn.style.background = "rgba(0,0,0,1.0)";
+  speakerBtn.style.display = "flex";
+  speakerBtn.style.alignItems = "center";
+  speakerBtn.style.justifyContent = "center";
+  speakerBtn.style.cursor = "pointer";
+  speakerBtn.style.zIndex = 1000;
+  speakerBtn.style.backdropFilter = "blur(6px)";
+
+  document.body.appendChild(speakerBtn);
+
+  // =========================
+  // SVG ICONS
+  // =========================
+  const icon = document.createElement("span");
+  icon.style.transform = "translateX(-2px)";
+
+  const iconOn = `
+  <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
+    <path d="M3 10v4h4l5 4V6L7 10H3z" fill="white"/>
+    <path d="M16 8.5a4.5 4.5 0 010 7" stroke="white" stroke-width="2"/>
+    <path d="M19 5a9 9 0 010 14" stroke="white" stroke-width="2"/>
+  </svg>
+  `;
+
+  const iconOff = `
+  <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
+    <path d="M3 10v4h4l5 4V6L7 10H3z" fill="white"/>
+    <line x1="16" y1="8" x2="21" y2="16" stroke="white" stroke-width="2"/>
+    <line x1="21" y1="8" x2="16" y2="16" stroke="white" stroke-width="2"/>
+  </svg>
+  `;
+
+  icon.innerHTML = iconOff;
+  speakerBtn.appendChild(icon);
+
+  // =========================
+  // AUDIO SETUP
+  // =========================
+  const audioPlayer = document.createElement("audio");
+  audioPlayer.id = "backgroundAudio";
+  audioPlayer.style.display = "none";
+  document.body.appendChild(audioPlayer);
+
+  const playlist = [
+    { title: "Sundance", src: "./assets/music/01.mp3" },
+    { title: "8 Bit Super Party", src: "./assets/music/02.mp3" },
+    { title: "Flashback", src: "./assets/music/03.mp3" },
+    { title: "Dancing Lights", src: "./assets/music/04.mp3" },
+    { title: "Teddy Bear in Trance", src: "./assets/music/05.mp3" },
+    { title: "Stranger", src: "./assets/music/06.mp3" },
+    { title: "Time", src: "./assets/music/07.mp3" },
+    { title: "Mystic Monsters", src: "./assets/music/08.mp3" },
+    { title: "Hyper Horses", src: "./assets/music/09.mp3" },
+    { title: "Escape", src: "./assets/music/10.mp3" },
+    { title: "Invisible", src: "./assets/music/11.mp3" }
+  ];
+
+  let currentIndex = Math.floor(Math.random() * playlist.length);
+
+  // =========================
+  // WEB AUDIO
+  // =========================
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+  const sourceNode = audioContext.createMediaElementSource(audioPlayer);
+  const gainNode = audioContext.createGain();
+
+  gainNode.gain.value = 0.2;
+
+  sourceNode.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  function loadTrack(index) {
+    audioPlayer.src = playlist[index].src;
+  }
+
+  function nextTrack() {
+    currentIndex = (currentIndex + 1) % playlist.length;
+
+    loadTrack(currentIndex);
+
+    if (playing) {
+      audioPlayer.play().catch(() => {});
+    }
+  }
+
+  audioPlayer.addEventListener("ended", nextTrack);
+
+  // =========================
+  // STATE
+  // =========================
+  let initialized = false;
+  let playing = false;
+
+  // =========================
+  // FIRST CLICK ANYWHERE
+  // =========================
+  document.addEventListener("click", async function firstInteraction(e) {
+
+    // Ignore clicks on speaker button
+    if (speakerBtn.contains(e.target)) return;
+
+    if (initialized) return;
+
+    try {
+
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+
+      loadTrack(currentIndex);
+
+      await audioPlayer.play();
+
+      initialized = true;
+      playing = true;
+
+      icon.innerHTML = iconOn;
+
+    } catch(err) {
+      console.log(err);
+    }
+
+  }, { passive: true });
+
+  // =========================
+  // SPEAKER TOGGLE
+  // =========================
+  speakerBtn.addEventListener("click", async (e) => {
+
+    e.stopPropagation();
+
+    try {
+
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+
+      // If never started yet, speaker starts music
+      if (!initialized) {
+
+        loadTrack(currentIndex);
+
+        await audioPlayer.play();
+
+        initialized = true;
+        playing = true;
+
+        icon.innerHTML = iconOn;
+
+        return;
+      }
+
+      if (playing) {
+
+        audioPlayer.pause();
+
+        playing = false;
+        icon.innerHTML = iconOff;
+
+      } else {
+
+        await audioPlayer.play();
+
+        playing = true;
+        icon.innerHTML = iconOn;
+
+      }
+
+    } catch(err) {
+      console.log(err);
+    }
+
+  });
+
+});
+</script>
+
+<script>
+
+const flyingEmoticons = [
+    "⚔️","🦄","👹","👻","🤖","👁️","💀","🔥",
+    "💥","🩸","🕸️","✨","🥷🏻","👾","👽","💩"
+];
+
+document.addEventListener("click", function(e){
+
+    for(let i = 0; i < 12; i++){
+
+        setTimeout(()=>{
+
+            const emoji = document.createElement("div");
+
+            emoji.textContent =
+                flyingEmoticons[
+                    Math.floor(Math.random()*flyingEmoticons.length)
+                ];
+
+            const startX = e.clientX + (Math.random()*60-30);
+            const startY = e.clientY;
+
+            emoji.style.position = "fixed";
+            emoji.style.left = startX + "px";
+            emoji.style.top = startY + "px";
+            emoji.style.fontSize = (25 + Math.random()*35) + "px";
+            emoji.style.zIndex = "99999";
+            emoji.style.pointerEvents = "none";
+
+            document.body.appendChild(emoji);
+
+
+            const drift = Math.random()*200-100;
+            const rise = 500 + Math.random()*400;
+            const spin = Math.random()*720-360;
+
+
+            emoji.animate([
+
+                {
+                    transform:"translate(0,0) scale(1)",
+                    opacity:1
+                },
+
+                {
+                    transform:
+                    `translate(${drift}px,-${rise}px)
+                     scale(1.3)
+                     rotate(${spin}deg)`,
+                    opacity:0.9
+                },
+
+                {
+                    transform:
+                    `translate(${drift*1.5}px,-${rise+250}px)
+                     scale(0.7)
+                     rotate(${spin*2}deg)`,
+                    opacity:0
+                }
+
+            ],{
+
+                duration:4500 + Math.random()*2500,
+                easing:"cubic-bezier(.15,.7,.2,1)",
+                fill:"forwards"
+
+            });
+
+
+            setTimeout(()=>{
+                emoji.remove();
+            },7500);
+
+
+        }, i*100);
+
+    }
+
+});
+
+</script>
+
+<script>
+(() => {
+
+    /* =====================================================
+       HOTLER / ORIGIN PARADOX
+       Standalone move-666 terminal
+       ===================================================== */
+
+    let originMoveCount = 0;
+    let originLastNode = currentNode;
+    let originTriggered = false;
+
+
+    /* =====================================================
+       WATCH COMPLETED MOVES
+       ===================================================== */
+
+    const originWatcher = setInterval(() => {
+
+        if (typeof currentNode === "undefined") return;
+
+        if (currentNode !== originLastNode) {
+
+            originLastNode = currentNode;
+            originMoveCount++;
+
+            console.log("[HOTLER] MOVE:", originMoveCount);
+
+            if (
+                originMoveCount >= 666 &&
+                !originTriggered
+            ) {
+
+                originTriggered = true;
+
+                clearInterval(originWatcher);
+
+                launchOriginTerminal();
+
+            }
+
+        }
+
+    }, 100);
+
+
+    /* =====================================================
+       CREATE TERMINAL
+       ===================================================== */
+
+    function launchOriginTerminal() {
+
+        const overlay = document.createElement("div");
+
+        overlay.id = "originDistortion";
+
+        overlay.innerHTML = `
+
+            <style>
+
+                #originDistortion {
+
+                    position: fixed;
+                    inset: 0;
+
+                    background: #000;
+                    color: #d8d8d8;
+
+                    z-index: 2147483647;
+
+                    font-family:
+                        "Courier New",
+                        Courier,
+                        monospace;
+
+                    overflow: hidden;
+
+                    user-select: none;
+
+                }
+
+
+                #originTerminal {
+
+                    position: absolute;
+                    inset: 0;
+
+                    z-index: 2;
+
+                    box-sizing: border-box;
+
+                    padding:
+                        clamp(24px, 5vw, 72px);
+
+                    font-size:
+                        clamp(13px, 1.35vw, 20px);
+
+                    line-height: 1.55;
+
+                    overflow-y: auto;
+
+                    scrollbar-width: none;
+
+                }
+
+
+                #originTerminal::-webkit-scrollbar {
+
+                    display: none;
+
+                }
+
+
+                #originOutput {
+
+                    white-space: pre-wrap;
+                    word-break: break-word;
+
+                }
+
+
+                #originCursor {
+
+                    display: inline-block;
+
+                    width: 0.65em;
+                    height: 1.05em;
+
+                    background: currentColor;
+
+                    vertical-align: -0.15em;
+
+                    animation:
+                        originBlink .75s steps(1) infinite;
+
+                }
+
+
+                #originNoise {
+
+                    position: absolute;
+                    inset: 0;
+
+                    z-index: 3;
+
+                    pointer-events: none;
+
+                    opacity: .09;
+
+                    background:
+                        repeating-linear-gradient(
+                            0deg,
+                            rgba(255,255,255,.14) 0px,
+                            rgba(255,255,255,.14) 1px,
+                            transparent 1px,
+                            transparent 4px
+                        );
+
+                }
+
+
+                #killHitlr {
+
+                    display: none;
+
+                    margin-top: 30px;
+
+                    padding: 13px 18px;
+
+                    border: 1px solid #d8d8d8;
+
+                    background: #000;
+                    color: #fff;
+
+                    font: inherit;
+                    font-weight: normal;
+
+                    cursor: pointer;
+
+                }
+
+
+                #killHitlr:hover {
+
+                    background: #fff;
+                    color: #000;
+
+                }
+
+
+                #killHitlr:disabled {
+
+                    opacity: .4;
+                    cursor: default;
+
+                }
+
+
+                #gameOver {
+
+                    display: none;
+
+                    position: absolute;
+                    inset: 0;
+
+                    z-index: 20;
+
+                    align-items: center;
+                    justify-content: center;
+
+                    background: #000;
+                    color: #fff;
+
+                    font-family:
+                        "Courier New",
+                        Courier,
+                        monospace;
+
+                    font-size:
+                        clamp(42px, 9vw, 150px);
+
+                    font-weight: normal;
+
+                    letter-spacing: .06em;
+
+                    text-align: center;
+
+                }
+
+
+                @keyframes originBlink {
+
+                    0%, 49% {
+                        opacity: 1;
+                    }
+
+                    50%, 100% {
+                        opacity: 0;
+                    }
+
+                }
+
+            </style>
+
+
+            <div id="originTerminal">
+
+                <span id="originOutput"></span><span id="originCursor"></span>
+
+                <br>
+
+                <button id="killHitlr">
+                    Kill 💀 Hitlr
+                </button>
+
+            </div>
+
+
+            <div id="originNoise"></div>
+
+
+            <div id="gameOver">
+                GAME ☠️ OVER!
+            </div>
+
+        `;
+
+        document.body.appendChild(overlay);
+
+
+        const terminal =
+            overlay.querySelector("#originTerminal");
+
+        const output =
+            overlay.querySelector("#originOutput");
+
+        const killButton =
+            overlay.querySelector("#killHitlr");
+
+        const cursor =
+            overlay.querySelector("#originCursor");
+
+        const gameOver =
+            overlay.querySelector("#gameOver");
+
+
+        /* =====================================================
+           Glitch
+           ===================================================== */
+
+        const glitchState = {
+
+            trigger: "pointermove",
+
+            throttle: 180,
+
+            amount: 32,
+
+            size: 34,
+
+            spread: 260,
+
+            duration: 1600,
+
+            blur: 0,
+
+            opacity: 1,
+
+            blend: "normal",
+
+            rainbow: false,
+
+            colors: [
+                "#ffffff",
+                "#ff2e88",
+                "#00d9ff",
+                "#ffcc00"
+            ]
+
+        };
+
+
+        const glitchStage =
+            document.createElement("div");
+
+
+        glitchStage.style.cssText = `
+
+            position: absolute;
+
+            inset: 0;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            z-index: 10;
+
+        `;
+
+
+        overlay.appendChild(
+            glitchStage
+        );
+
+
+        const rand =
+            (a,b) =>
+                a +
+                Math.random() *
+                (b-a);
+
+
+        const pick =
+            array =>
+                array[
+                    Math.floor(
+                        Math.random() *
+                        array.length
+                    )
+                ];
+
+
+        const glitchColor =
+            () =>
+                glitchState.rainbow
+
+                    ? `hsl(${Math.random()*360} 100% 62%)`
+
+                    : pick(
+                        glitchState.colors
+                    );
+
+
+        function createGlitchNode(
+            x,
+            y
+        ) {
+
+            const q =
+                document.createElement("div");
+
+
+            q.style.cssText = `
+
+                position: absolute;
+
+                pointer-events: none;
+
+                user-select: none;
+
+                will-change:
+                    transform,
+                    opacity;
+
+            `;
+
+
+            q.style.left =
+                x + "px";
+
+
+            q.style.top =
+                y + "px";
+
+
+            q.style.mixBlendMode =
+                glitchState.blend;
+
+
+            q.style.filter =
+                "blur(" +
+                glitchState.blur +
+                "px)";
+
+
+            q.style.opacity =
+                glitchState.opacity;
+
+
+            glitchStage.appendChild(
+                q
+            );
+
+
+            return q;
+
+        }
+
+
+        function animateGlitch(
+            q,
+            keyframes,
+            duration =
+                glitchState.duration
+        ) {
+
+            q.animate(
+
+                keyframes,
+
+                {
+
+                    duration,
+
+                    easing:
+                        "cubic-bezier(.15,.75,.25,1)",
+
+                    fill:
+                        "forwards"
+
+                }
+
+            );
+
+
+            setTimeout(
+
+                () =>
+                    q.remove(),
+
+                duration +
+                100
+
+            );
+
+        }
+
+
+        function runGlitch(
+            x,
+            y
+        ) {
+
+            const n =
+                glitchState.amount;
+
+
+            const s =
+                glitchState.spread;
+
+
+            const d =
+                glitchState.duration;
+
+
+            for (
+                let i = 0;
+                i < Math.min(n,40);
+                i++
+            ) {
+
+                const q =
+                    createGlitchNode(
+
+                        x +
+                        rand(
+                            -s * .6,
+                            s * .6
+                        ),
+
+                        y +
+                        rand(
+                            -s * .35,
+                            s * .35
+                        )
+
+                    );
+
+
+                q.style.width =
+                    rand(
+                        8,
+                        glitchState.size * 2
+                    ) +
+                    "px";
+
+
+                q.style.height =
+                    rand(
+                        2,
+                        glitchState.size * .4
+                    ) +
+                    "px";
+
+
+                q.style.background =
+                    glitchColor();
+
+
+                q.style.boxShadow =
+
+                    `${rand(-12,12)}px 0 #ff006e,` +
+
+                    `${rand(-12,12)}px 0 #00eaff`;
+
+
+                animateGlitch(
+
+                    q,
+
+                    [
+
+                        {
+
+                            transform:
+                                `skewX(${rand(-30,30)}deg)`,
+
+                            opacity:
+                                glitchState.opacity
+
+                        },
+
+                        {
+
+                            transform:
+                                `translateX(${rand(-100,100)}px)`,
+
+                            opacity:
+                                0
+
+                        }
+
+                    ],
+
+                    d * .5
+
+                );
+
+            }
+
+        }
+
+
+        let lastGlitchMove = 0;
+
+
+        overlay.addEventListener(
+            "pointermove",
+            e => {
+
+                const now =
+                    performance.now();
+
+
+                if (
+                    now -
+                    lastGlitchMove <
+                    glitchState.throttle
+                ) {
+
+                    return;
+
+                }
+
+
+                lastGlitchMove =
+                    now;
+
+
+                const rect =
+                    overlay.getBoundingClientRect();
+
+
+                const x =
+                    e.clientX -
+                    rect.left;
+
+
+                const y =
+                    e.clientY -
+                    rect.top;
+
+
+                runGlitch(
+                    x,
+                    y
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           TERMINAL HELPERS
+           ===================================================== */
+
+        function scrollBottom() {
+
+            terminal.scrollTop =
+                terminal.scrollHeight;
+
+        }
+
+
+        function wait(ms) {
+
+            return new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        ms
+                    )
+            );
+
+        }
+
+
+        async function printLine(
+            text = "",
+            delay = 45
+        ) {
+
+            for (
+                const char
+                of text
+            ) {
+
+                output.textContent +=
+                    char;
+
+
+                scrollBottom();
+
+
+                await wait(
+
+                    delay +
+
+                    Math.random() *
+                    25
+
+                );
+
+            }
+
+
+            output.textContent +=
+                "\n";
+
+
+            scrollBottom();
+
+        }
+
+
+        async function fastLine(
+            text = ""
+        ) {
+
+            output.textContent +=
+                text +
+                "\n";
+
+
+            scrollBottom();
+
+
+            await wait(
+
+                70 +
+
+                Math.random() *
+                90
+
+            );
+
+        }
+
+
+        /* =====================================================
+           INITIAL MEMORY FAILURE
+           ===================================================== */
+
+        async function boot() {
+
+            await printLine(
+                "ACÉPHALE INTELLIGENCE // MEMORY INTERFACE"
+            );
+
+
+            await fastLine("");
+
+
+            await fastLine(
+                "movement threshold .............. 666"
+            );
+
+
+            await fastLine(
+                "recursive topology .............. ACTIVE"
+            );
+
+
+            await fastLine(
+                "observer status ................. PRESENT"
+            );
+
+
+            await fastLine("");
+
+
+            await wait(500);
+
+
+            /* HOTLER DATASET */
+
+            await printLine(
+                "> LOAD DATASET: HOTLER"
+            );
+
+
+            await wait(450);
+
+
+            await fastLine(
+                "mounting /HOTLER/"
+            );
+
+
+            await fastLine(
+                "indexing speculative archive..."
+            );
+
+
+            await fastLine(
+                "cross-referencing reconstructed fragments..."
+            );
+
+
+            await fastLine(
+                "reading communication layers..."
+            );
+
+
+            await fastLine(
+                "mapping AGON / ALEA / MIMICRY / ILINX..."
+            );
+
+
+            await fastLine(
+                "mapping LUDUS / PAIDIA..."
+            );
+
+
+            await fastLine(
+                "mapping LIGHT / DARK..."
+            );
+
+
+            await fastLine(
+                "dataset status ................... ONLINE"
+            );
+
+
+            await fastLine("");
+
+
+            await wait(700);
+
+
+            /* HITLR SEARCH */
+
+            await printLine(
+                "> QUERY: ORIGIN OF HITLR"
+            );
+
+
+            await wait(700);
+
+
+            await fastLine("");
+
+
+            await fastLine(
+                "scanning HOTLER dataset..."
+            );
+
+
+            await wait(350);
+
+
+            await fastLine(
+                "[01] archival fragments"
+            );
+
+
+            await fastLine(
+                "[02] reconstructed documents"
+            );
+
+
+            await fastLine(
+                "[03] ritual communications"
+            );
+
+
+            await fastLine(
+                "[04] ludic contamination layer"
+            );
+
+
+            await fastLine(
+                "[05] synthetic memory"
+            );
+
+
+            await fastLine(
+                "[06] source code"
+            );
+
+
+            await fastLine("");
+
+
+            await wait(800);
+
+
+            await fastLine(
+                "searching historical origin..."
+            );
+
+
+            await fastLine(
+                "searching ideological origin..."
+            );
+
+
+            await fastLine(
+                "searching mythical origin..."
+            );
+
+
+            await fastLine(
+                "searching computational origin..."
+            );
+
+
+            await fastLine("");
+
+
+            await wait(700);
+
+
+            await fastLine(
+                "RESULT:"
+            );
+
+
+            await fastLine("");
+
+
+            await printLine(
+                "HITLR ORIGIN ............... NOT FOUND",
+                28
+            );
+
+
+            await wait(650);
+
+
+            await printLine(
+                "HITLR INSTANCE ............. FOUND",
+                28
+            );
+
+
+            await fastLine("");
+
+
+            await fastLine(
+                "location:"
+            );
+
+
+            await printLine(
+                "/HOTLER/SOURCE/",
+                35
+            );
+
+
+            await wait(600);
+
+
+            await fastLine("");
+
+
+            await printLine(
+                "ENTITY MAY BE REMOVED.",
+                40
+            );
+
+
+            await fastLine("");
+
+
+            await wait(500);
+
+
+            killButton.style.display =
+                "inline-block";
+
+        }
+
+
+        /* =====================================================
+           KILL HITLR
+           ===================================================== */
+
+        killButton.addEventListener(
+            "click",
+            async () => {
+
+                killButton.disabled =
+                    true;
+
+
+                killButton.style.display =
+                    "none";
+
+
+                await fastLine("");
+
+
+                await printLine(
+                    "> EXECUTE: KILL HITLR",
+                    35
+                );
+
+
+                await wait(700);
+
+
+                await fastLine(
+                    "terminating entity..."
+                );
+
+
+                await wait(500);
+
+
+                await fastLine(
+                    "deleting historical pointer..."
+                );
+
+
+                await fastLine(
+                    "deleting symbolic pointer..."
+                );
+
+
+                await fastLine(
+                    "deleting reconstructed pointer..."
+                );
+
+
+                await fastLine(
+                    "deleting source instance..."
+                );
+
+
+                await wait(800);
+
+
+                await fastLine("");
+
+
+                await fastLine(
+                    "ERROR ERROR ERROR ERROR"
+                );
+
+
+                await wait(350);
+
+
+                await fastLine("");
+
+
+                await printLine(
+                    "ORIGIN PARADOX",
+                    65
+                );
+
+
+                await wait(500);
+
+
+                await fastLine("");
+
+
+                await printLine(
+                    "HITLR FOUND IN THE SOURCE CODE OF HOTLER.",
+                    35
+                );
+
+
+                await wait(700);
+
+
+                await fastLine("");
+
+
+                await fastLine(
+                    "HOTLER depends on HITLR."
+                );
+
+
+                await fastLine(
+                    "HITLR depends on HOTLER."
+                );
+
+
+                await fastLine("");
+
+
+                await printLine(
+                    "SOURCE CANNOT REMOVE ITS OWN ORIGIN.",
+                    32
+                );
+
+
+                await wait(600);
+
+
+                await fastLine(
+                    "ORIGIN = OUTPUT"
+                );
+
+
+                await fastLine(
+                    "OUTPUT = ORIGIN"
+                );
+
+
+                await fastLine(
+                    "HITLR = HOTLER"
+                );
+
+
+                await fastLine(
+                    "HOTLER = HITLR"
+                );
+
+
+                await fastLine("");
+
+
+                await wait(500);
+
+
+                await printLine(
+                    "ERROR ERROR ERROR",
+                    40
+                );
+
+
+                await fastLine("");
+
+
+                await printLine(
+                    "SELF DESTRUCTION INITIATED",
+                    42
+                );
+
+
+                await fastLine("");
+
+
+                await countdown();
+
+            }
+        );
+
+
+        /* =====================================================
+           SELF DESTRUCTION
+           ===================================================== */
+
+        async function countdown() {
+
+            for (
+                let number = 10;
+                number >= 0;
+                number--
+            ) {
+
+                await printLine(
+
+                    "SELF DESTRUCTION IN " +
+                    number,
+
+                    16
+
+                );
+
+
+                await wait(650);
+
+            }
+
+
+            cursor.style.display =
+                "none";
+
+
+            await fastLine("");
+
+
+            await printLine(
+                "SOURCE LOST.",
+                60
+            );
+
+
+            await wait(600);
+
+
+            output.textContent =
+                "";
+
+
+            await wait(300);
+
+
+            // SELF DESTRUCTION = COMPLETE NEW GAME RESET
+            // Remove all persisted game data: comments, unlocks,
+            // progress, saved states, credits, etc.
+            try {
+                localStorage.clear();
+            } catch (e) {
+                console.warn("Could not clear localStorage:", e);
+            }
+
+            gameOver.style.display =
+                "flex";
+
+            // Keep GAME OVER visible for 5 seconds, then close
+            // the entire self-destruction overlay and continue.
+            await wait(5000);
+
+            gameOver.style.display =
+                "none";
+
+            overlay.remove();
+
+        }
+
+
+        boot();
+
+    }
+
+})();
+</script>
+
+</body>
+</html>

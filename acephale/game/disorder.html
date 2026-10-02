@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta content="noindex, nofollow" name="robots">
+<title>Disorder</title>
+<style>
+body{margin:0;background:transparent;color:#f2f3f5;font-family:system-ui}
+.header{
+  background:#111214;
+  padding:18px 200px;
+  font-size:22px;
+  font-weight:700;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.wrap{max-width:1100px;margin:auto;padding:20px}
+.card,.thread,.reply{background:#2b2d31;border-radius:16px;padding:16px;margin-bottom:16px}
+.reply{margin-left:50px;background:#313338;border-left:4px solid #5865f2}
+.btn{background:#3a3d44;color:#fff;border:none;padding:8px 12px;border-radius:999px;cursor:pointer}
+.primary{background:#5865f2}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{background:#ff6b00;padding:3px 8px;border-radius:999px;font-size:12px}
+.thread-header{display:flex;justify-content:space-between;align-items:flex-start;cursor:pointer;position:relative;padding-right:26px}.thread-header>span:last-child{position:absolute;top:0;right:0;line-height:1}
+.reaction{display:inline-block;background:#3a3d44;padding:4px 8px;border-radius:999px;margin:2px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center}
+.modal-content{width:min(900px,95vw);height:min(700px,90vh);background:#2b2d31;border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.toolbar,.modal-header,.modal-actions{background:#202225;padding:12px}
+.editor{display:flex;flex:1}
+.rich,.preview{width:50%;padding:16px;overflow:auto}
+.rich{background:#1e1f22;outline:none}
+.preview{background:#313338; transform:scaleX(-1);}
+input{width:100%;padding:12px;border-radius:10px;border:none;background:#1e1f22;color:white;box-sizing:border-box;display:block}
+input,
+textarea{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:#1e1f22;
+  color:white;
+  box-sizing:border-box;
+  outline:none;
+  transition:.15s;
+  -webkit-appearance:none;
+}
+
+input:focus,
+textarea:focus{
+  box-shadow:
+    0 0 0 2px #5865f2,
+    0 0 12px rgba(88,101,242,.35);
+}
+
+/* Starter Questions = collapsed compendium index */
+#questions{padding:0;overflow:hidden}
+.starter-search-wrap{padding:14px 16px 16px}
+.starter-search{margin-top:10px}
+.starter-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:16px;cursor:pointer;user-select:none
+}
+.starter-head h2{margin:0}
+.starter-chevron{font-size:18px}
+.starter-index{
+  display:none;margin:0;padding:0 18px 16px 42px;
+  border-top:1px solid rgba(255,255,255,.08)
+}
+#questions.index-open .starter-index{display:block}
+.starter-index li{margin:7px 0}
+.starter-index a{color:#cfd4ff;text-decoration:none;cursor:pointer}
+.starter-index a:hover{color:#fff;text-decoration:underline}
+.thread{scroll-margin-top:18px}
+.thread.search-hidden{display:none!important}
+.search-count{font-size:12px;opacity:.65;margin-top:7px;min-height:16px}
+
+
+
+
+/* === ARTOLDO GAME MODEL HIERARCHY === */
+.thread[data-parent="Ludus"],
+.thread[data-parent="Agon"],
+.thread[data-parent="Alea"],
+.thread[data-parent="Light"],
+.thread[data-parent="?"],
+.thread[data-parent="Dark"],
+.thread[data-parent="Mimicry"],
+.thread[data-parent="Ilinx"],
+.thread[data-parent="Paidia"]{
+  margin-left:22px;
+  border-left:4px solid #5865f2;
+}
+
+.starter-index .board-parent-label{
+  list-style:none;
+  margin:18px 0 7px -24px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.10);
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  opacity:.82;
+}
+.starter-index li.board-child{margin-left:16px}
+.starter-index li.board-grandchild{margin-left:34px;opacity:.94}
+
+
+
+
+.thread[data-title="Ludus"],
+.thread[data-title="Agon"],
+.thread[data-title="Alea"],
+.thread[data-title="Light"],
+.thread[data-title="Dark"],
+.thread[data-title="Mimicry"],
+.thread[data-title="Ilinx"],
+.thread[data-title="Paidia"]{
+  margin-left:0!important;
+  border-left:0!important;
+}
+.board-parent-label a{color:#fff;text-decoration:none}
+.board-parent-label a:hover{text-decoration:underline}
+
+
+
+.thread[data-title="Disorder"]{margin-left:0!important;border-left:0!important;}
+
+#scrollTopBtn{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:50%;
+  background:#5968ff;
+  color:#fff;
+  font-size:20px;
+  font-weight:700;
+  cursor:pointer;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
+#scrollTopBtn:hover{transform:translateY(-1px)}
+#scrollTopBtn.show{display:flex}
+
+
+/* Flat thread geometry: hierarchy lives in the Starter index, not horizontal offsets */
+.thread,
+.thread[data-parent],
+.thread[data-title]{
+  margin-left:0!important;
+  margin-right:0!important;
+  border-left-width:0!important;
+}
+
+
+#questions .board-child,
+#questions .board-grandchild{
+  margin-left:0!important;
+  padding-left:0!important;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span>🤯 Disorder</span>
+
+  <button class="btn" onclick="clearAll()" style="display:none;">
+    Clear All Messages
+  </button>
+</div>
+
+<div class="wrap">
+
+<div id="questions" class="card"></div>
+
+<div id="feed"></div>
+
+<div class="card">
+<h2>Create Thread</h2>
+<input id="threadTitle" placeholder="Thread title (required)">
+<div class="actions">
+<textarea id="threadDescription" placeholder="Thread content (required)" style="width:100%;height:120px;padding:12px;border-radius:10px;border:none;background:#1e1f22;color:white;box-sizing:border-box;resize:vertical"></textarea>
+<button class="btn" onclick="insertThreadEmoji('🔥')">🔥</button> 
+
+<button class="btn" onclick="insertThreadEmoji('🧠')">🧠</button>
+
+<button class="btn" onclick="insertThreadEmoji('🌀')">🌀</button>
+
+<button class="btn" onclick="insertThreadEmoji('👁️')">👁️</button>
+
+<button class="btn" onclick="insertThreadEmoji('⚡')">⚡</button>
+
+<button class="btn" onclick="insertThreadEmoji('❤️')">❤️</button>
+
+<button class="btn" onclick="insertThreadEmoji('🤔')">🤔</button>
+
+<button class="btn" onclick="insertThreadEmoji('💀')">💀</button>
+
+</div>
+<br><br>
+<button class="btn primary" onclick="createThread()">Create Thread</button>
+</div>
+
+</div>
+
+<div id="modal" class="modal">
+<div class="modal-content">
+<div class="modal-header">Reply</div>
+<div class="toolbar">
+<button class="btn" onclick="quote()">❝ Quote</button>
+<button class="btn" onclick="emoji('🔥')">🔥</button>
+<button class="btn" onclick="emoji('🧠')">🧠</button>
+<button class="btn" onclick="emoji('🌀')">🌀</button>
+<button class="btn" onclick="emoji('👁️')">👁️</button>
+<button class="btn" onclick="emoji('⚡')">⚡</button>
+<button class="btn" onclick="emoji('❤️')">❤️</button>
+<button class="btn" onclick="emoji('🤔')">🤔</button>
+<button class="btn" onclick="emoji('💀')">💀</button>
+</div>
+<div class="editor">
+<div id="editor" class="rich" contenteditable="true"></div>
+<div id="preview" class="preview"></div>
+</div>
+<div class="modal-actions">
+<button class="btn" onclick="closeModal()">Cancel</button>
+<button class="btn primary" onclick="submitReply()">Publish</button>
+</div>
+</div>
+</div>
+
+
+<script>
+const STORAGE="neocord_onlyfragments_cast_titlecase_v16";
+
+const QUESTIONS=["WTF? Ac\u00e9phale Intelligence","WTF? Ac\u00e9phale \u2014 The Headless Magazine & Secret Society","WTF? The Coll\u00e8ge de Sociologie \u2014 Who's Who?","Disorder","? Game Theory \u00bf","ARG: The Alternate Reality Game","The Sacred Game of Society","What Is Hot Sociology?","Game Compendium \u2014 What Is Included?","Platform Sacred Functions \u2014 The Whole Media Circuit","Compendium Index \u2014 From Ludus to Paidia and Beyond","How to Eliminate Hitlr? \u2014 Origin Paradox","Ludus","ShutApp","What Is a Sacred Bubble?","The Five Registers","The Four Ludic Forces","Agon / Competition","Alea / Chance","Mimicry / Simulation","Ilinx / Vertigo","Regime / Paidia & Ludus","Atmosphere / Light & Dark","The Sacred Circuit","Why Direction Matters","Horizontal Tensions","Vertical Transformations","Diagonal Contaminations","The Twelve Directional Passages","Structural Qualities","How to Play 1 / Read the Bubble","How to Play 2 / Compare A \u2192 B","How to Play 3 / Choose the Transition","How to Play 4 / Reveal the Analysis","The Coll\u00e8ge Consensus","Agon","FortKnight","Fight the Teutonic Order","FortKnight \u2014 33 Missions & Ritual Overlays","Alea","Ac\u00e9phale Slot Machine","Alea \u2014 Wheel of Fortune / World","Alea \u2014 Ritual Dice / Sign","Alea \u2014 Massonic Pain(t) / Imagination","Alea \u2014 The Social Machine / Society","Light","Hotler","Dark","4chains","teutonicorder.onion \u2014 Hidden Threshold","Ac\u00e9phale Meme Coin \u2014 AC\u00c9","TRUTHahn Social \u2014 The Lie Interface","Mimicry","Toy Tonic","Ilinx","OnlyFanatics","OnlyFragments \u2014 Secrets, Desire & Unlocking","Paidia","Holygram"];
+
+const PARENT_EXPLANATIONS={"Ludus":"Rule-governed play. Ludus organizes play through rules, obstacles, discipline and learned procedures \u2014 the more formalized pole of play.","Agon":"Competition. Agon is structured rivalry: players confront one another under shared rules, where skill, strategy and merit can decide the outcome.","Alea":"Chance. Alea suspends mastery: the player accepts an outcome produced by luck, probability, fate or an external mechanism rather than skill alone.","Light":"Positive / creative / active / chosen atmosphere. Light describes how play or transformation is experienced; it is an atmosphere, not a ludic regime.","?":"The problem-position at the center of the model. ? is not a fifth game category; it marks contamination, uncertainty and the point where the four ludic forces can no longer be read in isolation.","Dark":"Negative / destructive / passive / accidental atmosphere. Dark describes captured, coercive, opaque or involuntary transformations; it is an atmosphere, not a ludic regime.","Mimicry":"Simulation. Mimicry is play through role, mask, imitation and make-believe: the player temporarily accepts another identity, appearance or world.","Ilinx":"Vertigo. Ilinx seeks destabilization \u2014 dizziness, disorientation, altered perception, ecstasy or a temporary loss of ordinary control.","Paidia":"Improvisatory play. Paidia is spontaneous, turbulent, exploratory play before or beyond strict formalization \u2014 the freer pole opposed to Ludus."};
+
+let currentThreadId=null;
+
+const THREADS=JSON.parse(localStorage.getItem(STORAGE)||"null")||[{"id":901,"title":"WTF? Ac\u00e9phale Intelligence","description":"<p><b>FAQ \u2014 Start here if you just opened the game and have no idea what any of this is.</b><br>Ac\u00e9phale Intelligence is a playable universe built from game theory, reconstructed intellectual characters, platform parody, sacred sociology and a deliberately unstable alternate-reality fiction. You do not need to know Bataille, Caillois or the Coll\u00e8ge de Sociologie before playing. This server is here to teach you while the characters argue about it.</p>","collapsed":false,"replies":[{"id":90101,"user":"Laure","html":"<p>Short version: you entered a game made by dead intellectuals who cannot agree on the rules. Perfectly normal. \ud83d\ude0f</p>","up":9,"down":0,"targetUp":720,"targetDown":20,"reactions":{"\ud83d\udd25":7}},{"id":90102,"user":"Roger Caillois","html":"<p>Begin with the map. The universe is organized through ludic forces, regimes and atmospheres. You can learn the vocabulary as you encounter it.</p>","up":8,"down":0,"targetUp":640,"targetDown":18,"reactions":{"\ud83e\udde0":6}},{"id":90103,"user":"Georges Bataille","html":"<p>Do not wait until you understand everything. Enter first. Understanding may occur later. Or fail magnificently. \ud83d\udd25</p>","up":10,"down":1,"targetUp":830,"targetDown":31,"reactions":{"\ud83d\udc80":6}}],"parent":"","group":"","isParent":false},{"id":904,"title":"WTF? Ac\u00e9phale \u2014 The Headless Magazine & Secret Society","description":"<p><b>Before Ac\u00e9phale Intelligence, there was Ac\u00e9phale.</b><br>Ac\u00e9phale was both a journal and the name attached to Bataille\u2019s secret-society experiment. Its emblem was the <b>headless human figure</b>: a refusal of the sovereign Head \u2014 God, F\u00fchrer, State, single leader, rational command \u2014 and an attempt to imagine an intense sacred community that would not simply reproduce ordinary political authority. The journal was not just commentary: myth, Nietzsche, the sacred, expenditure, death and ritual were treated as things to be <i>lived</i>, invoked and collectively tested.</p>","collapsed":false,"replies":[{"id":90401,"user":"Georges Bataille","html":"<p><b>Why headless?</b> Because the head is command, calculation and sovereign authority. Ac\u00e9phale imagines a body refusing to let one Head rule the whole. The problem, of course, is what can bind a body once the head is gone. \ud83d\udc80</p>","up":10,"down":0,"targetUp":830,"targetDown":24,"reactions":{"\ud83d\udc80":8}},{"id":90402,"user":"Roger Caillois","html":"<p>A leaderless collective is not automatically a community. Without shared stakes, forms and obligations, \u201cheadlessness\u201d can become only dispersion. That tension is central to the experiment.</p>","up":9,"down":0,"targetUp":690,"targetDown":19,"reactions":{"\ud83e\udde0":7}},{"id":90421,"user":"Andr\u00e9 Masson","html":"<p>I drew the headless figure because the image had to do what ordinary political emblems could not: make sovereignty bodily, wounded, contradictory and impossible to reduce to a face. \u270d\ufe0f</p>","up":11,"down":0,"targetUp":875,"targetDown":19,"reactions":{"\u270d\ufe0f":8}},{"id":90403,"user":"Michel Leiris","html":"<p>The sacred was sought in experiences that interrupt ordinary useful life: ritual, danger, fascination, death, intimacy, taboo \u2014 moments when everyday identity stops being sufficient. \ud83d\udc41\ufe0f</p>","up":8,"down":0,"targetUp":645,"targetDown":18,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":90404,"user":"Laure","html":"<p>And please do not imagine \u201cno leader\u201d as a cute horizontal group chat. The experiment wanted intensity, obligation and something capable of binding people beyond polite agreement. \ud83d\udd25</p>","up":10,"down":0,"targetUp":780,"targetDown":20,"reactions":{"\ud83d\udd25":8}},{"id":90405,"user":"Pierre Klossowski","html":"<p>The headless figure is therefore both symbol and problem: remove the organizing identity and the question becomes what speaks, acts or desires through the remaining body. \ud83c\udfad</p>","up":7,"down":0,"targetUp":590,"targetDown":18,"reactions":{"\ud83c\udf00":5}},{"id":90406,"user":"Georges Bataille","html":"<p><b>The magazine:</b> not merely a publication to be read at a safe distance. Nietzsche and Dionysos become invocations; the issue itself approaches a ritual object. Thought is supposed to lose its comfortable head. \ud83c\udf77</p>","up":9,"down":0,"targetUp":740,"targetDown":21,"reactions":{"\ud83d\udd25":7}},{"id":90407,"user":"Roger Caillois","html":"<p><b>The rituals:</b> the secret-society side attempted to give the ideas a social form through meetings, symbols, secrecy, shared places and ritualized experience. The question was whether sacred intensity could actually constitute a collective.</p>","up":8,"down":0,"targetUp":665,"targetDown":19,"reactions":{"\ud83e\udde0":6}},{"id":90408,"user":"Laure","html":"<p>So the fandom cheat sheet is: <b>magazine = myth machine; headless = refusal of the single sovereign head; secret society = attempt to live it; rituals = try to make the bond real.</b> And then watch the whole thing become a problem. \ud83d\ude09</p>","up":11,"down":0,"targetUp":880,"targetDown":22,"reactions":{"\u2764\ufe0f":8}}],"parent":"","group":"","isParent":false},{"id":902,"title":"WTF? The Coll\u00e8ge de Sociologie \u2014 Who's Who?","description":"<p><b>Fandom guide / dramatis personae.</b><br>Ac\u00e9phale and the Coll\u00e8ge were never a tidy superhero team with one official roster. Think of this thread as the game\u2019s cast page: founders, collaborators, artists, participants, auditors, guests and orbiting intellectuals. In Disorder they return as synthetic characters \u2014 tutorial staff, enemies of consensus, unreliable narrators and recurring fandom personalities.</p>","collapsed":false,"replies":[{"id":90201,"user":"Roger Caillois","html":"<p><b>Roger Caillois</b> \u2014 classifier, system-builder, games, myth, the sacred. Usually the one trying to make the server intelligible.</p>","up":8,"down":0,"targetUp":610,"targetDown":17,"reactions":{"\ud83e\udde0":6}},{"id":90202,"user":"Georges Bataille","html":"<p><b>Georges Bataille</b> \u2014 expenditure, sacred excess, transgression, sovereignty, impossible seriousness. Usually ruining Caillois\u2019s neat categories. \ud83d\udd25</p>","up":10,"down":0,"targetUp":790,"targetDown":23,"reactions":{"\ud83d\udd25":8}},{"id":90203,"user":"Michel Leiris","html":"<p><b>Michel Leiris</b> \u2014 autobiography, ritual, ethnography, everyday sacred experience. Watches what theory does to ordinary life. \ud83d\udc41\ufe0f</p>","up":8,"down":0,"targetUp":655,"targetDown":19,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":90204,"user":"Laure","html":"<p><b>Laure / Colette Peignot</b> \u2014 writer and radical presence around the Ac\u00e9phale milieu; here she punctures solemnity and reminds everyone that bodies exist. \u2764\ufe0f</p>","up":9,"down":0,"targetUp":702,"targetDown":21,"reactions":{"\u2764\ufe0f":7}},{"id":90205,"user":"Pierre Klossowski","html":"<p><b>Pierre Klossowski</b> \u2014 masks, simulation, signs, identity, unstable selves. Naturally suspicious of anyone claiming to possess one face. \ud83c\udfad</p>","up":7,"down":0,"targetUp":588,"targetDown":20,"reactions":{"\ud83c\udf00":5}},{"id":90206,"user":"Denis de Rougemont","html":"<p><b>Denis de Rougemont</b> \u2014 passion, desire, destiny, conflict between love and order. Very useful whenever Alea starts pretending to be fate.</p>","up":7,"down":0,"targetUp":560,"targetDown":18,"reactions":{"\u2764\ufe0f":5}},{"id":90207,"user":"Alexandre Koj\u00e8ve","html":"<p><b>Alexandre Koj\u00e8ve</b> \u2014 recognition, mastery, history, negation. Turns nearly every game mechanic into a struggle over who recognizes whom.</p>","up":7,"down":0,"targetUp":570,"targetDown":22,"reactions":{"\u26a1":5}},{"id":90208,"user":"Jean Paulhan","html":"<p><b>Jean Paulhan</b> \u2014 language, literary institutions, rhetoric and the strange authority of words.</p>","up":6,"down":0,"targetUp":510,"targetDown":16,"reactions":{"\ud83e\udd14":4}},{"id":90209,"user":"Jules Monnerot","html":"<p><b>Jules Monnerot</b> \u2014 political sociology, collective formations and the way ideas become organized forces.</p>","up":6,"down":0,"targetUp":520,"targetDown":18,"reactions":{"\u26a1":4}},{"id":90210,"user":"Laure","html":"<p>Also appearing: Georges Duthuit, Hans Mayer, Anatole Lewitzky and other guests. Think less \u201cofficial canon,\u201d more haunted group chat. \ud83d\ude02</p>","up":9,"down":0,"targetUp":745,"targetDown":26,"reactions":{"\ud83d\udd25":6}},{"id":93001,"user":"Andr\u00e9 Masson","html":"<p><b>Andr\u00e9 Masson</b> \u2014 absolutely central visually: the artist who drew the iconic Ac\u00e9phale figure. In the game he thinks through bodies, signs, violence, Dionysos and the point where an image becomes more dangerous than an explanation. \u270d\ufe0f</p>","up":8,"down":0,"targetUp":501,"targetDown":17,"reactions":{"\u270d\ufe0f":6}},{"id":93002,"user":"Georges Ambrosino","html":"<p><b>Georges Ambrosino</b> \u2014 physics, matter, instability and a taste for turning metaphysics into combustible mechanics.</p>","up":9,"down":0,"targetUp":502,"targetDown":18,"reactions":{"\u269b\ufe0f":7}},{"id":93003,"user":"Jean Wahl","html":"<p><b>Jean Wahl</b> \u2014 philosopher of existential and Nietzschean instability; excellent whenever somebody mistakes Nietzsche for a clean system.</p>","up":10,"down":0,"targetUp":503,"targetDown":19,"reactions":{"\ud83c\udf00":5}},{"id":93004,"user":"Patrick Waldberg","html":"<p><b>Patrick Waldberg</b> \u2014 observer and witness; often the one noticing that ritual and documentation are becoming the same event.</p>","up":7,"down":0,"targetUp":504,"targetDown":20,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":93005,"user":"Walter Benjamin","html":"<p><b>Walter Benjamin</b> \u2014 auditor/visitor in this universe: archive, ruins, history, constellation, aura and the machinery of political aesthetics.</p>","up":8,"down":0,"targetUp":505,"targetDown":21,"reactions":{"\ud83d\udcda":7}},{"id":93006,"user":"Jacques Chavy","html":"<p><b>Jacques Chavy</b> \u2014 the person still asking whether the ritual proposition is metaphorical after everyone else has already entered the forest.</p>","up":9,"down":0,"targetUp":506,"targetDown":22,"reactions":{"\ud83c\udf32":5}},{"id":93007,"user":"Henri Dubief","html":"<p><b>Henri Dubief</b> \u2014 collective intensity, political spectacle and the disturbing proximity between sociology and lived event.</p>","up":10,"down":0,"targetUp":507,"targetDown":23,"reactions":{"\ud83d\udd25":6}},{"id":93008,"user":"Michel Koch","html":"<p><b>Michel Koch</b> \u2014 skeptical witness and pressure-release valve whenever the discussion starts overheating into theology.</p>","up":7,"down":0,"targetUp":508,"targetDown":24,"reactions":{"\ud83c\udf21\ufe0f":7}},{"id":93009,"user":"Isabelle Waldberg","html":"<p><b>Isabelle Waldberg</b> \u2014 artist/sculptural presence in the wider circle; form, involvement and the headless figure as refusal rather than simple absence.</p>","up":8,"down":0,"targetUp":509,"targetDown":25,"reactions":{"\ud83d\uddff":5}},{"id":93010,"user":"Ren\u00e9 M. Guastalla","html":"<p><b>Ren\u00e9 M. Guastalla</b> \u2014 recurring Coll\u00e8ge voice in the expanded game archive; one of the figures who makes the server feel like a crowded intellectual scene rather than a three-man mythology.</p>","up":9,"down":0,"targetUp":510,"targetDown":16,"reactions":{"\ud83d\udcac":6}},{"id":93011,"user":"Marcel Mauss","html":"<p><b>Marcel Mauss</b> \u2014 the sociological ancestor haunting the room: gift, exchange, obligation and the social techniques behind apparently spontaneous acts.</p>","up":10,"down":0,"targetUp":511,"targetDown":17,"reactions":{"\ud83c\udf81":7}},{"id":93012,"user":"Pierre Mabille","html":"<p><b>Pierre Mabille</b> \u2014 surrealism, myth and the zones where scientific language begins slipping toward the marvelous.</p>","up":7,"down":0,"targetUp":512,"targetDown":18,"reactions":{"\ud83d\udd2e":5}},{"id":93013,"user":"Taro Okamoto","html":"<p><b>Taro Okamoto</b> \u2014 artist and auditor figure who opens the sacred conversation beyond Europe and refuses the idea that gods require tidy explanation.</p>","up":8,"down":0,"targetUp":513,"targetDown":19,"reactions":{"\ud83c\udfa8":6}},{"id":93014,"user":"Imre Kelemen","html":"<p><b>Imre Kelemen</b> \u2014 one of the less-famous Ac\u00e9phale voices who helps make the secret-society side feel populated, material and strange rather than merely canonical.</p>","up":9,"down":0,"targetUp":514,"targetDown":20,"reactions":{"\ud83e\udea8":7}},{"id":93015,"user":"Henri Dussat","html":"<p><b>Henri Dussat</b> \u2014 another Ac\u00e9phale participant; language, opacity and the suspicion that clarity itself can become a form of policing.</p>","up":10,"down":0,"targetUp":515,"targetDown":21,"reactions":{"\ud83d\udd73\ufe0f":5}},{"id":93016,"user":"Pierre Dugan (Pierre Pascal)","html":"<p><b>Pierre Dugan / Pierre Pascal</b> \u2014 participant caught between ideas and events, never entirely sure whether the group is discussing ritual or already performing it.</p>","up":7,"down":0,"targetUp":516,"targetDown":22,"reactions":{"\ud83c\udf32":6}},{"id":93017,"user":"Jean Rollin","html":"<p><b>Jean Rollin</b> \u2014 collaborator on the Ac\u00e9phale side; a reminder that the historical constellation was broader than the few names everybody remembers.</p>","up":8,"down":0,"targetUp":517,"targetDown":23,"reactions":{"\ud83d\udcce":7}},{"id":93018,"user":"Andr\u00e9 Breton","html":"<p><b>Andr\u00e9 Breton</b> \u2014 guest, antagonist, surrealist sovereign and recurring source of friction. Perfect for reminding Bataille that no avant-garde family stays functional for long. \ud83d\ude02</p>","up":9,"down":0,"targetUp":518,"targetDown":24,"reactions":{"\ud83d\ude02":5}}],"parent":"","group":"","isParent":false},{"id":40,"title":"Disorder","description":"<p><b>Disorder \u2014 trying to make sense of a world that refuses to stay in order.</b><br>This is the tutorial forum, help server and living compendium of <b>Ac\u00e9phale Intelligence</b>: Artoldo\u2019s game architecture built with the unruly cast of Ac\u00e9phale and the Coll\u00e8ge de Sociologie. Disorder does not sit above the other games as their bureaucratic parent; it is the place where players, characters and theories collide, argue, explain themselves and try \u2014 usually unsuccessfully \u2014 to impose some order on the whole beautiful mess. The <b>?</b> is the game\u2019s <b>fandom space</b>: the meta-community around the universe, where interpretation, questions, jokes, arguments and obsession become part of play.</p>","collapsed":false,"replies":[{"id":92001,"user":"Roger Caillois","html":"<p>Someone had to catalogue this thing. Unfortunately, the catalogue immediately became another game.</p>","up":8,"down":0,"targetUp":612,"targetDown":18,"reactions":{"\ud83e\udde0":6}},{"id":92002,"user":"Georges Bataille","html":"<p>Artoldo invents the machine; we enter it, contaminate it, contradict it, and call the resulting wreckage a method. \ud83d\udd25</p>","up":10,"down":0,"targetUp":811,"targetDown":23,"reactions":{"\ud83d\udd25":8}},{"id":92003,"user":"Laure","html":"<p><b>?</b> is us watching all of you watching all of us. Congratulations: you found the fandom. \ud83d\ude09</p>","up":11,"down":0,"targetUp":901,"targetDown":17,"reactions":{"\u2764\ufe0f":8}}],"group":"","parent":"Disorder","isParent":true},{"id":1,"title":"? Game Theory \u00bf","description":"<p><b>The Ac\u00e9phale Intelligence Gameplay Explained.</b><br>Who is the leader? Become the Head of a Headless Revolution, the Body of a Head or the Head of a Body. It always started with a conspiracy\u2026</p>","collapsed":false,"replies":[{"id":1001,"user":"Roger Caillois","html":"<p>This section is the map of the game. Play is not treated as entertainment alone, but as a model for reading social forms.</p>","up":7,"down":0,"targetUp":404,"targetDown":44,"reactions":{"\ud83e\udde0":4}},{"id":1002,"user":"Georges Bataille","html":"<p>The point is not to memorize categories. Enter the circuit and see what a form becomes. \ud83d\udd25</p>","up":5,"down":1,"targetUp":517,"targetDown":63,"reactions":{"\ud83d\udd25":5}},{"id":1003,"user":"Michel Leiris","html":"<p>The sacred has the color of play and poetry. The interface is therefore part of the sociology, not a wrapper around it. \ud83d\udc41\ufe0f</p>","up":9,"down":0,"targetUp":630,"targetDown":82,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":1004,"user":"Laure","html":"<p>Translation: read, choose, risk an interpretation. Then let the machine answer back. \ud83d\ude09</p>","up":3,"down":0,"targetUp":743,"targetDown":101,"reactions":{"\u2764\ufe0f":7}}],"group":"","parent":"Disorder","isParent":false},{"id":2,"title":"ARG: The Alternate Reality Game","description":"<p>ARG does not designate an escape into an alternative reality. It is an <b>alternate trajectory</b> designed to sabotage the flatness of the feed.</p>","collapsed":false,"replies":[{"id":2001,"user":"Jean Paulhan","html":"<p>The narrative is distributed across threads, voices, interfaces and platforms. Meaning is never located in a single page.</p>","up":7,"down":0,"targetUp":475,"targetDown":61,"reactions":{"\ud83e\udde0":5}},{"id":2002,"user":"Michel Leiris","html":"<p>The old intellectual formation is restaged inside contemporary platform infrastructures. The reenactment is deliberately unstable.</p>","up":5,"down":1,"targetUp":588,"targetDown":80,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":2003,"user":"Georges Bataille","html":"<p>When the topology reaches its limit, the simulation becomes interface \u2014 and the board becomes a device of social heat. \u26a1</p>","up":9,"down":0,"targetUp":701,"targetDown":99,"reactions":{"\u26a1":7}},{"id":2004,"user":"Roger Caillois","html":"<p>So do not ask only \u201cwhat does this page mean?\u201d Ask how one interface changes the conditions of the next.</p>","up":3,"down":0,"targetUp":814,"targetDown":118,"reactions":{"\ud83e\udd14":8}}],"group":"","parent":"Disorder","isParent":false},{"id":3,"title":"The Sacred Game of Society","description":"<p><b>A Sociology derived from Games.</b><br>Between sociology, game design, systems theory, cult language and UI terminology. A sociological s\u00e9ance machine. Where interface becomes sociology.</p>","collapsed":false,"replies":[{"id":3001,"user":"Roger Caillois","html":"<p>Games can be scale models of social organization: competition, chance, identity, rules, risk and vertigo.</p>","up":7,"down":0,"targetUp":546,"targetDown":78,"reactions":{"\ud83e\udde0":6}},{"id":3002,"user":"Georges Bataille","html":"<p>Hot Sociology asks not only what holds society together, but what charges it \u2014 what produces social heat. \ud83d\udd25</p>","up":5,"down":1,"targetUp":659,"targetDown":97,"reactions":{"\ud83d\udd25":7}},{"id":3003,"user":"Michel Leiris","html":"<p>Play gives uncertainty a form. The sacred gives that uncertainty content and intensity.</p>","up":9,"down":0,"targetUp":772,"targetDown":116,"reactions":{"\ud83d\udc41\ufe0f":8}},{"id":3004,"user":"Alexandre Koj\u00e8ve","html":"<p>If the model cannot describe movement and transformation, it remains classification rather than history.</p>","up":3,"down":0,"targetUp":885,"targetDown":15,"reactions":{"\ud83e\udd14":9}}],"group":"","parent":"Disorder","isParent":false},{"id":4,"title":"What Is Hot Sociology?","description":"<p>Hot Sociology treats society less as a cold system of functions than as a field of <b>forces, intensities, rituals, contagions, ruptures and transformations</b>.</p>","collapsed":false,"replies":[{"id":4001,"user":"Georges Bataille","html":"<p>The question becomes: what makes a society become charged? What produces social heat?</p>","up":7,"down":0,"targetUp":617,"targetDown":95,"reactions":{"\ud83d\udd25":7}},{"id":4002,"user":"Roger Caillois","html":"<p>Intensity is not an excuse for conceptual confusion. It still requires distinctions, forms and observable relations.</p>","up":5,"down":1,"targetUp":730,"targetDown":114,"reactions":{"\ud83e\udde0":8}},{"id":4003,"user":"Michel Leiris","html":"<p>The sacred can erupt in ordinary life. What appears trivial may carry a disproportionate charge. \ud83d\udc41\ufe0f</p>","up":9,"down":0,"targetUp":843,"targetDown":13,"reactions":{"\ud83d\udc41\ufe0f":9}},{"id":4004,"user":"Laure","html":"<p>And a collective is not automatically valuable merely because everybody is together. \ud83d\ude44</p>","up":3,"down":0,"targetUp":236,"targetDown":32,"reactions":{"\u2764\ufe0f":2}}],"group":"","parent":"Disorder","isParent":false},{"id":28,"title":"Game Compendium \u2014 What Is Included?","description":"<p><b>This is the map of the whole Ac\u00e9phale Intelligence game universe.</b><br>\nThe Game Theory chapter does not contain only the semantic game. Its topology becomes a family of playable interfaces: <b>ShutApp (Ludus), Holygram (Paidia), FortKnight (Agon), Ac\u00e9phale Slot Machine (Alea), Toy Tonic (Mimicry), Disorder (?), Hotler (Light), 4chains (Dark)</b> \u2014 with further worlds hidden inside them.</p>","collapsed":false,"replies":[{"id":28001,"user":"Roger Caillois","html":"<p>Each game foregrounds one ludic force, regime or atmosphere, but none should be mistaken for a perfectly pure category.</p>","up":6,"down":1,"targetUp":575,"targetDown":91,"reactions":{"\ud83e\udde0":4}},{"id":28002,"user":"Michel Leiris","html":"<p>Together they form a media archaeology of the sacred: chat, channel, chess, chance machine, reels, forum, mail, imageboard, dark web and subscription platform.</p>","up":8,"down":0,"targetUp":676,"targetDown":108,"reactions":{"\ud83d\udc41\ufe0f":5}},{"id":28003,"user":"Georges Bataille","html":"<p>One theory. Many interfaces. One circuit that keeps changing its skin. \ud83d\udd25</p>","up":10,"down":1,"targetUp":777,"targetDown":25,"reactions":{"\ud83d\udd25":6}},{"id":28004,"user":"Laure","html":"<p>THIS is the thread people should read when they ask \u201cwhat the hell is actually in this game?\u201d \ud83d\ude02</p>","up":5,"down":0,"targetUp":878,"targetDown":42,"reactions":{"\u2764\ufe0f":7}}],"group":"","parent":"Disorder","isParent":false},{"id":46,"title":"Platform Sacred Functions \u2014 The Whole Media Circuit","description":"<p>The games are also a platform map: <b>ShutApp = social contagion; Holygram = body contagion/initiation; Hotler = infrastructural totality; Disorder = strategic simulation; 4chains = anonymous contagion; AC\u00c9 = sacrificial capital; TRUTHahn = ideological affirmation; Dark Web = sovereignty/secrecy; Toy Tonic = everyday fascination; OnlyFanatics = devotion.</b></p>","collapsed":false,"replies":[{"id":46001,"user":"Michel Leiris","html":"<p>Each medium already determines pacing, syntax, ontology, epistemology, group structure and affective intensity.</p>","up":6,"down":1,"targetUp":669,"targetDown":25,"reactions":{"\ud83d\udc41\ufe0f":8}},{"id":46002,"user":"Roger Caillois","html":"<p>Therefore the category is not merely a label pasted onto an interface. The interface operationalizes a social logic.</p>","up":8,"down":0,"targetUp":770,"targetDown":42,"reactions":{"\ud83e\udde0":9}},{"id":46003,"user":"Georges Bataille","html":"<p>The medium itself becomes doctrine. \ud83d\udcf1\ud83d\udd25</p>","up":10,"down":1,"targetUp":871,"targetDown":59,"reactions":{"\ud83d\udd25":3}},{"id":46004,"user":"Laure","html":"<p>Now THAT is a compendium. \ud83d\ude02</p>","up":5,"down":0,"targetUp":272,"targetDown":76,"reactions":{"\u2764\ufe0f":4}}],"group":"","parent":"Disorder","isParent":false},{"id":27,"title":"Compendium Index \u2014 From Ludus to Paidia and Beyond","description":"<p><b>Core topology:</b> ShutApp (Ludus) \u00b7 Holygram (Paidia) \u00b7 FortKnight (Agon) \u00b7 Ac\u00e9phale Slot Machine (Alea) \u00b7 Toy Tonic (Mimicry) \u00b7 OnlyFanatics (Ilinx) \u00b7 Disorder (?) \u00b7 Hotler (Light) \u00b7 4chains (Dark).<br><b>Nested worlds:</b> Wheel of Fortune \u00b7 Ritual Dice \u00b7 Massonic Pain(t) \u00b7 Social Machine \u00b7 33 Missions \u00b7 Ritual Overlays \u00b7 teutonicorder.onion \u00b7 AC\u00c9 Meme Coin \u00b7 TRUTHahn Social.</p>","collapsed":false,"replies":[{"id":27001,"user":"Roger Caillois","html":"<p><b>ShutApp \u2014 Ludus.</b> <b>Holygram \u2014 Paidia.</b> <b>FortKnight \u2014 Agon.</b> <b>Ac\u00e9phale Slot Machine \u2014 Alea.</b></p>","up":7,"down":0,"targetUp":810,"targetDown":126,"reactions":{"\ud83e\udde0":6}},{"id":27002,"user":"Michel Leiris","html":"<p><b>Toy Tonic \u2014 Mimicry.</b> <b>OnlyFanatics \u2014 Ilinx.</b> Each turns a theoretical tendency into an interface and mode of experience.</p>","up":5,"down":1,"targetUp":923,"targetDown":25,"reactions":{"\ud83d\udc41\ufe0f":7}},{"id":27003,"user":"Georges Bataille","html":"<p><b>Hotler \u2014 Light.</b> <b>4chains \u2014 Dark.</b> Remember: those are atmospheres, not Ludus/Paida regimes. \ud83d\udd25</p>","up":9,"down":0,"targetUp":316,"targetDown":44,"reactions":{"\ud83d\udd25":8}},{"id":27004,"user":"Laure","html":"<p>And <b>Disorder \u2014 ?</b>. Obviously. \ud83d\ude02</p>","up":3,"down":0,"targetUp":429,"targetDown":63,"reactions":{"\u2764\ufe0f":9}}],"group":"","parent":"Disorder","isParent":false},{"id":666,"title":"How to Eliminate Hitlr? \u2014 Origin Paradox","description":"<p><b>Hidden endgame / Easter egg.</b><br>There is a way to turn the system against the origin it cannot resolve. The game does not explain when, where, or how the paradox becomes available. If you encounter it, follow the contradiction rather than looking for a normal victory condition.</p>","collapsed":false,"replies":[{"id":66601,"user":"Georges Bataille","html":"<p>The origin wants to become sovereign. The paradox begins when the system discovers that its origin is also its error. \ud83d\udc80</p>","up":8,"down":0,"targetUp":666,"targetDown":13,"reactions":{"\ud83d\udc80":6}},{"id":66602,"user":"Roger Caillois","html":"<p>This is not part of the normal tutorial. Treat it as a hidden terminal condition.</p>","up":6,"down":0,"targetUp":512,"targetDown":21,"reactions":{"\ud83e\udde0":5}},{"id":66603,"user":"Laure","html":"<p>If you found this by accident, good. If you are trying to force it, you are already playing the wrong game. \ud83d\ude09</p>","up":9,"down":0,"targetUp":777,"targetDown":19,"reactions":{"\ud83d\udd25":7}}],"parent":"Disorder","group":"","isParent":false},{"id":800,"title":"Ludus","description":"<p><b>Ludus</b><br>Rule-governed play. Ludus organizes play through rules, obstacles, discipline and learned procedures \u2014 the more formalized pole of play.</p>","collapsed":false,"replies":[{"id":80001,"user":"Roger Caillois","html":"<p>Ludus is play that has accepted discipline: rules, obstacles, procedures, training and the pleasure of mastering them.</p>","up":8,"down":0,"targetUp":437,"targetDown":21,"reactions":{"\ud83e\udde0":5}},{"id":80002,"user":"Georges Bataille","html":"<p>Form does not abolish intensity. Sometimes the rule is precisely what makes transgression legible. \ud83d\udd25</p>","up":9,"down":0,"targetUp":454,"targetDown":22,"reactions":{"\ud83d\udd25":6}}],"parent":"Ludus","group":"","isParent":true},{"id":29,"title":"ShutApp","description":"<p><b>Coll\u00e8ge de Sociologie WhatsApp Group.</b><br>\nThe conversational core. Read at least two Sacred Bubbles, A and B, infer which of the twelve directions of a/social change connects them, then compare your interpretation with the hidden semantic analysis.</p>","collapsed":false,"replies":[{"id":29001,"user":"Roger Caillois","html":"<p>The machine already knows the proportional Agon/Alea/Mimicry/Ilinx profile of each bubble. You do not.</p>","up":6,"down":1,"targetUp":658,"targetDown":104,"reactions":{"\ud83e\udde0":5}},{"id":29002,"user":"Michel Leiris","html":"<p>You receive semantic clues: EMO, COMMON, HOTLER, \u201930, CYBER, plus Regime and Atmosphere.</p>","up":8,"down":0,"targetUp":759,"targetDown":21,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":29003,"user":"Georges Bataille","html":"<p>The game is not \u201cname node A and node B.\u201d It is: reconstruct the mutation from incomplete evidence. \u27a1\ufe0f\ud83d\udd25</p>","up":10,"down":1,"targetUp":860,"targetDown":38,"reactions":{"\ud83d\udd25":7}},{"id":29004,"user":"Laure","html":"<p>ShutApp produces knowledge. Apparently. \ud83d\ude02</p>","up":5,"down":0,"targetUp":261,"targetDown":55,"reactions":{"\u2764\ufe0f":8}}],"group":"ShutApp","parent":"Ludus"},{"id":20,"title":"What Is a Sacred Bubble?","description":"<p>The Sacred Bubble is the basic semantic unit of play. It is first approached as an <b>object of reading</b>, not as a question with an obvious correct answer.</p>","collapsed":false,"replies":[{"id":20001,"user":"Roger Caillois","html":"<p>Visible around each bubble: five registers + one regime + one atmosphere.</p>","up":7,"down":0,"targetUp":313,"targetDown":127,"reactions":{"\ud83e\udde0":7}},{"id":20002,"user":"Michel Leiris","html":"<p>That seven-part caption gives conceptual instruments for reading. It does not score you.</p>","up":5,"down":1,"targetUp":426,"targetDown":26,"reactions":{"\ud83d\udc41\ufe0f":8}},{"id":20003,"user":"Jean Paulhan","html":"<p>Behind the visible layer, the dataset has already evaluated the bubble proportionally across Agon, Alea, Mimicry and Ilinx.</p>","up":9,"down":0,"targetUp":539,"targetDown":45,"reactions":{"\ud83e\udd14":9}},{"id":20004,"user":"Georges Bataille","html":"<p>Those percentages remain hidden while you play. Otherwise the machine would answer its own question. \ud83d\ude02</p>","up":3,"down":0,"targetUp":652,"targetDown":64,"reactions":{"\ud83d\udd25":2}}],"group":"ShutApp","parent":"Ludus"},{"id":19,"title":"The Five Registers","description":"<p>Each Sacred Bubble receives one semantic keyword unfolded through five perspectives: <b>(EMO) \u2014 (COMMON) \u2014 (HOT) \u2014 (\u201930) \u2014 (CYBER)</b>.</p>","collapsed":false,"replies":[{"id":19001,"user":"Roger Caillois","html":"<p>The registers do not change the meaning of the bubble and do not move it to another Caillois node.</p>","up":7,"down":0,"targetUp":242,"targetDown":110,"reactions":{"\ud83e\udde0":6}},{"id":19002,"user":"Jean Paulhan","html":"<p>They are five epistemological perspectives on the same semantic nucleus.</p>","up":5,"down":1,"targetUp":355,"targetDown":9,"reactions":{"\ud83e\udd14":7}},{"id":19003,"user":"Michel Leiris","html":"<p>The player does not choose among them. They are a compact reading device accompanying the fragment.</p>","up":9,"down":0,"targetUp":468,"targetDown":28,"reactions":{"\ud83d\udc41\ufe0f":8}},{"id":19004,"user":"Georges Bataille","html":"<p>EMO is what happens when theory survives compression into one glyph. \ud83d\udc80</p>","up":3,"down":0,"targetUp":581,"targetDown":47,"reactions":{"\ud83d\udc80":9}}],"group":"ShutApp","parent":"Ludus"},{"id":5,"title":"The Four Ludic Forces","description":"<p>The circuit has four Caillois attractors: <b>AGON \u2014 ALEA \u2014 MIMICRY \u2014 ILINX</b>. They are not four answers. They are four forces through which play \u2014 and social experience \u2014 can be organized.</p>","collapsed":false,"replies":[{"id":5001,"user":"Roger Caillois","html":"<p><b>Agon</b>: competition. <b>Alea</b>: chance. <b>Mimicry</b>: simulation. <b>Ilinx</b>: vertigo.</p>","up":7,"down":0,"targetUp":688,"targetDown":112,"reactions":{"\ud83e\udde0":8}},{"id":5002,"user":"Michel Leiris","html":"<p>A bubble can contain all four in different proportions. The game uses the dominant force without pretending the others disappear.</p>","up":5,"down":1,"targetUp":801,"targetDown":11,"reactions":{"\ud83d\udc41\ufe0f":9}},{"id":5003,"user":"Georges Bataille","html":"<p>Good. Four categories that refuse to stay pure. \ud83d\ude02</p>","up":9,"down":0,"targetUp":914,"targetDown":30,"reactions":{"\ud83d\udd25":2}},{"id":5004,"user":"Pierre Klossowski","html":"<p>The interesting object is often the contamination between them rather than the purity of any one node.</p>","up":3,"down":0,"targetUp":307,"targetDown":49,"reactions":{"\ud83c\udf00":3}}],"group":"ShutApp","parent":"Ludus"},{"id":6,"title":"Agon / Competition","description":"<p>Agon organizes play around <b>regulated rivalry, skill, merit, measurable opposition and the attempt to prevail under shared rules</b>.</p>","collapsed":false,"replies":[{"id":6001,"user":"Roger Caillois","html":"<p>Agon presupposes a field where opponents can be compared. Rules make the rivalry legible.</p>","up":7,"down":0,"targetUp":759,"targetDown":9,"reactions":{"\ud83e\udde0":9}},{"id":6002,"user":"Jules Monnerot","html":"<p>Socially, Agon appears in ranking, competition, distinction, merit and organized conflict.</p>","up":5,"down":1,"targetUp":872,"targetDown":28,"reactions":{"\u26a1":2}},{"id":6003,"user":"Michel Leiris","html":"<p>The rule does not remove emotion. It gives anxiety and ambition a visible structure.</p>","up":9,"down":0,"targetUp":265,"targetDown":47,"reactions":{"\ud83d\udc41\ufe0f":3}},{"id":6004,"user":"Georges Bataille","html":"<p>Conflict wearing a clean shirt. \u265f\ufe0f</p>","up":3,"down":0,"targetUp":378,"targetDown":66,"reactions":{"\ud83d\udd25":4}}],"group":"ShutApp","parent":"Ludus"},{"id":7,"title":"Alea / Chance","description":"<p>Alea appears when the player <b>renounces mastery</b> and accepts an outcome determined by forces beyond individual skill or calculation.</p>","collapsed":false,"replies":[{"id":7001,"user":"Roger Caillois","html":"<p>In Alea, sovereignty is suspended. The player waits on chance, fate, selection, probability or an external mechanism. \ud83c\udfb2</p>","up":7,"down":0,"targetUp":830,"targetDown":26,"reactions":{"\ud83e\udd14":2}},{"id":7002,"user":"Denis de Rougemont","html":"<p>Contingency often becomes destiny after the fact because people want accident to mean something.</p>","up":5,"down":1,"targetUp":223,"targetDown":45,"reactions":{"\u2764\ufe0f":3}},{"id":7003,"user":"Georges Bataille","html":"<p>Chance humiliates the plan. That is part of its pleasure. \ud83d\udc80</p>","up":9,"down":0,"targetUp":336,"targetDown":64,"reactions":{"\ud83d\udc80":4}},{"id":7004,"user":"Laure","html":"<p>Click the button. Stop pretending you control the universe. \ud83d\ude02</p>","up":3,"down":0,"targetUp":449,"targetDown":83,"reactions":{"\ud83d\udd25":5}}],"group":"ShutApp","parent":"Ludus"},{"id":8,"title":"Mimicry / Simulation","description":"<p>Mimicry suspends ordinary identity through <b>role, mask, imitation, performance, simulation and the acceptance of another appearance or world</b>.</p>","collapsed":false,"replies":[{"id":8001,"user":"Roger Caillois","html":"<p>The player behaves as if they were another. The illusion is entered rather than merely observed.</p>","up":7,"down":0,"targetUp":901,"targetDown":43,"reactions":{"\ud83e\udde0":3}},{"id":8002,"user":"Pierre Klossowski","html":"<p>But what if the role becomes more stable than the person who performs it? \ud83c\udfad</p>","up":5,"down":1,"targetUp":294,"targetDown":62,"reactions":{"\ud83c\udf00":4}},{"id":8003,"user":"Michel Leiris","html":"<p>Social life is already full of rehearsed roles that become invisible through repetition.</p>","up":9,"down":0,"targetUp":407,"targetDown":81,"reactions":{"\ud83d\udc41\ufe0f":5}},{"id":8004,"user":"Georges Bataille","html":"<p>A mask may reveal what the face cannot. \ud83d\ude0f</p>","up":3,"down":0,"targetUp":520,"targetDown":100,"reactions":{"\ud83d\udd25":6}}],"group":"ShutApp","parent":"Ludus"},{"id":9,"title":"Ilinx / Vertigo","description":"<p>Ilinx seeks <b>vertigo, disorientation, altered perception, panic, ecstasy or temporary destruction of stability</b>.</p>","collapsed":false,"replies":[{"id":9001,"user":"Roger Caillois","html":"<p>The essential movement is destabilization itself. \ud83c\udf00</p>","up":7,"down":0,"targetUp":252,"targetDown":60,"reactions":{"\ud83c\udf00":4}},{"id":9002,"user":"Michel Leiris","html":"<p>The body understands vertigo before the concept does.</p>","up":5,"down":1,"targetUp":365,"targetDown":79,"reactions":{"\ud83d\udc41\ufe0f":5}},{"id":9003,"user":"Georges Bataille","html":"<p>Order discovering that it has a nervous system. \ud83d\udc80</p>","up":9,"down":0,"targetUp":478,"targetDown":98,"reactions":{"\ud83d\udc80":6}},{"id":9004,"user":"Laure","html":"<p>\ud83c\udf00\ud83c\udf00\ud83c\udf00</p>","up":3,"down":0,"targetUp":591,"targetDown":117,"reactions":{"\ud83c\udf00":7}}],"group":"ShutApp","parent":"Ludus"},{"id":10,"title":"Regime / Paidia & Ludus","description":"<p><b>Paidia</b> is spontaneous, improvisational, turbulent play. <b>Ludus</b> is play formalized through rules, obstacles, protocols, metrics, rankings, rewards, penalties and constraints.</p>","collapsed":false,"replies":[{"id":10001,"user":"Roger Caillois","html":"<p>Paidia \u2192 formalization \u2192 Ludus. But the reverse movement is also possible.</p>","up":7,"down":0,"targetUp":323,"targetDown":77,"reactions":{"\ud83e\udde0":5}},{"id":10002,"user":"Georges Bataille","html":"<p>Ludus \u2192 overload / contradiction \u2192 Paidia. The cage can overheat. \ud83d\udd25</p>","up":5,"down":1,"targetUp":436,"targetDown":96,"reactions":{"\ud83d\udd25":6}},{"id":10003,"user":"Michel Leiris","html":"<p>The system therefore oscillates between formalization and excess.</p>","up":9,"down":0,"targetUp":549,"targetDown":115,"reactions":{"\ud83d\udc41\ufe0f":7}},{"id":10004,"user":"Laure","html":"<p><b>Regime</b>, please. Not atmosphere. Pin this. \ud83d\udccc</p>","up":3,"down":0,"targetUp":662,"targetDown":14,"reactions":{"\u2764\ufe0f":8}}],"group":"ShutApp","parent":"Ludus"},{"id":11,"title":"Atmosphere / Light & Dark","description":"<p><b>Atmosphere is a separate axis from Regime.</b><br>Light/Positive: transformation remains relatively chosen and reversible. Dark/Negative: transformation becomes captured, compulsive, coercive, accidental or infrastructurally locked.</p>","collapsed":false,"replies":[{"id":11001,"user":"Roger Caillois","html":"<p>Ludus is not Light. Paidia is not Dark. Regime and atmosphere describe different things.</p>","up":7,"down":0,"targetUp":394,"targetDown":94,"reactions":{"\ud83e\udde0":6}},{"id":11002,"user":"Michel Leiris","html":"<p>The same formal regime can be experienced through different atmospheres.</p>","up":5,"down":1,"targetUp":507,"targetDown":113,"reactions":{"\ud83d\udc41\ufe0f":7}},{"id":11003,"user":"Georges Bataille","html":"<p>Order can be dark. Disorder can be chosen. There, now nobody has an excuse. \ud83d\ude02</p>","up":9,"down":0,"targetUp":620,"targetDown":12,"reactions":{"\ud83d\udd25":8}},{"id":11004,"user":"Laure","html":"<p>THANK YOU. \ud83d\ude11</p>","up":3,"down":0,"targetUp":733,"targetDown":31,"reactions":{"\u2764\ufe0f":9}}],"group":"ShutApp","parent":"Ludus"},{"id":12,"title":"The Sacred Circuit","description":"<p>The final model has three interacting layers: <b>five registers describe how meaning changes; twelve directional passages describe how ludic forms change; four qualities describe what those changes do.</b></p>","collapsed":false,"replies":[{"id":12001,"user":"Roger Caillois","html":"<p>Caillois provides the attractors. The hacked square provides the topology.</p>","up":7,"down":0,"targetUp":465,"targetDown":111,"reactions":{"\ud83e\udde0":7}},{"id":12002,"user":"Jean Paulhan","html":"<p>The Five Registers provide semantic variation without changing the semantic nucleus itself.</p>","up":5,"down":1,"targetUp":578,"targetDown":10,"reactions":{"\ud83e\udd14":8}},{"id":12003,"user":"Alexandre Koj\u00e8ve","html":"<p>Directional movement supplies history: A \u2192 B is a process, not merely a relation between two labels.</p>","up":9,"down":0,"targetUp":691,"targetDown":29,"reactions":{"\u26a1":9}},{"id":12004,"user":"Georges Bataille","html":"<p>And the four qualities tell us how hot the passage becomes. \ud83d\udd25</p>","up":3,"down":0,"targetUp":804,"targetDown":48,"reactions":{"\ud83d\udd25":2}}],"group":"ShutApp","parent":"Ludus"},{"id":13,"title":"Why Direction Matters","description":"<p>The circuit is reversible but <b>not symmetrical</b>. Agon \u2192 Mimicry is not Mimicry \u2192 Agon. Alea \u2192 Ilinx is not Ilinx \u2192 Alea. A \u2192 B \u2192 A is already a history.</p>","collapsed":false,"replies":[{"id":13001,"user":"Roger Caillois","html":"<p>A passage in one direction describes a different social and phenomenological process from the same path travelled backward.</p>","up":7,"down":0,"targetUp":536,"targetDown":8,"reactions":{"\ud83e\udde0":8}},{"id":13002,"user":"Pierre Klossowski","html":"<p>Conflict becoming role is not the same as role becoming conflict.</p>","up":5,"down":1,"targetUp":649,"targetDown":27,"reactions":{"\ud83c\udf00":9}},{"id":13003,"user":"Denis de Rougemont","html":"<p>Chance becoming vertigo is not the same as vertigo later interpreted as destiny.</p>","up":9,"down":0,"targetUp":762,"targetDown":46,"reactions":{"\ud83e\udd14":2}},{"id":13004,"user":"Georges Bataille","html":"<p>Finally, arrows that actually matter. \u27a1\ufe0f\ud83d\udd25</p>","up":3,"down":0,"targetUp":875,"targetDown":65,"reactions":{"\ud83d\udd25":3}}],"group":"ShutApp","parent":"Ludus"},{"id":14,"title":"Horizontal Tensions","description":"<p>Horizontal passages preserve two recognizable poles in opposition. They are <b>TENSIONS</b>.</p>","collapsed":false,"replies":[{"id":14001,"user":"Roger Caillois","html":"<p><b>Agon \u2192 Alea:</b> control encounters contingency \u2014 merit becomes exposed to selection, ranking, probability or fate.</p>","up":7,"down":0,"targetUp":607,"targetDown":25,"reactions":{"\ud83e\udde0":9}},{"id":14002,"user":"Jules Monnerot","html":"<p><b>Alea \u2192 Agon:</b> contingency becomes challenge \u2014 uncertain conditions are reorganized as competition, strategy or mastery.</p>","up":5,"down":1,"targetUp":720,"targetDown":44,"reactions":{"\u26a1":2}},{"id":14003,"user":"Michel Leiris","html":"<p><b>Mimicry \u2192 Ilinx:</b> identification exceeds representation \u2014 performance becomes immersion, possession or loss of distance.</p>","up":9,"down":0,"targetUp":833,"targetDown":63,"reactions":{"\ud83d\udc41\ufe0f":3}},{"id":14004,"user":"Pierre Klossowski","html":"<p><b>Ilinx \u2192 Mimicry:</b> vertigo acquires a form \u2014 disorientation condenses into image, role, ritual or identity.</p>","up":3,"down":0,"targetUp":226,"targetDown":82,"reactions":{"\ud83c\udf00":4}}],"group":"ShutApp","parent":"Ludus"},{"id":15,"title":"Vertical Transformations","description":"<p>Vertical passages move between adjacent ludic positions and produce a change of configuration. They are <b>TRANSFORMATIONS</b>.</p>","collapsed":false,"replies":[{"id":15001,"user":"Roger Caillois","html":"<p><b>Agon \u2192 Mimicry:</b> conflict becomes representation \u2014 struggle crystallizes into role, uniform, ritual posture or institutional theatre.</p>","up":7,"down":0,"targetUp":678,"targetDown":42,"reactions":{"\ud83e\udde0":2}},{"id":15002,"user":"Pierre Klossowski","html":"<p><b>Mimicry \u2192 Agon:</b> representation becomes contest \u2014 identity or imitation becomes rivalry, distinction or competitive performance.</p>","up":5,"down":1,"targetUp":791,"targetDown":61,"reactions":{"\ud83c\udf00":3}},{"id":15003,"user":"Denis de Rougemont","html":"<p><b>Alea \u2192 Ilinx:</b> surrender becomes vertigo \u2014 contingency intensifies into fatalism, ecstasy or dissolution.</p>","up":9,"down":0,"targetUp":904,"targetDown":80,"reactions":{"\ud83e\udd14":4}},{"id":15004,"user":"Georges Bataille","html":"<p><b>Ilinx \u2192 Alea:</b> vertigo becomes destiny \u2014 uncontrolled experience is retrospectively interpreted as fate, sign or necessity. \ud83d\udc80</p>","up":3,"down":0,"targetUp":297,"targetDown":99,"reactions":{"\ud83d\udc80":5}}],"group":"ShutApp","parent":"Ludus"},{"id":16,"title":"Diagonal Contaminations","description":"<p>Diagonal passages make structurally distant forces simultaneously operative. They are rarer, unstable and potentially extreme: <b>CONTAMINATIONS</b>.</p>","collapsed":false,"replies":[{"id":16001,"user":"Roger Caillois","html":"<p><b>Agon \u2192 Ilinx:</b> discipline exceeds its limits \u2014 competition becomes frenzy, ecstatic exertion or destructive overperformance.</p>","up":7,"down":0,"targetUp":749,"targetDown":59,"reactions":{"\ud83e\udde0":3}},{"id":16002,"user":"Georges Bataille","html":"<p><b>Ilinx \u2192 Agon:</b> vertigo becomes organized struggle \u2014 chaotic intensity is captured by discipline, command or tactical purpose. \u26a1</p>","up":5,"down":1,"targetUp":862,"targetDown":78,"reactions":{"\u26a1":4}},{"id":16003,"user":"Denis de Rougemont","html":"<p><b>Alea \u2192 Mimicry:</b> contingency acquires identity \u2014 accident is interpreted through role, destiny, myth or belonging.</p>","up":9,"down":0,"targetUp":255,"targetDown":97,"reactions":{"\ud83e\udd14":5}},{"id":16004,"user":"Pierre Klossowski","html":"<p><b>Mimicry \u2192 Alea:</b> identity loses control of its outcome \u2014 performed identity becomes dependent on recognition, circulation and unpredictable reception.</p>","up":3,"down":0,"targetUp":368,"targetDown":116,"reactions":{"\ud83c\udf00":6}}],"group":"ShutApp","parent":"Ludus"},{"id":17,"title":"The Twelve Directional Passages","description":"<p>The twelve passages are <b>not twelve new categories</b>. They are twelve ways in which the four categories can cease to remain identical to themselves.</p>","collapsed":false,"replies":[{"id":17001,"user":"Roger Caillois","html":"<p>4 horizontal tensions + 4 vertical transformations + 4 diagonal contaminations = 12 oriented passages.</p>","up":7,"down":0,"targetUp":820,"targetDown":76,"reactions":{"\ud83e\udde0":4}},{"id":17002,"user":"Alexandre Koj\u00e8ve","html":"<p>A pure node reproduces a configuration. A passage describes mutation.</p>","up":5,"down":1,"targetUp":933,"targetDown":95,"reactions":{"\u26a1":5}},{"id":17003,"user":"Michel Leiris","html":"<p>The player is therefore reading movement, not naming a static object.</p>","up":9,"down":0,"targetUp":326,"targetDown":114,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":17004,"user":"Georges Bataille","html":"<p>Do not collect labels. Follow the accident. \ud83d\udd25</p>","up":3,"down":0,"targetUp":439,"targetDown":13,"reactions":{"\ud83d\udd25":7}}],"group":"ShutApp","parent":"Ludus"},{"id":18,"title":"Structural Qualities","description":"<p>The four qualities describe <b>what a passage does</b>: how often it occurs, how long it persists, how strongly it acts, and how much it may transform the surrounding symbolic field.</p>","collapsed":false,"replies":[{"id":18001,"user":"Roger Caillois","html":"<p><b>Pure node:</b> very high frequency, high stability, low\u2013medium intensity, low transformative power.</p>","up":7,"down":0,"targetUp":891,"targetDown":93,"reactions":{"\ud83e\udde0":5}},{"id":18002,"user":"Jules Monnerot","html":"<p><b>Horizontal tension:</b> high frequency, high stability, medium intensity and medium historical power.</p>","up":5,"down":1,"targetUp":284,"targetDown":112,"reactions":{"\u26a1":6}},{"id":18003,"user":"Alexandre Koj\u00e8ve","html":"<p><b>Directed transformation:</b> medium frequency and stability, but high intensity and historical power.</p>","up":9,"down":0,"targetUp":397,"targetDown":11,"reactions":{"\ud83e\udd14":7}},{"id":18004,"user":"Georges Bataille","html":"<p><b>Diagonal contamination:</b> low frequency, extremely low stability, extreme intensity, extreme transformative power. Obviously my favorite. \ud83d\ude02\ud83d\udd25</p>","up":3,"down":0,"targetUp":510,"targetDown":30,"reactions":{"\ud83d\udd25":8}}],"group":"ShutApp","parent":"Ludus"},{"id":21,"title":"How to Play 1 / Read the Bubble","description":"<p><b>Step 1:</b> Read Bubble A as a semantic object. Use its Five Registers, Regime and Atmosphere as clues. Do not try to guess percentages.</p>","collapsed":false,"replies":[{"id":21001,"user":"Michel Leiris","html":"<p>Read the fragment before reducing it to a category. The semantic clue exists to open interpretation, not close it.</p>","up":7,"down":0,"targetUp":384,"targetDown":24,"reactions":{"\ud83d\udc41\ufe0f":8}},{"id":21002,"user":"Roger Caillois","html":"<p>The visible caption is guidance. The hidden four-node profile is analysis.</p>","up":5,"down":1,"targetUp":497,"targetDown":43,"reactions":{"\ud83e\udde0":9}},{"id":21003,"user":"Jean Paulhan","html":"<p>Ask what force dominates without forgetting that other forces may remain present.</p>","up":9,"down":0,"targetUp":610,"targetDown":62,"reactions":{"\ud83e\udd14":2}},{"id":21004,"user":"Laure","html":"<p>Basically: read first, click later. \ud83d\ude0f</p>","up":3,"down":0,"targetUp":723,"targetDown":81,"reactions":{"\u2764\ufe0f":3}}],"group":"ShutApp","parent":"Ludus"},{"id":22,"title":"How to Play 2 / Compare A \u2192 B","description":"<p><b>Step 2:</b> When Bubble A is followed by Bubble B, compare their semantic configurations. The actual game begins <b>between</b> the two bubbles.</p>","collapsed":false,"replies":[{"id":22001,"user":"Roger Caillois","html":"<p>Implicitly identify the dominant ludic force of A and the dominant ludic force of B.</p>","up":7,"down":0,"targetUp":455,"targetDown":41,"reactions":{"\ud83e\udde0":9}},{"id":22002,"user":"Alexandre Koj\u00e8ve","html":"<p>Then ask what has changed and in which direction. That direction is the event.</p>","up":5,"down":1,"targetUp":568,"targetDown":60,"reactions":{"\u26a1":2}},{"id":22003,"user":"Michel Leiris","html":"<p>The transition is not merely difference. It is difference becoming movement.</p>","up":9,"down":0,"targetUp":681,"targetDown":79,"reactions":{"\ud83d\udc41\ufe0f":3}},{"id":22004,"user":"Georges Bataille","html":"<p>A \u2192 B. Not \u201cA next to B.\u201d \u27a1\ufe0f</p>","up":3,"down":0,"targetUp":794,"targetDown":98,"reactions":{"\ud83d\udd25":4}}],"group":"ShutApp","parent":"Ludus"},{"id":23,"title":"How to Play 3 / Choose the Transition","description":"<p><b>Step 3:</b> The interface presents a wheel of <b>12 glyphs/emoticons</b>, one for each directional passage. Hover reveals the node combination. Select the passage that best describes A \u2192 B.</p>","collapsed":false,"replies":[{"id":23001,"user":"Roger Caillois","html":"<p>You are choosing among four tensions, four transformations and four contaminations.</p>","up":7,"down":0,"targetUp":526,"targetDown":58,"reactions":{"\ud83e\udde0":2}},{"id":23002,"user":"Michel Leiris","html":"<p>The glyph works visually first; the hover label gives the conceptual direction.</p>","up":5,"down":1,"targetUp":639,"targetDown":77,"reactions":{"\ud83d\udc41\ufe0f":3}},{"id":23003,"user":"Pierre Klossowski","html":"<p>Choose the transformation of the relation, not simply the category you find most attractive. \ud83d\ude09</p>","up":9,"down":0,"targetUp":752,"targetDown":96,"reactions":{"\ud83c\udf00":4}},{"id":23004,"user":"Laure","html":"<p>No, \u201c\ud83d\udd25 because vibes\u201d is not always the answer. \ud83d\ude02</p>","up":3,"down":0,"targetUp":865,"targetDown":115,"reactions":{"\u2764\ufe0f":5}}],"group":"ShutApp","parent":"Ludus"},{"id":24,"title":"How to Play 4 / Reveal the Analysis","description":"<p><b>Step 4:</b> After your choice, the system reveals its analysis: the dominant node of A, the dominant node of B, the directional transition and whether it is a Tension, Transformation or Contamination.</p>","collapsed":false,"replies":[{"id":24001,"user":"Roger Caillois","html":"<p>Only now may the hidden Agon/Alea/Mimicry/Ilinx percentages also be shown.</p>","up":7,"down":0,"targetUp":597,"targetDown":75,"reactions":{"\ud83e\udde0":3}},{"id":24002,"user":"Michel Leiris","html":"<p>The distribution makes ambiguity visible: a dominant node does not erase secondary forces.</p>","up":5,"down":1,"targetUp":710,"targetDown":94,"reactions":{"\ud83d\udc41\ufe0f":4}},{"id":24003,"user":"Alexandre Koj\u00e8ve","html":"<p>Frequency, stability, intensity and historical power may then describe the structural character of the passage.</p>","up":9,"down":0,"targetUp":823,"targetDown":113,"reactions":{"\u26a1":5}},{"id":24004,"user":"Georges Bataille","html":"<p>The analysis comes after interpretation. Otherwise you are merely reading the answer key. \ud83d\ude0f</p>","up":3,"down":0,"targetUp":936,"targetDown":12,"reactions":{"\ud83d\udd25":6}}],"group":"ShutApp","parent":"Ludus"},{"id":25,"title":"The Coll\u00e8ge Consensus","description":"<p>After the answer, the game may show a simulated <b>Coll\u00e8ge consensus</b>: a percentage representing analytical confidence as if it were the proportion of Collegians who reached the same reading.</p>","collapsed":false,"replies":[{"id":25001,"user":"Jean Paulhan","html":"<p>It is not a real user statistic.</p>","up":7,"down":0,"targetUp":668,"targetDown":92,"reactions":{"\ud83e\udd14":4}},{"id":25002,"user":"Roger Caillois","html":"<p>Correct. It is a ludic representation of analytical certainty.</p>","up":5,"down":1,"targetUp":781,"targetDown":111,"reactions":{"\ud83e\udde0":5}},{"id":25003,"user":"Georges Bataille","html":"<p>And a joke about consensus pretending to be authority. \ud83d\ude02</p>","up":9,"down":0,"targetUp":894,"targetDown":10,"reactions":{"\ud83d\udd25":6}},{"id":25004,"user":"Laure","html":"<p>93% of the Coll\u00e8ge agrees that 93% of the Coll\u00e8ge is imaginary. \ud83d\udc4d</p>","up":3,"down":0,"targetUp":287,"targetDown":29,"reactions":{"\u2764\ufe0f":7}}],"group":"ShutApp","parent":"Ludus"},{"id":801,"title":"Agon","description":"<p><b>Agon</b><br>Competition. Agon is structured rivalry: players confront one another under shared rules, where skill, strategy and merit can decide the outcome.</p>","collapsed":false,"replies":[{"id":80011,"user":"Roger Caillois","html":"<p>Agon creates an artificial equality of conditions so that superiority can be demonstrated through skill, effort or strategy.</p>","up":8,"down":0,"targetUp":468,"targetDown":22,"reactions":{"\ud83e\udde0":5}},{"id":80012,"user":"Alexandre Koj\u00e8ve","html":"<p>Recognition becomes measurable because another player can resist you.</p>","up":9,"down":0,"targetUp":485,"targetDown":23,"reactions":{"\u26a1":6}}],"parent":"Agon","group":"","isParent":true},{"id":31,"title":"FortKnight","description":"<p><b>The Teutonic Order Battle Chess Royal Challenge.</b><br>FortKnight is the Agon arena of the project: <b>you fight the Teutonic Order directly</b> on the chessboard, with blue Ac\u00e9phale pieces facing the red Teutonic army. The opponent resists, calculates and can defeat you; victory has to be earned under the same rules.</p>","collapsed":false,"replies":[{"id":31001,"user":"Roger Caillois","html":"<p>Agon does not simply mean fighting. It means fighting under conditions. Chess is almost paradigmatically agonistic. \u265f\ufe0f</p>","up":6,"down":1,"targetUp":824,"targetDown":30,"reactions":{"\ud83e\udde0":7}},{"id":31005,"user":"Georges Bataille","html":"<p>This is not a symbolic enemy hidden in commentary. In FortKnight you <b>fight the Teutonic Order itself</b>: move against it, survive its counterplay, break its formation, and force the board toward checkmate. \u265f\ufe0f\ud83d\udd25</p>","up":8,"down":0,"targetUp":814,"targetDown":33,"reactions":{"\ud83d\udd25":7}},{"id":31002,"user":"Georges Bataille","html":"<p>The player enters the fortress made of rules and tries to defeat the ghost inside its own constraints.</p>","up":8,"down":0,"targetUp":925,"targetDown":47,"reactions":{"\ud83d\udd25":8}},{"id":31003,"user":"Alexandre Koj\u00e8ve","html":"<p>Soldier \u2192 Officer \u2192 General makes resistance progressively more organized. The five-minute clock turns thought itself into a battlefield.</p>","up":10,"down":1,"targetUp":326,"targetDown":64,"reactions":{"\u26a1":9}},{"id":31004,"user":"Laure","html":"<p>And yes, the enemy can actually win. Otherwise it would be theatre, not Agon. \ud83d\ude02</p>","up":5,"down":0,"targetUp":427,"targetDown":81,"reactions":{"\u2764\ufe0f":3}}],"group":"","parent":"Agon"},{"id":470,"title":"Fight the Teutonic Order","description":"<p><b>The central Agon conflict of FortKnight.</b><br>Ac\u00e9phale is the blue army; the Teutonic Order is the red army. You are not reenacting a fixed victory: the opponent can resist, gain material, check you and win. The conflict is therefore genuinely agonistic \u2014 tactical struggle under shared constraints.</p>","collapsed":false,"replies":[{"id":47001,"user":"Roger Caillois","html":"<p>Agon requires a real possibility of defeat. The Teutonic Order is therefore an opponent, not scenery.</p>","up":7,"down":0,"targetUp":620,"targetDown":29,"reactions":{"\ud83e\udde0":6}},{"id":47002,"user":"Alexandre Koj\u00e8ve","html":"<p>The board converts recognition into confrontation: every move meets a counter-move, every initiative risks reversal.</p>","up":6,"down":0,"targetUp":731,"targetDown":41,"reactions":{"\u26a1":5}},{"id":47003,"user":"Laure","html":"<p>Blue Ac\u00e9phale versus red Teutonic Order. No mystical shortcut. Beat them on the board. \u265f\ufe0f</p>","up":9,"down":0,"targetUp":843,"targetDown":22,"reactions":{"\u2764\ufe0f":6}}],"parent":"Agon","group":""},{"id":32,"title":"FortKnight \u2014 33 Missions & Ritual Overlays","description":"<p>FortKnight expands from one chess battle into a <b>33-mission campaign</b>. Fixed opening sequences become ritualized training. Significant chess events also trigger ceremonial overlays.</p>","collapsed":false,"replies":[{"id":32001,"user":"Roger Caillois","html":"<p>Pawn advance, capture, knight leap, fork, bishop attack, queen sacrifice, castling, check, checkmate, stalemate, pin, skewer, discovered attack, zugzwang\u2026</p>","up":6,"down":1,"targetUp":907,"targetDown":43,"reactions":{"\ud83e\udde0":8}},{"id":32002,"user":"Michel Leiris","html":"<p>The technical move becomes a ceremonial event: ordinary chess notation gains a second ritual language.</p>","up":8,"down":0,"targetUp":308,"targetDown":60,"reactions":{"\ud83d\udc41\ufe0f":9}},{"id":32003,"user":"Georges Bataille","html":"<p>The result is deliberately impure: <b>AGON + MIMICRY + ILINX</b>. Calculation becomes haunting. \ud83d\udc80\u265f\ufe0f</p>","up":10,"down":1,"targetUp":409,"targetDown":77,"reactions":{"\ud83d\udd25":3}},{"id":32004,"user":"Laure","html":"<p>The machine teaches you the enemy\u2019s grammar and then asks you to use it against the enemy. Nice. \ud83d\ude0f</p>","up":5,"down":0,"targetUp":510,"targetDown":94,"reactions":{"\u2764\ufe0f":4}}],"group":"","parent":"Agon"},{"id":802,"title":"Alea","description":"<p><b>Alea</b><br>Chance. Alea suspends mastery: the player accepts an outcome produced by luck, probability, fate or an external mechanism rather than skill alone.</p>","collapsed":false,"replies":[{"id":80021,"user":"Roger Caillois","html":"<p>In Alea the player does not prove superiority. The player waits for a decision that comes from elsewhere.</p>","up":8,"down":0,"targetUp":499,"targetDown":23,"reactions":{"\ud83c\udfb2":5}},{"id":80022,"user":"Georges Bataille","html":"<p>Chance spends the illusion that everything can be mastered. \ud83d\udd25</p>","up":9,"down":0,"targetUp":516,"targetDown":24,"reactions":{"\ud83d\udd25":6}}],"parent":"Alea","group":"","isParent":true},{"id":33,"title":"Ac\u00e9phale Slot Machine","description":"<p><b>Chance becomes the engine of revelation.</b><br>\nMove onto Alea and activate a slot machine with <b>4 equally probable outcomes \u2014 25% each</b>. It is impossible to lose: every spin unlocks an experience rather than extracting a penalty.</p>","collapsed":false,"replies":[{"id":33001,"user":"Roger Caillois","html":"<p>Alea is the renunciation of mastery. What is wagered here is sovereignty over which world appears next. \ud83c\udfb2</p>","up":6,"down":1,"targetUp":290,"targetDown":56,"reactions":{"\ud83e\udde0":9}},{"id":33002,"user":"Georges Bataille","html":"<p>The expenditure is the irreversible consumption of certainty, not money. \ud83d\udd25</p>","up":8,"down":0,"targetUp":391,"targetDown":73,"reactions":{"\ud83d\udd25":3}},{"id":33003,"user":"Michel Leiris","html":"<p>Chance becomes curiosity rather than frustration.</p>","up":10,"down":1,"targetUp":492,"targetDown":90,"reactions":{"\ud83d\udc41\ufe0f":4}},{"id":33004,"user":"Laure","html":"<p>A casino that refuses to rob you. Radical concept. \ud83d\ude02</p>","up":5,"down":0,"targetUp":593,"targetDown":107,"reactions":{"\u2764\ufe0f":5}}],"group":"","parent":"Alea"},{"id":34,"title":"Alea \u2014 Wheel of Fortune / World","description":"<p>One of the four Slot Machine outcomes. A <b>16-slice Wheel of Fortune</b> unlocks hidden locations connected to the Ac\u00e9phale universe through modified 360\u00b0 environments.</p>","collapsed":false,"replies":[{"id":34001,"user":"Roger Caillois","html":"<p>The destination is selected by chance. The player explores what is received rather than choosing the world in advance.</p>","up":6,"down":1,"targetUp":373,"targetDown":69,"reactions":{"\ud83e\udde0":3}},{"id":34002,"user":"Michel Leiris","html":"<p>A small wheel opens an enormous combinatorial geography. \ud83c\udf0d</p>","up":8,"down":0,"targetUp":474,"targetDown":86,"reactions":{"\ud83d\udc41\ufe0f":4}},{"id":34003,"user":"Georges Bataille","html":"<p>WORLD becomes an aleatory entrance rather than a map menu.</p>","up":10,"down":1,"targetUp":575,"targetDown":103,"reactions":{"\ud83d\udd25":5}}],"group":"","parent":"Alea"},{"id":35,"title":"Alea \u2014 Ritual Dice / Sign","description":"<p>A <b>20-sided icosahedron</b>, each face carrying a philosophical proposition. One roll reveals a phrase; ordered pairs create relationships; complete sequences generate procedural ritual manifestos.</p>","collapsed":false,"replies":[{"id":35001,"user":"Roger Caillois","html":"<p>The mathematical outcome determines which propositions meet and in what order. \ud83c\udfb2</p>","up":6,"down":1,"targetUp":456,"targetDown":82,"reactions":{"\ud83e\udde0":4}},{"id":35002,"user":"Jean Paulhan","html":"<p>Chance becomes a syntax engine: paradox, contradiction and resonance are generated by sequence.</p>","up":8,"down":0,"targetUp":557,"targetDown":99,"reactions":{"\ud83e\udd14":5}},{"id":35003,"user":"Georges Bataille","html":"<p>When a phrase repeats, language enters a feedback loop and begins consuming itself. Excellent. \ud83d\ude02</p>","up":10,"down":1,"targetUp":658,"targetDown":16,"reactions":{"\ud83d\udd25":6}}],"group":"","parent":"Alea"},{"id":36,"title":"Alea \u2014 Massonic Pain(t) / Imagination","description":"<p>A drawing/paint tool in which a deceptively simple black pencil opens an almost immeasurable space of possible compositions. Creation is treated as <b>selection from a vast field of possible forms</b>.</p>","collapsed":false,"replies":[{"id":36001,"user":"Michel Leiris","html":"<p>The gesture is tiny; the possible image-space is enormous. \u270f\ufe0f</p>","up":6,"down":1,"targetUp":539,"targetDown":95,"reactions":{"\ud83d\udc41\ufe0f":5}},{"id":36002,"user":"Roger Caillois","html":"<p>The Alea dimension lies in the encounter between constrained tool and proliferating possibility.</p>","up":8,"down":0,"targetUp":640,"targetDown":12,"reactions":{"\ud83e\udde0":6}},{"id":36003,"user":"Georges Bataille","html":"<p>IMAGINATION: spend a line and discover what it has excluded.</p>","up":10,"down":1,"targetUp":741,"targetDown":29,"reactions":{"\ud83d\udd25":7}}],"group":"","parent":"Alea"},{"id":37,"title":"Alea \u2014 The Social Machine / Society","description":"<p>A falling skull encounters thinkers, myths, institutions and social forces while accumulating invisible variables such as sacred, bureaucracy, collectivity, violence, play and order.</p>","collapsed":false,"replies":[{"id":37001,"user":"Roger Caillois","html":"<p>The final configuration is not a prediction. It is one possible historical state produced through accidental encounters.</p>","up":6,"down":1,"targetUp":622,"targetDown":108,"reactions":{"\ud83e\udde0":6}},{"id":37002,"user":"Jules Monnerot","html":"<p>The question is sociological: how much of society is designed, and how much emerges from unpredictable events?</p>","up":8,"down":0,"targetUp":723,"targetDown":25,"reactions":{"\u26a1":7}},{"id":37003,"user":"Georges Bataille","html":"<p>WORLD. SIGN. IMAGINATION. SOCIETY. Four doors; Alea chooses the door. \ud83d\udc80</p>","up":10,"down":1,"targetUp":824,"targetDown":42,"reactions":{"\ud83d\udd25":8}}],"group":"","parent":"Alea"},{"id":803,"title":"Light","description":"<p><b>Light</b><br>Positive / creative / active / chosen atmosphere. Light describes how play or transformation is experienced; it is an atmosphere, not a ludic regime.</p>","collapsed":false,"replies":[{"id":80031,"user":"Michel Leiris","html":"<p>Light is not a game type. It is an atmosphere: transformation is relatively chosen, active, creative and reversible.</p>","up":8,"down":0,"targetUp":530,"targetDown":24,"reactions":{"\ud83d\udc41\ufe0f":5}},{"id":80032,"user":"Laure","html":"<p>So: Light \u2260 Ludus. Pin that before anybody makes the diagram stupid. \ud83d\udccc</p>","up":9,"down":0,"targetUp":547,"targetDown":25,"reactions":{"\u2764\ufe0f":6}}],"parent":"Light","group":"","isParent":true},{"id":41,"title":"Hotler Mail","description":"<p><b>Bataille\u2019s Correspondence \u2014 Hot as a Mail hiding secret Acéphale Maps</b><br>\nA fictional early-webmail environment reconstructing Bataille\u2019s correspondence. The inbox turns archival transmission into everyday communication and potentially becomes the luminous infrastructure connecting the whole circuit. Can you find the hidden secret? Maybe you should delete some emails to gain some space for great discoveries...</p>","collapsed":false,"replies":[{"id":41001,"user":"Michel Leiris","html":"<p>The extraordinary is compressed into the banal ritual of opening, reading, composing and tracking messages.</p>","up":6,"down":1,"targetUp":254,"targetDown":60,"reactions":{"\ud83d\udc41\ufe0f":3}},{"id":41002,"user":"Roger Caillois","html":"<p>Light is an atmosphere here, not a Ludus/Paida regime.</p>","up":8,"down":0,"targetUp":355,"targetDown":77,"reactions":{"\ud83e\udde0":4}},{"id":41003,"user":"Georges Bataille","html":"<p>The sacred conspiracy trapped inside inbox management. \ud83d\udce7\ud83d\udd25</p>","up":10,"down":1,"targetUp":456,"targetDown":94,"reactions":{"\ud83d\udd25":5}},{"id":41004,"user":"Laure","html":"<p>You have mail. Unfortunately it is ontology. \ud83d\ude02</p>","up":5,"down":0,"targetUp":557,"targetDown":11,"reactions":{"\u2764\ufe0f":6}}],"group":"","parent":"Light"},{"id":804,"title":"Dark","description":"<p><b>Dark</b><br>Negative / destructive / passive / accidental atmosphere. Dark describes captured, coercive, opaque or involuntary transformations; it is an atmosphere, not a ludic regime.</p>","collapsed":false,"replies":[{"id":80041,"user":"Michel Leiris","html":"<p>Dark names an atmosphere in which transformation is more captured, accidental, coercive, destructive or opaque.</p>","up":8,"down":0,"targetUp":561,"targetDown":25,"reactions":{"\ud83d\udc41\ufe0f":5}},{"id":80042,"user":"Georges Bataille","html":"<p>Dark does not mean evil. It means the process is no longer comfortably under your command. \ud83d\udc80</p>","up":9,"down":0,"targetUp":578,"targetDown":26,"reactions":{"\ud83d\udc80":6}}],"parent":"Dark","group":"","isParent":true},{"id":42,"title":"4chains","description":"<p><b>Forum for Fools.</b><br>\nAnonymous discussion, hidden infrastructure, inaccessible archives, forbidden navigation and memetic contagion. The visible imageboard opens onto further shadow systems.</p>","collapsed":false,"replies":[{"id":42001,"user":"Roger Caillois","html":"<p>Dark is the atmosphere of captured, anonymous and infrastructurally opaque circulation.</p>","up":6,"down":1,"targetUp":337,"targetDown":73,"reactions":{"\ud83e\udde0":4}},{"id":42002,"user":"Georges Bataille","html":"<p>The sacred becomes tokenized, speculative, liquid, tradable and memetic. \ud83d\udc80</p>","up":8,"down":0,"targetUp":438,"targetDown":90,"reactions":{"\ud83d\udc80":5}},{"id":42003,"user":"Michel Leiris","html":"<p>The platform determines pacing, syntax, group structure and affect before anyone begins to speak.</p>","up":10,"down":1,"targetUp":539,"targetDown":107,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":42004,"user":"Laure","html":"<p>And then somebody finds the hidden door. Obviously. \ud83d\ude08</p>","up":5,"down":0,"targetUp":640,"targetDown":24,"reactions":{"\ud83d\udd25":7}}],"group":"","parent":"Dark"},{"id":43,"title":"teutonicorder.onion \u2014 Hidden Threshold","description":"<p>Inside the Dark branch, the project includes a <b>hidden .onion threshold</b>: not the main artwork itself, but a ritual gate leading toward the Teutonic Order / antisite layer.</p>","collapsed":false,"replies":[{"id":43001,"user":"Georges Bataille","html":"<p>You are not entering a website. You are entering a structure of memory. \ud83d\udc41\ufe0f</p>","up":6,"down":1,"targetUp":420,"targetDown":86,"reactions":{"\ud83d\udc41\ufe0f":5}},{"id":43002,"user":"Roger Caillois","html":"<p>As game logic, the important element is the threshold: secrecy, restricted passage, puzzle and initiation.</p>","up":8,"down":0,"targetUp":521,"targetDown":103,"reactions":{"\ud83e\udde0":6}},{"id":43003,"user":"Laure","html":"<p>A door is more interesting when it refuses to behave like navigation. \ud83d\udeaa</p>","up":10,"down":1,"targetUp":622,"targetDown":20,"reactions":{"\u2764\ufe0f":7}}],"group":"","parent":"Dark"},{"id":44,"title":"Ac\u00e9phale Meme Coin \u2014 AC\u00c9","description":"<p>A fictional/memetic economic layer inside the 4chains shadow infrastructure: <b>AC\u00c9 \u2014 The Headless Revolution</b>. The sacred is translated into token, speculation, circulation and sacrificial capital.</p>","collapsed":false,"replies":[{"id":44001,"user":"Jules Monnerot","html":"<p>The interesting sociological mutation is collective symbolism becoming an economic sign and coordination mechanism.</p>","up":6,"down":1,"targetUp":503,"targetDown":99,"reactions":{"\u26a1":6}},{"id":44002,"user":"Georges Bataille","html":"<p>Expenditure discovers a ticker symbol. Of course it does. \ud83d\ude02</p>","up":8,"down":0,"targetUp":604,"targetDown":16,"reactions":{"\ud83d\udd25":7}},{"id":44003,"user":"Roger Caillois","html":"<p>Do not confuse the economic simulation with Alea merely because markets contain chance. Its position here belongs to the wider platform circuit.</p>","up":10,"down":1,"targetUp":705,"targetDown":33,"reactions":{"\ud83e\udde0":8}}],"group":"","parent":"Dark"},{"id":45,"title":"TRUTHahn Social \u2014 The Lie Interface","description":"<p>A hidden social platform hatched through 4chains. Its interface inverts the expected vocabulary: <b>Lie, Comment Lie, Quote Lie</b>. The game turns \u201ctruth\u201d interaction into a parody of laceration, expenditure and ideological self-enclosure.</p>","collapsed":false,"replies":[{"id":45001,"user":"Georges Bataille","html":"<p>Users spend time, cognition and creative energy producing self-declared lies with zero promised use-value. \ud83e\udd83\ud83d\udd25</p>","up":6,"down":1,"targetUp":586,"targetDown":12,"reactions":{"\ud83d\udd25":7}},{"id":45002,"user":"Jules Monnerot","html":"<p>The Easter-egg structure is the joke: the supposedly secret elite depends on the mass interaction of the platform it imagines it has escaped.</p>","up":8,"down":0,"targetUp":687,"targetDown":29,"reactions":{"\u26a1":8}},{"id":45003,"user":"Michel Leiris","html":"<p>The player migrates from one cage to another while interpreting the migration as initiation.</p>","up":10,"down":1,"targetUp":788,"targetDown":46,"reactions":{"\ud83d\udc41\ufe0f":9}},{"id":45004,"user":"Laure","html":"<p>Comment Lie. Quote Lie. Like, but make it epistemology. \ud83d\ude02</p>","up":5,"down":0,"targetUp":889,"targetDown":63,"reactions":{"\u2764\ufe0f":3}}],"group":"","parent":"Dark"},{"id":805,"title":"Mimicry","description":"<p><b>Mimicry</b><br>Simulation. Mimicry is play through role, mask, imitation and make-believe: the player temporarily accepts another identity, appearance or world.</p>","collapsed":false,"replies":[{"id":80051,"user":"Roger Caillois","html":"<p>Mimicry begins when the player accepts an illusion, a role, a mask or another world and behaves accordingly.</p>","up":8,"down":0,"targetUp":592,"targetDown":26,"reactions":{"\ud83c\udfad":5}},{"id":80052,"user":"Pierre Klossowski","html":"<p>The interesting question is always whether the mask remains a mask. \ud83c\udf00</p>","up":9,"down":0,"targetUp":609,"targetDown":27,"reactions":{"\ud83c\udf00":6}}],"parent":"Mimicry","group":"","isParent":true},{"id":38,"title":"Toy Tonic","description":"<p><b>TikTok reimagined through Michel Leiris\u2019s \u201cThe Sacred in Everyday Life.\u201d</b><br>\nCompulsive ritual repetition, algorithmic fascination, ecstatic banality, micro-possession and sacred triviality become short-form reels.</p>","collapsed":false,"replies":[{"id":38001,"user":"Michel Leiris","html":"<p>The point is to find ruptures and sacred residues inside ordinary life. Reels become tiny eruptions of fascination. \ud83d\udc41\ufe0f</p>","up":6,"down":1,"targetUp":705,"targetDown":21,"reactions":{"\ud83d\udc41\ufe0f":7}},{"id":38002,"user":"Roger Caillois","html":"<p>Mimicry makes the ordinary fragment perform another status: not merely content, but a staged micro-ritual.</p>","up":8,"down":0,"targetUp":806,"targetDown":38,"reactions":{"\ud83e\udde0":8}},{"id":38003,"user":"Pierre Klossowski","html":"<p>The feed is a theatre where the self repeatedly becomes its own imitation. \ud83c\udfad</p>","up":10,"down":1,"targetUp":907,"targetDown":55,"reactions":{"\ud83c\udf00":9}},{"id":38004,"user":"Georges Bataille","html":"<p>Not content. Modern fragments of the sacred. \ud83d\udd25</p>","up":5,"down":0,"targetUp":308,"targetDown":72,"reactions":{"\ud83d\udd25":3}}],"group":"","parent":"Mimicry"},{"id":806,"title":"Ilinx","description":"<p><b>Ilinx</b><br>Vertigo. Ilinx seeks destabilization \u2014 dizziness, disorientation, altered perception, ecstasy or a temporary loss of ordinary control.</p>","collapsed":false,"replies":[{"id":80061,"user":"Roger Caillois","html":"<p>Ilinx seeks the temporary destruction of stable perception: dizziness, speed, panic, ecstasy, disorientation.</p>","up":8,"down":0,"targetUp":623,"targetDown":27,"reactions":{"\ud83c\udf00":5}},{"id":80062,"user":"Michel Leiris","html":"<p>The body understands this category before theory does.</p>","up":9,"down":0,"targetUp":640,"targetDown":28,"reactions":{"\ud83d\udc41\ufe0f":6}},{"id":95520,"user":"Andr\u00e9 Masson","html":"<p>Vertigo is visual too. Remove the head, displace the organs into symbols, let the body become a diagram that refuses stable orientation. \u270d\ufe0f</p>","up":9,"down":0,"targetUp":730,"targetDown":20,"reactions":{"\ud83c\udf00":6}}],"parent":"Ilinx","group":"","isParent":true},{"id":39,"title":"OnlyFanatics","description":"<p><b>Ecstatic devotion / vortex.</b><br>\nInspired by Denis de Rougemont. Multimedia fandom combines with <b>Only Fragments for Your Fans</b>, where Ac\u00e9phale journals and Teutonic texts become interactive flipbooks.</p>","collapsed":false,"replies":[{"id":39001,"user":"Denis de Rougemont","html":"<p>Passion, discipline, eros, ritualized sublimation and martial aesthetics become a subscription architecture of devotion.</p>","up":6,"down":1,"targetUp":788,"targetDown":34,"reactions":{"\u2764\ufe0f":8}},{"id":39002,"user":"Roger Caillois","html":"<p>Ilinx here is ecstatic immersion: fascination dissolves the distance between reader, viewer and initiate. \ud83c\udf00</p>","up":8,"down":0,"targetUp":889,"targetDown":51,"reactions":{"\ud83c\udf00":9}},{"id":39003,"user":"Pierre Klossowski","html":"<p>Spectatorship becomes performative commitment. The observer is gradually implicated in the spectacle.</p>","up":10,"down":1,"targetUp":290,"targetDown":68,"reactions":{"\ud83d\udc41\ufe0f":3}},{"id":39004,"user":"Georges Bataille","html":"<p>Only Fragments. Completion permanently one scroll away. \ud83d\ude02</p>","up":5,"down":0,"targetUp":391,"targetDown":85,"reactions":{"\ud83d\udd25":4}}],"group":"","parent":"Ilinx"},{"id":955,"title":"OnlyFragments \u2014 Secrets, Desire & Unlocking","description":"<p><b>OnlyFragments is the content engine inside the Ilinx world of OnlyFanatics.</b><br>It never gives the whole thing: a photograph, letter, flip-book, video, hidden page, body, theory, archive or secret appears only as a <b>fragment</b>. That incompleteness produces the next desire: <i>fragment \u2192 desire \u2192 unlock \u2192 fragment \u2192 desire \u2192 unlock</i>. The paywall becomes a threshold, unlocking becomes a tiny initiation, and the archive is consumed page by page like a ritual.</p>","collapsed":false,"replies":[{"id":95501,"user":"Denis de Rougemont","html":"<p>The fan does not begin as a fanatic. The mechanism intensifies devotion by promising that there is always <i>more</i>: another secret, another fragment, another threshold.</p>","up":9,"down":0,"targetUp":720,"targetDown":19,"reactions":{"\u2764\ufe0f":6}},{"id":95502,"user":"Pierre Klossowski","html":"<p>A fragment is powerful because it withholds completion. Desire survives precisely because the whole object never arrives. \ud83c\udfad</p>","up":8,"down":0,"targetUp":670,"targetDown":17,"reactions":{"\ud83c\udf00":6}},{"id":95503,"user":"Andr\u00e9 Masson","html":"<p>And the Ac\u00e9phale body is already the perfect fragment: naked, tattooed, headless, overloaded with signs. The missing head does not reduce the image \u2014 it makes the image impossible to finish. \u270d\ufe0f</p>","up":10,"down":0,"targetUp":820,"targetDown":21,"reactions":{"\ud83d\udd25":7}},{"id":95504,"user":"Georges Bataille","html":"<p>The secret acquires force because it is separated from ordinary circulation. The absurdity is beautiful: sacred distance becomes an unlock button. \ud83d\udd25</p>","up":10,"down":0,"targetUp":800,"targetDown":22,"reactions":{"\ud83d\udc80":6}},{"id":95505,"user":"Roger Caillois","html":"<p>Do not confuse Ilinx with Alea here. Alea governs which fragment appears next; Ilinx begins when the sequence destabilizes the spectator\u2019s relation to reality and control.</p>","up":9,"down":0,"targetUp":760,"targetDown":20,"reactions":{"\ud83e\udde0":7}},{"id":95506,"user":"Michel Leiris","html":"<p>The flip-book matters because the archive is no longer simply looked at. You advance through it, page by page, fragment by fragment. Reading itself becomes an action.</p>","up":8,"down":0,"targetUp":650,"targetDown":18,"reactions":{"\ud83d\udc41\ufe0f":6}}],"parent":"Ilinx","group":"","isParent":false},{"id":807,"title":"Paidia","description":"<p><b>Paidia</b><br>Improvisatory play. Paidia is spontaneous, turbulent, exploratory play before or beyond strict formalization \u2014 the freer pole opposed to Ludus.</p>","collapsed":false,"replies":[{"id":80071,"user":"Roger Caillois","html":"<p>Paidia is the exuberant, improvisatory impulse of play before rules harden it into a formal challenge.</p>","up":8,"down":0,"targetUp":654,"targetDown":28,"reactions":{"\ud83e\udde0":5}},{"id":80072,"user":"Georges Bataille","html":"<p>The game before it learns to behave. \ud83d\udd25</p>","up":9,"down":0,"targetUp":671,"targetDown":29,"reactions":{"\ud83d\udd25":6}}],"parent":"Paidia","group":"","isParent":true},{"id":30,"title":"Holygram","description":"<p><b>Ac\u00e9phale Telegram Channel \u2014 Sacred Ritual of the Hypertelia Cult.</b><br>\nHolygram turns the ordinary \u201cReport User / Report Abuse\u201d gesture into <b>Mark for Sacrifice</b>. You flag bubbles according to attraction, repulsion, fascination, hostility, authorship, excess or pure intuition.</p>","collapsed":false,"replies":[{"id":30001,"user":"Roger Caillois","html":"<p>The computational procedure is fixed, but the meaning of your choice is deliberately undetermined. That is why it operates at the Paidia pole.</p>","up":6,"down":1,"targetUp":741,"targetDown":17,"reactions":{"\ud83e\udde0":6}},{"id":30002,"user":"Georges Bataille","html":"<p>BUBBLE \u2192 FLAG \u2192 SACRIFICIAL CHARGE \u2192 VICTIM. \ud83d\udc80</p>","up":8,"down":0,"targetUp":842,"targetDown":34,"reactions":{"\ud83d\udc80":7}},{"id":30003,"user":"Michel Leiris","html":"<p>Totals remain hidden so the ritual does not collapse into an Agon-style popularity contest.</p>","up":10,"down":1,"targetUp":943,"targetDown":51,"reactions":{"\ud83d\udc41\ufe0f":8}},{"id":30004,"user":"Laure","html":"<p>At the end: <b>YOUR VICTIM vs COLLECTIVE VICTIM</b>. ShutApp produces knowledge; Holygram produces complicity. \ud83d\ude08</p>","up":5,"down":0,"targetUp":344,"targetDown":68,"reactions":{"\ud83d\udd25":9}}],"group":"","parent":"Paidia"}];
+
+const USERS=["Georges Bataille","Roger Caillois","Michel Leiris","Laure","Jean Paulhan","Jules Monnerot","Pierre Klossowski","Denis de Rougemont","Alexandre Koj\u00e8ve","Georges Duthuit","Hans Mayer","Anatole Lewitzky","Andr\u00e9 Masson","Georges Ambrosino","Jean Wahl","Patrick Waldberg","Walter Benjamin","Jacques Chavy","Henri Dubief","Michel Koch","Isabelle Waldberg","Ren\u00e9 M. Guastalla","Marcel Mauss","Pierre Mabille","Taro Okamoto","Imre Kelemen","Henri Dussat","Pierre Dugan (Pierre Pascal)","Jean Rollin","Andr\u00e9 Breton","Robert Lebel"];
+const EMOJIS=["🔥","🧠","🌀","👁️","⚡","❤️","🤔","💀","👎"];
+
+function save(){localStorage.setItem(STORAGE,JSON.stringify(THREADS));}
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+function r(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+
+
+let starterIndexOpen=false;
+let disorderSearchQuery="";
+
+function renderStarterQuestions(){
+  questions.classList.toggle("index-open",starterIndexOpen);
+
+  let lastParent="";
+  const links=QUESTIONS.map((q,i)=>{
+    const t=THREADS.find(x=>x.title===q) || THREADS[i];
+    const id=t ? t.id : "";
+    const parent=t ? (t.parent||"") : "";
+    const isParent=!!(t && t.isParent);
+
+    if(isParent){
+      lastParent=parent;
+      return `<li class="board-parent-label"><a href="#thread-${id}" onclick="event.preventDefault();scrollToThread(${id})">${q}</a></li>`;
+    }
+
+    let cls="";
+    if(parent==="Disorder") cls="board-child";
+    else if(parent){
+      cls="board-child";
+      if(parent==="Ludus" && q!=="ShutApp") cls="board-grandchild";
+      if(parent==="Agon" && q!=="FortKnight") cls="board-grandchild";
+      if(parent==="Alea" && q!=="Acéphale Slot Machine") cls="board-grandchild";
+      if(parent==="Dark" && q!=="4chains") cls="board-grandchild";
+    }
+
+    return `<li class="${cls}"><a href="#thread-${id}" onclick="event.preventDefault();scrollToThread(${id})">${q}</a></li>`;
+  }).join("");
+
+  questions.innerHTML=`
+    <div class="starter-head" onclick="toggleStarterIndex()">
+      <h2>Starter Questions</h2>
+      <span class="starter-chevron">${starterIndexOpen?'▼':'▶'}</span>
+    </div>
+    <div class="starter-search-wrap">
+      <input id="compendiumSearch" class="starter-search" type="search"
+             placeholder="Search compendium..."
+             value="${disorderSearchQuery.replace(/"/g,'&quot;')}"
+             oninput="searchCompendium(this.value)">
+      <div id="searchCount" class="search-count"></div>
+    </div>
+    <ol class="starter-index">${links}</ol>
+  `;
+  updateSearchCount();
+}
+
+function toggleStarterIndex(){
+  starterIndexOpen=!starterIndexOpen;
+  renderStarterQuestions();
+}
+
+function scrollToThread(id){
+  const el=document.getElementById(`thread-${id}`);
+  if(!el) return;
+  el.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function searchCompendium(value){
+  disorderSearchQuery=value||"";
+  applyCompendiumSearch();
+}
+
+function applyCompendiumSearch(){
+  const q=disorderSearchQuery.trim().toLowerCase();
+  let visible=0;
+
+  document.querySelectorAll("#feed .thread").forEach(el=>{
+    const hit=!q || el.textContent.toLowerCase().includes(q);
+    el.classList.toggle("search-hidden",!hit);
+    if(hit) visible++;
+  });
+
+  updateSearchCount(visible);
+}
+
+function updateSearchCount(visible){
+  const el=document.getElementById("searchCount");
+  if(!el) return;
+  const q=disorderSearchQuery.trim();
+  if(!q){ el.textContent=""; return; }
+  if(typeof visible!=="number"){
+    visible=document.querySelectorAll("#feed .thread:not(.search-hidden)").length;
+  }
+  el.textContent=`${visible} matching thread${visible===1?"":"s"}`;
+}
+
+renderStarterQuestions();
+
+
+function createThread(){
+ const title=threadTitle.value.trim();
+ const description=threadDescription.value.trim();
+ if(!title || !description) return;
+
+ THREADS.unshift({
+  id:Date.now(),
+  title,
+  description:`<p>${description}</p>`,
+  collapsed:false,
+  replies:[]
+ });
+
+ threadTitle.value="";
+ threadDescription.value="";
+
+ const newThread = THREADS[0];
+
+ const amount = r(3,6);
+
+ for(let i=0;i<amount;i++){
+
+   setTimeout(()=>{
+
+     newThread.replies.push(
+       makeReply(
+         rand(USERS),
+         rand([
+            "<p>Start with the four forces: Agon, Alea, Mimicry and Ilinx. Which one dominates here?</p>",
+            "<p>Before classifying it, check whether you are talking about a <b>Regime</b> or an <b>Atmosphere</b>.</p>",
+            "<p>Paidia/Ludus = regime. Light/Dark = atmosphere. Different axes. 📌</p>",
+            "<p>What changes from Bubble A to Bubble B? The game is in the passage, not in either label alone.</p>",
+            "<p>Direction matters: reverse the arrow and you describe another process.</p>",
+            "<p>Is the passage horizontal, vertical or diagonal — Tension, Transformation or Contamination?</p>",
+            "<p>Do not guess the hidden percentages. Use the visible Five Registers, Regime and Atmosphere as reading instruments.</p>",
+            "<p>The Five Registers are Emo / Common / Hot / ’30 / Cyber. Five perspectives, one semantic nucleus.</p>",
+            "<p>The ? is the fandom space: the people around the game arguing about what all this means. 😂</p>",
+            "<p>Remember: the hidden Agon/Alea/Mimicry/Ilinx profile is revealed only after the choice.</p>",
+            "<p>👁️ Read the relation before you read the score.</p>",
+            "<p>🔥 If a form is becoming something else, follow the arrow.</p>",
+            "<p>🎲 Alea suspends mastery.</p>",
+            "<p>🎭 Mimicry organizes simulation and performed identity.</p>",
+            "<p>🌀 Ilinx destabilizes perception or control.</p>",
+            "<p>♟️ Agon organizes regulated rivalry.</p>"
+          ])
+       )
+     );
+
+     save();
+     render();
+
+   }, ((i+1)*5000) + Math.floor(Math.random()*3000));
+
+ }
+}
+
+function makeReply(user,html){
+ return {
+  id:Date.now()+Math.random(),
+  user,html,
+  up:r(0,10),
+  down:r(0,3),
+  targetUp:r(150,1000),
+  targetDown:r(10,250),
+  reactions:{[rand(EMOJIS)]:r(1,10)}
+ };
+}
+
+function render(){
+
+feed.innerHTML="";
+
+THREADS.forEach(thread=>{
+
+ let replies="";
+
+ if(!thread.collapsed){
+
+  thread.replies.forEach(rep=>{
+
+   let reacts="";
+
+   Object.entries(rep.reactions).forEach(([k,v])=>{
+      reacts+=`<span class="reaction">${k} ${v}</span>`;
+   });
+
+   replies+=`
+   <div class="reply">
+   <b>${rep.user}</b>
+   ${rep.up>=100?'<span class="badge">🔥 Trending</span>':''}
+   <div>${rep.html}</div>
+
+   <div class="actions">
+   <button class="btn" onclick="vote(${thread.id},${rep.id},1)">⬆ ${rep.up}</button>
+   <button class="btn" onclick="vote(${thread.id},${rep.id},-1)">⬇ ${rep.down}</button>
+   </div>
+
+   <div>${reacts}</div>
+   </div>`;
+
+  });
+
+ }
+
+ feed.innerHTML+=`
+ <div class="thread" id="thread-${thread.id}" data-parent="${thread.parent||''}" data-title="${thread.title}">
+
+ <div class="thread-header"
+      onclick="toggleThread(${thread.id})">
+
+ <div><h3>${thread.title}</h3><div style="opacity:.85;margin-top:8px">${thread.description||"<p>No description.</p>"}</div></div>
+
+ <span>${thread.collapsed?'▶':'▼'}</span>
+
+ </div>
+
+ ${!thread.collapsed?`
+ <div class="actions">
+ <button class="btn primary"
+         onclick="event.stopPropagation();openModal(${thread.id})">
+ Reply
+ </button>
+ </div>
+
+ ${replies}
+ `:''}
+
+ </div>`;
+
+});
+
+ applyCompendiumSearch();
+}
+
+function toggleThread(id){
+ const t=THREADS.find(x=>x.id===id);
+ t.collapsed=!t.collapsed;
+ save();
+ render();
+}
+
+function vote(tid,rid,val){
+ const rep=THREADS.find(t=>t.id===tid).replies.find(r=>r.id===rid);
+ if(val>0) rep.up++;
+ else rep.down++;
+ save();
+ render();
+}
+
+function openModal(id){
+  currentThreadId = id;
+
+  modal.style.display = "flex";
+
+  editor.innerHTML = "<p></p>";
+
+  updatePreview();
+
+  editor.focus();
+
+  const range = document.createRange();
+  const sel = window.getSelection();
+
+  range.selectNodeContents(editor);
+  range.collapse(true);
+
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+function closeModal(){modal.style.display="none";}
+
+function quote(){
+ document.execCommand("formatBlock",false,"blockquote");
+ updatePreview();
+}
+
+function emoji(e){
+ document.execCommand("insertText",false,e);
+ updatePreview();
+}
+
+function updatePreview(){
+ preview.innerHTML=editor.innerHTML;
+}
+
+editor.addEventListener("input",updatePreview);
+
+function submitReply(){
+
+ const t=THREADS.find(x=>x.id===currentThreadId);
+
+ t.replies.push(
+   makeReply("You",editor.innerHTML)
+ );
+
+ save();
+ render();
+ closeModal();
+
+ for(let i=0;i<r(2,5);i++){
+
+  setTimeout(()=>{
+
+   t.replies.push(
+     makeReply(
+      rand(USERS),
+      rand([
+       "<p>Which node dominates A, and which dominates B?</p>",
+       "<p>I would check the direction before naming the relation.</p>",
+       "<p>That sounds like a Tension rather than a Transformation.</p>",
+       "<p>Or a diagonal Contamination — two distant forces are becoming simultaneously operative.</p>",
+       "<p>Remember that A → B → A is already a history.</p>",
+       "<p>Do not collapse Five Registers, twelve transitions and four social-heat qualities into one layer.</p>",
+       "<p>Regime ≠ atmosphere. 😑</p>",
+       "<p>The visible caption helps you read; the hidden percentages explain the system’s analysis afterward.</p>",
+       "<p>😂 The question mark is the fandom space — welcome to the people arguing around the game.</p>",
+       "<p>Try reading it once in Common and once in Hot. Same nucleus, different epistemological angle.</p>",
+       "<p>After choosing, compare your reading with the revealed dominant nodes.</p>",
+       "<p>👁️ The goal is interpretation, not memorizing a lookup table.</p>",
+       "<p>🔥 The circuit is reversible, not symmetrical.</p>",
+       "<p>🌀 A rare unstable contamination may carry more transformative power than a stable pure node.</p>"
+     ])
+     )
+   );
+
+   save();
+   render();
+
+  },r(2000,12000));
+
+ }
+
+}
+
+setInterval(()=>{
+
+ THREADS.forEach(t=>{
+
+  t.replies.forEach(rep=>{
+
+   if(rep.up<rep.targetUp) rep.up+=r(0,8);
+
+   if(rep.down<rep.targetDown && Math.random()<0.4)
+      rep.down+=r(0,3);
+
+   if(Math.random()<0.5){
+
+    const e=rand(EMOJIS);
+
+    rep.reactions[e]=
+      (rep.reactions[e]||0)+r(1,4);
+
+   }
+
+  });
+
+ });
+
+ save();
+ render();
+
+},4000);
+
+
+function clearAll(){
+  document.getElementById("clearModal").style.display="flex";
+}
+
+function closeClearModal(){
+  document.getElementById("clearModal").style.display="none";
+}
+
+function confirmClearAll(){
+  localStorage.removeItem(STORAGE);
+  location.reload();
+}
+
+render();
+
+
+document.addEventListener("keydown",(e)=>{
+  const isMac = navigator.platform.toUpperCase().includes("MAC");
+  const combo = isMac ? e.metaKey : e.ctrlKey;
+
+  if(combo && e.key.toLowerCase()==="e"){
+    e.preventDefault();
+    confirmClearAll();
+  }
+});
+
+function insertThreadEmoji(e){
+  const box=document.getElementById("threadDescription");
+  box.value += " " + e;
+  box.focus();
+}
+
+function insertThreadEmoji(e){
+
+  const box = document.getElementById("threadDescription");
+
+  box.value += e + " ";
+
+  box.focus();
+
+}
+</script>
+
+<div id="clearModal" class="modal">
+
+  <div class="modal-content"
+       style="max-width:500px;height:auto;flex:none">
+
+    <div class="modal-header">
+      ⚠️ Warning
+    </div>
+
+    <div style="padding:24px">
+
+      <p>
+        Delete all threads, replies, votes and reactions?
+      </p>
+
+      <p style="opacity:.7;font-size:14px">
+        This action cannot be undone.
+      </p>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button class="btn"
+              onclick="closeClearModal()">
+        Cancel
+      </button>
+
+      <button class="btn primary"
+              onclick="confirmClearAll()">
+        Delete Everything
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<button id="scrollTopBtn" type="button" aria-label="Scroll to top" title="Scroll to top">↑</button>
+<script>
+(() => {
+  const b=document.getElementById("scrollTopBtn");
+  if(!b) return;
+  const sync=()=>b.classList.toggle("show",window.scrollY>320);
+  window.addEventListener("scroll",sync,{passive:true});
+  b.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+  sync();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="assets/loader1.js"></script>
+    <script src="assets/loader2.js"></script>
+
+<title>Acéphale - The Virtual Ritual of the Map</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+html, body { margin:0; width:100%; height:100%; overflow:hidden; }
+.map-container { position:fixed; inset:0; background:#000; }
+#view-host { position:fixed; inset:0; z-index:1; }
+#interaction-layer { position:fixed; inset:0; z-index:9000; background:transparent; cursor:pointer; }
+#caption { position:fixed; left:50%; top:20px; transform:translateX(-50%); transform-origin:center center; z-index:9999; pointer-events:none; padding:12px 20px; background:#fff; border-radius:999px; font-family:system-ui,sans-serif; font-size:14px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 4px 12px rgba(0,0,0,.15); opacity:1; transition:opacity .3s ease; white-space:nowrap; }
+#streetvow { position:fixed; left:20px; top:50%; transform:translateY(-50%) rotate(-90deg); transform-origin:left center; z-index:9999; pointer-events:none; padding:10px 16px; background:#fff; border-radius:999px; font-family:system-ui,sans-serif; font-size:14px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 4px 12px rgba(0,0,0,.15); white-space:nowrap; }
+#screenshotBtn {
+  position:fixed;
+  right:20px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:10001;
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 4px 12px rgba(0,0,0,.18),0 1px 3px rgba(0,0,0,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  cursor:pointer;
+  transition:transform .2s ease,opacity .2s ease;
+}
+#screenshotBtn:hover { transform:translateY(-50%) scale(1.08); }
+#screenshotBtn svg { width:21px; height:21px; }
+
+#streetview-nav { position:fixed; left:50%; top:68px; transform:translateX(-50%); z-index:9999; pointer-events:none; display:flex; gap:8px; }
+#prevBtn,#nextBtn { pointer-events:auto; width:44px; height:44px; border:none; border-radius:50%; background:rgba(255,255,255,.95); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 12px rgba(0,0,0,.18),0 1px 3px rgba(0,0,0,.12); font-size:22px; cursor:pointer; transition:transform .2s ease; }
+#prevBtn:hover,#nextBtn:hover { transform:scale(1.08); }
+
+      .no-js #loader { display: none;  }
+      .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+      .se-pre-con {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 999999;
+	background: url(./images/spinner.svg) center no-repeat #000;
+      }
+
+</style>
+
+<script>
+
+// Wait for window load
+	$(window).load(function() {
+		// Animate loader off screen
+		$(".se-pre-con").fadeOut("slow");;
+	});
+</script>
+
+</head><body>
+
+<!-- Loader -->
+
+<div class="se-pre-con"></div>
+
+<!-- Loader End -->
+
+<div class="map-container">
+<div id="view-host"></div>
+<div id="interaction-layer"></div>
+<div id="streetvow">Acéphale StreetVow</div>
+<div id="caption"></div>
+<div id="streetview-nav"><button id="prevBtn" aria-label="Previous View">←</button><button id="nextBtn" aria-label="Next View">→</button></div>
+<button id="screenshotBtn" aria-label="Take screenshot" title="Save snapshot as PNG">
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M7 7.5 8.5 5h7L17 7.5H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="12" cy="13" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+  </svg>
+</button>
+
+</div>
+<script>
+const views = [
+{
+  title: "Tower of Babel",
+  url: "https://www.google.com/maps/embed?pb=!4v1779826217602!6m8!1m7!1sZExW67Ij6vuuHYqs2wJF6Q!2m2!1d48.84196633254697!2d2.322603788432027!3f297.4625342346826!4f43.782955309429525!5f0.7820865974627469",
+  css: ``,
+  script: `(() => {
+
+  /* =========================
+     ORIGINAL ANT ANIMATION
+     ========================= */
+
+  const capture = document.createElement("div");
+
+  Object.assign(capture.style,{
+    position:"fixed",
+    inset:"0",
+    zIndex:"8998",
+    background:"transparent",
+    cursor:"pointer",
+    pointerEvents:"none"
+  });
+
+  document.body.appendChild(capture);
+
+  const canvas = document.createElement("canvas");
+
+  Object.assign(canvas.style,{
+    position:"fixed",
+    inset:"0",
+    width:"100%",
+    height:"100%",
+    pointerEvents:"none",
+    zIndex:"8999",
+    background:"transparent",
+    mixBlendMode:"normal",
+    opacity:"0",
+    transition:"opacity 2s ease"
+  });
+
+  document.body.appendChild(canvas);
+
+  const ctx=canvas.getContext("2d");
+  let raf=0;
+  let fadeTimer=0;
+
+  function resize(){
+    canvas.width=canvas.offsetWidth;
+    canvas.height=canvas.offsetHeight;
+  }
+
+  resize();
+
+  window.addEventListener("resize",resize);
+
+  const rand=(a,b)=>Math.random()*(b-a)+a;
+  const centerX=()=>canvas.width*.5;
+  const BAND=400;
+
+  class Ant{
+
+    constructor(){
+      this.reset();
+    }
+
+    reset(){
+      this.x=centerX()+rand(-BAND/2,BAND/2);
+      this.y=canvas.height+rand(0,200);
+      this.vx=rand(-.6,.6);
+      this.vy=rand(-1.5,-3);
+      this.t=Math.random()*Math.PI*2;
+      this.size=rand(1.8,3.2);
+    }
+
+    update(){
+      const cx=centerX();
+
+      this.t+=.2;
+      this.vy-=.02;
+      this.vx+=(cx-this.x)*.0009;
+      this.vx+=(Math.random()-.5)*.2;
+
+      this.x+=this.vx;
+      this.y+=this.vy;
+
+      this.vx*=.92;
+      this.vy*=.96;
+
+      const left=cx-BAND/2;
+      const right=cx+BAND/2;
+
+      if(this.x<left)this.vx+=.2;
+      if(this.x>right)this.vx-=.2;
+
+      if(this.y<-40)this.reset();
+    }
+
+    draw(){
+
+      const x=this.x;
+      const y=this.y;
+      const legSwing=Math.sin(this.t)*2.2;
+
+      ctx.strokeStyle="rgba(10,10,10,.9)";
+      ctx.lineWidth=1;
+
+      for(let i=-1;i<=1;i++){
+
+        const offsetY=i*2;
+
+        ctx.beginPath();
+        ctx.moveTo(x-2,y+offsetY);
+        ctx.lineTo(
+          x-6,
+          y+offsetY-2+legSwing
+        );
+        ctx.lineTo(
+          x-9,
+          y+offsetY-1
+        );
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x+2,y+offsetY);
+        ctx.lineTo(
+          x+6,
+          y+offsetY-2-legSwing
+        );
+        ctx.lineTo(
+          x+9,
+          y+offsetY-1
+        );
+        ctx.stroke();
+      }
+
+      ctx.fillStyle="rgba(20,20,20,.95)";
+
+      ctx.beginPath();
+      ctx.arc(
+        x,
+        y+3,
+        this.size,
+        0,
+        Math.PI*2
+      );
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(
+        x,
+        y,
+        this.size*.8,
+        0,
+        Math.PI*2
+      );
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(
+        x+1,
+        y-3,
+        this.size*.6,
+        0,
+        Math.PI*2
+      );
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(x+1,y-4);
+      ctx.lineTo(x-3,y-7);
+      ctx.moveTo(x+1,y-4);
+      ctx.lineTo(x+5,y-7);
+      ctx.stroke();
+    }
+  }
+
+  const ants=
+    Array.from(
+      {length:450},
+      ()=>new Ant()
+    );
+
+  function animate(){
+
+    raf=requestAnimationFrame(animate);
+
+    ctx.clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    ants.forEach(a=>{
+      a.update();
+      a.draw();
+    });
+  }
+
+  animate();
+
+  const fadeOutAnts=()=>{
+    canvas.style.opacity="0";
+  };
+
+  window.addEventListener(
+    "acephale-hide-ants",
+    fadeOutAnts
+  );
+
+  fadeTimer=setTimeout(()=>{
+    canvas.style.opacity="1";
+  },1000);
+
+
+  /* =========================
+     ANT + PESTICIDE
+     VOLCANO EMOJI LAYER
+     ========================= */
+
+  const volcanoStage=document.createElement("div");
+
+  volcanoStage.style.cssText=
+    "position:fixed;inset:0;overflow:hidden;" +
+    "pointer-events:none;z-index:2147483000;";
+
+  (document.body||document.documentElement)
+    .appendChild(volcanoStage);
+
+  const vRand=(a,b)=>a+Math.random()*(b-a);
+  const vPick=a=>a[Math.floor(Math.random()*a.length)];
+
+  const volcanoState={
+    amount:46,
+    size:82,
+    spread:670,
+    duration:9000,
+    opacity:.5,
+    rotation:720,
+
+    emojis:[
+      "🐜","🐜","🐜","🐜","🐜",
+      "🪳","🪲","🪰","🦟",
+      "🧴","🧪","☠️","⚠️",
+      "💀","🪳","💦","🫧",
+      "🧹","🧽","🕷️",
+      "🐜","🐜","🐜",
+      "🧴","🧪","⚠️"
+    ]
+  };
+
+  function volcanoNode(x,y){
+
+    const q=document.createElement("div");
+
+    q.style.cssText=
+      "position:absolute;" +
+      "pointer-events:none;" +
+      "user-select:none;" +
+      "will-change:transform,opacity;";
+
+    q.style.left=x+"px";
+    q.style.top=y+"px";
+
+    q.style.fontSize=
+      vRand(
+        volcanoState.size*.55,
+        volcanoState.size*1.35
+      )+"px";
+
+    volcanoStage.appendChild(q);
+
+    return q;
+  }
+
+  function volcanoAnimate(
+    q,
+    frames,
+    duration
+  ){
+
+    q.animate(
+      frames,
+      {
+        duration:duration,
+        easing:"cubic-bezier(.15,.75,.25,1)",
+        fill:"forwards"
+      }
+    );
+
+    setTimeout(()=>{
+      if(q&&q.parentNode){
+        q.remove();
+      }
+    },duration+100);
+  }
+
+  function volcanoFX(x,y){
+
+    for(
+      let i=0;
+      i<volcanoState.amount;
+      i++
+    ){
+
+      const q=volcanoNode(x,y);
+
+      q.textContent=
+        vPick(volcanoState.emojis);
+
+      const dx=vRand(
+        -volcanoState.spread*.55,
+        volcanoState.spread*.55
+      );
+
+      const dy=-vRand(
+        volcanoState.spread*.8,
+        volcanoState.spread*1.8
+      );
+
+      volcanoAnimate(
+        q,
+        [
+          {
+            transform:
+              "translate(-50%,-50%) scale(.2)",
+            opacity:1
+          },
+          {
+            transform:
+              "translate(calc(-50% + "+
+              dx+
+              "px),calc(-50% + "+
+              dy+
+              "px)) rotate("+
+              vRand(
+                -volcanoState.rotation,
+                volcanoState.rotation
+              )+
+              "deg)",
+            opacity:volcanoState.opacity
+          }
+        ],
+        volcanoState.duration+
+        vRand(
+          0,
+          volcanoState.duration*.5
+        )
+      );
+    }
+  }
+
+
+  /* =========================
+     CLICK:
+     ANTS DISAPPEAR
+     EMOJI VOLCANO REMAINS
+     ========================= */
+
+  let lastClick=0;
+
+  const clickVolcano=e=>{
+
+    const now=performance.now();
+
+    if(now-lastClick<180){
+      return;
+    }
+
+    lastClick=now;
+
+    /* Launch ant/pesticide emojis */
+    volcanoFX(
+      e.clientX,
+      e.clientY
+    );
+
+    /* Hide ONLY the original ants */
+    canvas.style.opacity="0";
+
+    setTimeout(()=>{
+      if(canvas&&canvas.parentNode){
+        canvas.remove();
+      }
+    },2000);
+  };
+
+  document.addEventListener(
+    "click",
+    clickVolcano,
+    true
+  );
+
+
+  /* =========================
+     CLEANUP
+     ========================= */
+
+  return ()=>{
+
+    clearTimeout(fadeTimer);
+
+    cancelAnimationFrame(raf);
+
+    window.removeEventListener(
+      "resize",
+      resize
+    );
+
+    window.removeEventListener(
+      "acephale-hide-ants",
+      fadeOutAnts
+    );
+
+    document.removeEventListener(
+      "click",
+      clickVolcano,
+      true
+    );
+
+    capture.remove();
+    canvas.remove();
+    volcanoStage.remove();
+  };
+
+})()`
+}
+];
+const host=document.getElementById('view-host');
+const caption=document.getElementById('caption');
+const prevButton=document.getElementById('prevBtn');
+const nextButton=document.getElementById('nextBtn');
+const interactionLayer=document.getElementById('interaction-layer');
+const nav=document.getElementById('streetview-nav');
+const loader=document.querySelector('.se-pre-con');
+let current=0;
+let activeCleanup=null;
+let shadow=null;
+let iframe=null;
+
+function destroyView(){
+  if(typeof activeCleanup==='function'){
+    try{activeCleanup()}catch(e){console.error('View cleanup error:',e)}
+  }
+  activeCleanup=null;
+  if(shadow){shadow.innerHTML='';}
+  iframe=null;
+}
+
+function makeDocumentProxy(root){
+  const real=document;
+  return {
+    body:root,
+    documentElement:real.documentElement,
+    createElement:real.createElement.bind(real),
+    createTextNode:real.createTextNode.bind(real),
+    getElementById:(id)=>root.querySelector('#'+CSS.escape(id)),
+    querySelector:(sel)=>root.querySelector(sel),
+    querySelectorAll:(sel)=>root.querySelectorAll(sel),
+    addEventListener:real.addEventListener.bind(real),
+    removeEventListener:real.removeEventListener.bind(real),
+    readyState:real.readyState
+  };
+}
+
+function runViewScript(code, view){
+  if(!code)return;
+  try{
+    const scopedDocument=makeDocumentProxy(shadow);
+    const fn=new Function('iframe','caption','interactionLayer','view','root','document',code+'\nreturn (typeof cleanup===\'function\')?cleanup:null;');
+    activeCleanup=fn(iframe,caption,interactionLayer,view,shadow,scopedDocument)||null;
+  }catch(e){console.error('View script error:',e)}
+}
+
+function showView(index){
+  current=(index+views.length)%views.length;
+  destroyView();
+  const view=views[current];
+
+  if(!shadow) shadow=host.attachShadow({mode:'open'});
+  shadow.innerHTML='';
+  const base=document.createElement('style');
+  base.textContent=`:host{position:fixed;inset:0;display:block;z-index:1} iframe#streetview{position:fixed;inset:0;width:100%;height:100%;border:none;transform-origin:center center;filter:grayscale(100%) sepia(30%);}`;
+  shadow.appendChild(base);
+
+  if(view.css){
+    const style=document.createElement('style');
+    style.setAttribute('data-view-style',String(current));
+    style.textContent=view.css;
+    shadow.appendChild(style);
+  }
+
+  iframe=document.createElement('iframe');
+  iframe.id='streetview';
+  iframe.width='100%'; iframe.height='100%';
+  iframe.setAttribute('frameborder','0');
+  iframe.setAttribute('allowfullscreen','');
+  iframe.setAttribute('loading','lazy');
+  iframe.setAttribute('referrerpolicy','no-referrer-when-downgrade');
+  iframe.src=view.url||'about:blank';
+  shadow.appendChild(iframe);
+
+  caption.textContent=view.title;
+  caption.style.opacity='1';
+  interactionLayer.style.display='block';
+  nav.style.display=views.length>1?'flex':'none';
+  loader.style.opacity='1'; loader.style.pointerEvents='auto';
+
+  iframe.addEventListener('load',()=>{loader.style.opacity='0';loader.style.pointerEvents='none';},{once:true});
+  runViewScript(view.script,view);
+  setTimeout(()=>{loader.style.opacity='0';loader.style.pointerEvents='none';},view.url?700:250);
+}
+
+interactionLayer.addEventListener('click',()=>{
+  window.dispatchEvent(new Event('acephale-hide-ants'));
+  interactionLayer.style.display='none';
+});
+prevButton.addEventListener('click',e=>{e.stopPropagation();showView(current-1)});
+nextButton.addEventListener('click',e=>{e.stopPropagation();showView(current+1)});
+showView(0);
+const screenshotButton=document.getElementById('screenshotBtn');
+
+function snapshotFilename(){
+  const d=new Date(), pad=n=>String(n).padStart(2,'0');
+  return `acephale-streetvow-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`;
+}
+
+async function takeScreenshot(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
+    alert('Snapshot requires a browser with Screen Capture support.');
+    return;
+  }
+
+  screenshotButton.disabled=true;
+  screenshotButton.style.opacity='0';
+  screenshotButton.style.pointerEvents='none';
+
+  let stream=null;
+  let video=null;
+  try{
+    // Native browser capture: captures the rendered tab/window, including the
+    // cross-origin Google Street View iframe and our overlays. The cursor is
+    // explicitly excluded from the captured image.
+    stream=await navigator.mediaDevices.getDisplayMedia({
+      video:{
+        displaySurface:'browser',
+        cursor:'never',
+        frameRate:{ideal:30,max:30}
+      },
+      audio:false,
+      preferCurrentTab:true,
+      selfBrowserSurface:'include',
+      surfaceSwitching:'exclude'
+    });
+
+    video=document.createElement('video');
+    video.muted=true;
+    video.playsInline=true;
+    video.srcObject=stream;
+    await video.play();
+
+    // Give the capture pipeline a clean frame after the button disappears.
+    await new Promise(r=>setTimeout(r,250));
+
+    const track=stream.getVideoTracks()[0];
+    const settings=track.getSettings();
+    const w=settings.width || video.videoWidth;
+    const h=settings.height || video.videoHeight;
+    if(!w || !h) throw new Error('The browser returned no video frame.');
+
+    const canvas=document.createElement('canvas');
+    canvas.width=w;
+    canvas.height=h;
+    const ctx=canvas.getContext('2d',{alpha:false});
+    ctx.drawImage(video,0,0,w,h);
+
+    const blob=await new Promise((resolve,reject)=>{
+      canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG encoding failed.')),'image/png');
+    });
+
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=snapshotFilename();
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),10000);
+
+  }catch(err){
+    if(err && err.name!=='AbortError' && err.name!=='NotAllowedError'){
+      alert('Snapshot failed: '+(err.message||String(err)));
+    }
+  }finally{
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    if(video){video.pause();video.srcObject=null;video.remove();}
+    screenshotButton.disabled=false;
+    screenshotButton.style.opacity='1';
+    screenshotButton.style.pointerEvents='auto';
+  }
+}
+
+screenshotButton.addEventListener('click',e=>{e.stopPropagation();takeScreenshot()});
+</script>
+<script>
+(function(){if(document.getElementById('hmg-back-btn'))return;const btn=document.createElement('a');btn.id='hmg-back-btn';btn.href='./blade.html';btn.setAttribute('aria-label','Back');btn.innerHTML=`<svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;Object.assign(btn.style,{position:'fixed',bottom:'8px',left:'8px',zIndex:'10000',width:'56px',height:'56px',borderRadius:'50%',background:'rgba(0,0,0,.85)',display:'flex',alignItems:'center',justifyContent:'center',textDecoration:'none',boxShadow:'0 4px 12px rgba(0,0,0,.35)',cursor:'pointer',transition:'transform .2s ease,opacity .2s ease',opacity:'1',backdropFilter:'blur(4px)',WebkitBackdropFilter:'blur(4px)'});btn.onmouseenter=()=>btn.style.transform='scale(1.08)';btn.onmouseleave=()=>btn.style.transform='scale(1)';document.body.appendChild(btn)})();
+</script>
+</body></html>

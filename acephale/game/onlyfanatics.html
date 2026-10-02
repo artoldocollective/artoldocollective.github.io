@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta content="noindex, nofollow" name="robots">
+<title>OnlyFanatics – Only Fragments for your Fans</title>
+
+<style>
+
+:root{
+  --bg:#f4f6f9;
+  --card:#ffffff;
+  --border:#e5eaf0;
+  --text:#18222d;
+  --muted:#667281;
+  --cyan:#12cfff;
+  --cyan2:#0ea5e9;
+  --shadow:0 10px 35px rgba(0,0,0,.06);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:transparent;
+  font-family:Inter,Arial,sans-serif;
+  color:var(--text);
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+
+.topbar{
+  max-width:1400px;
+  margin:auto;
+  padding:16px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+}
+
+.top-center{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.timer{
+  font-size:.85rem;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:1.35rem;
+  font-weight:800;
+}
+
+.logo-badge{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  background: #ffc0cb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.balance{
+  background:white;
+  border:1px solid var(--border);
+  padding:12px 18px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  font-weight:700;
+}
+
+.layout{
+  max-width:1400px;
+  margin:auto;
+  padding:24px;
+  display:grid;
+  grid-template-columns:250px 1fr;
+  gap:24px;
+}
+
+.sidebar{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:18px;
+  height:fit-content;
+  box-shadow:var(--shadow);
+  position:sticky;
+  top:95px;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.menu-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px;
+  border-radius:18px;
+  transition:.2s;
+  cursor:pointer;
+  color:#334155;
+}
+
+.menu-item:hover{
+  background:#f4fbfe;
+}
+
+.menu-item.active{
+  background:#ecfaff;
+  color:#0891b2;
+  font-weight:700;
+}
+
+.menu-item svg{
+  width:22px;
+  height:22px;
+}
+
+.feed{
+  display:flex;
+  flex-direction:column;
+  gap:28px;
+}
+
+.card{
+  background:white;
+  border-radius:30px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+
+.card-top{
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.creator{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.avatar{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:#eef2f5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  line-height:1;
+  flex:none;
+}
+
+.creator h3{
+  font-size:1rem;
+}
+
+.creator p{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:.92rem;
+}
+
+.media-area{
+  position:relative;
+  overflow:hidden;
+  background:black;
+}
+
+.media-area video,
+.media-area img,
+.media-area iframe,
+.media-area .text-media{
+  width:100%;
+  aspect-ratio:16/9;
+  display:block;
+  border:0;
+}
+
+.media-area video,
+.media-area img,
+.media-area iframe{
+  object-fit:cover;
+}
+
+.text-media{
+  padding:40px;
+  background:#111827;
+  color:white;
+  font-family:Georgia,serif;
+  font-size:clamp(1rem,2vw,1.5rem);
+  line-height:1.7;
+  white-space:pre-wrap;
+  overflow:auto;
+}
+
+.blurred{
+  filter:blur(18px) brightness(.75);
+  transform:scale(1.05);
+}
+
+.lock-layer{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(7px);
+}
+
+.lock-box{
+  background:rgba(255,255,255,.95);
+  width:min(340px,90%);
+  border-radius:28px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,.12);
+}
+
+.lock-box svg{
+  width:44px;
+  height:44px;
+}
+
+.lock-box h2{
+  margin-top:14px;
+  font-size:1.2rem;
+}
+
+.lock-box p{
+  color:var(--muted);
+  line-height:1.6;
+  margin-top:8px;
+}
+
+.unlock-btn{
+  margin-top:20px;
+  width:100%;
+  border:none;
+  padding:15px;
+  border-radius:18px;
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  color:white;
+  font-weight:700;
+  font-size:1rem;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.unlock-btn:hover{
+  transform:translateY(-2px);
+}
+
+.content{
+  padding:22px;
+}
+
+.description{
+  color:#4b5563;
+  line-height:1.7;
+  margin-bottom:22px;
+}
+
+.reactions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:26px;
+}
+
+.reaction{
+  border:1px solid var(--border);
+  background:white;
+  padding:10px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:.2s;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:82px;
+  min-width:82px;
+  box-sizing:border-box;
+  justify-content:flex-start;
+  white-space:nowrap;
+}
+
+.reaction span{
+  display:inline-block;
+  width:4ch;
+  min-width:4ch;
+  flex:0 0 4ch;
+  text-align:left;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
+.reaction:hover{
+  background:#f4fbfe;
+}
+.reaction.clicked{
+  animation:reactionPop .22s ease-out;
+}
+@keyframes reactionPop{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.16)}
+  100%{transform:scale(1)}
+}
+.reaction-toast{
+  position:fixed;
+  z-index:99999;
+  background:#111827;
+  color:#fff;
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:12px;
+  line-height:1;
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%, 5px);
+  transition:opacity .15s ease, transform .15s ease;
+  white-space:nowrap;
+}
+.reaction-toast.show{
+  opacity:1;
+  transform:translate(-50%, 0);
+}
+
+
+.comments{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-bottom:18px;
+  max-height:270px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+  overscroll-behavior:contain;
+  padding-right:2px;
+}
+
+.comments::-webkit-scrollbar{
+  display:none;
+}
+
+.comment{
+  background:#f8fafc;
+  padding:15px;
+  border-radius:18px;
+}
+
+
+.comment strong{
+  display:block;
+  margin-bottom:2px;
+}
+
+.comment small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:7px;
+  font-size:.82rem;
+}
+
+.comment p{
+  color:#4b5563;
+  line-height:1.5;
+}
+
+.comment-form{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.comment-form input,
+.comment-form textarea{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  font-size:1rem;
+  outline:none;
+  background:white;
+}
+
+.comment-form textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.post-btn{
+  border:none;
+  background:#111827;
+  color:white;
+  padding:15px;
+  border-radius:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+@media(max-width:980px){
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .sidebar{
+    position:relative;
+    top:0;
+  }
+
+}
+
+@media(max-width:700px){
+
+  .layout{
+    padding:14px;
+  }
+
+  .topbar{
+    padding:14px;
+  }
+
+  .top-center{
+    position:relative;
+    left:auto;
+    transform:none;
+    margin:auto;
+  }
+
+}
+
+
+/* Not enough credits overlay */
+.credits-modal{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(15,23,42,.38);
+  backdrop-filter:blur(8px);
+}
+
+.credits-modal.show{
+  display:flex;
+  animation:creditsFadeIn .18s ease-out;
+}
+
+.credits-modal-box{
+  width:min(390px,100%);
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:30px;
+  text-align:center;
+  box-shadow:0 24px 80px rgba(15,23,42,.22);
+  animation:creditsPop .2s ease-out;
+}
+
+.credits-modal-icon{
+  width:64px;
+  height:64px;
+  margin:0 auto 16px;
+  border-radius:20px;
+  background:#fff0f3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+}
+
+.credits-modal-box h2{
+  font-size:1.25rem;
+  margin:0;
+}
+
+.credits-modal-box p{
+  color:var(--muted);
+  line-height:1.6;
+  margin:9px 0 20px;
+}
+
+.credits-modal-box strong{
+  color:var(--text);
+}
+
+.credits-modal-btn{
+  width:100%;
+  border:0;
+  padding:14px 18px;
+  border-radius:16px;
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  color:#fff;
+  font-weight:700;
+  font-size:1rem;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.credits-modal-btn:hover{
+  transform:translateY(-2px);
+}
+
+@keyframes creditsFadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes creditsPop{
+  from{opacity:0;transform:translateY(8px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.logo-title{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+}
+
+.logo-title h1{
+  margin:0;
+  font-size:1.35rem;
+  font-weight:800;
+}
+
+.logo-title small{
+  margin-top:4px;
+  font-size:.64rem;
+  line-height:1;
+  font-weight:500;
+  color:var(--muted);
+  letter-spacing:.02em;
+}
+</style>
+</head>
+
+<body>
+
+<div class="credits-modal" id="creditsModal" role="dialog" aria-modal="true" aria-labelledby="creditsModalTitle">
+  <div class="credits-modal-box" onclick="event.stopPropagation()">
+    <div class="credits-modal-icon">💳</div>
+    <h2 id="creditsModalTitle">Not enough credits</h2>
+    <p id="creditsModalMessage">You need more credits to unlock this fragment.</p>
+    <button class="credits-modal-btn" onclick="closeCreditsModal()">Got it</button>
+  </div>
+</div>
+
+<header>
+
+  <div class="topbar">
+
+<div class="logo">
+  <div class="logo-badge">
+    🫦
+  </div>
+
+  <div class="logo-title">
+    <h1>OnlyFanatics</h1>
+    <small>OnlyFragments for your fans</small>
+  </div>
+</div>
+
+    <div class="top-center">
+
+      <div class="balance">
+        Credits:
+        <span id="credits">300</span>
+      </div>
+
+      <div class="timer">
+        Refill in:
+        <span id="timer">10:00</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <div class="menu">
+
+      <div class="menu-item active" style="cursor:default;">
+
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            d="M4 10.5L12 4L20 10.5V19C20 19.55 19.55 20 19 20H15V14H9V20H5C4.45 20 4 19.55 4 19V10.5Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </svg>
+
+        Home
+
+      </div>
+
+      <div class="menu-item" style="cursor:default;">
+
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 20S4 15 4 8.8C4 6.15 6.1 4 8.7 4C10.4 4 11.6 4.9 12 5.7C12.4 4.9 13.6 4 15.3 4C17.9 4 20 6.15 20 8.8C20 15 12 20 12 20Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+
+        Following
+
+      </div>
+
+      <div class="menu-item" style="cursor:default;">
+
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            d="M4 6.5C4 5.67 4.67 5 5.5 5H18.5C19.33 5 20 5.67 20 6.5V15.5C20 16.33 19.33 17 18.5 17H9L4 20V6.5Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M7 9H17"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+          <path
+            d="M7 12.5H13"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+
+        Messages
+
+      </div>
+
+    </div>
+
+  </aside>
+
+  <main class="feed" id="feed"></main>
+
+</div>
+
+<script>
+
+const posts = [
+{
+  id:1,
+  creator:"Louis_Trente",
+  avatar:"👑",
+  date:"2 hours ago",
+  price:50,
+  unlocked:false,
+  description:"Exclusive leak! Watch now the secret locations of Acéphale at Désert de Retz",
+  type:"video",
+  src:"./video/retz.mp4"
+},
+{
+  id:2,
+  creator:"Pierre_Angélique",
+  avatar:"🎃",
+  date:"6 hours ago",
+  price:90,
+  unlocked:false,
+  description:"Instructions for the Encounter in the Forest",
+  type:"iframe",
+  src:"./media/encounters.html"
+},
+{
+  id:3,
+  creator:"OnlyFragments",
+  avatar:"📜",
+  date:"Yesterday",
+  price:290,
+  unlocked:false,
+  description:"Exclusive! Unveil the lost fragments of Bataille's 'Hitlr et l’Ordre teutonique'",
+  type:"iframe",
+  src:"./media/scratchgame.html"
+},
+{
+  id:4,
+  creator:"OnlyFragments",
+  avatar:"📜",
+  date:"Yesterday",
+  price:180,
+  unlocked:false,
+  description:"Rare manuscript!!! Acéphale Magazine – First edition",
+  type:"iframe",
+  src:"./media/magazine.html"
+},
+{
+  id:5,
+  creator:"Sons of Nietzsche",
+  avatar:"🧛🏻",
+  date:"Yesterday",
+  price:10,
+  unlocked:false,
+  description:"Nothing and nowhere...",
+  type:"text",
+  src:"\n God is dead.\n\n Move ahead."
+},
+{
+  id:6,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"3 hours ago",
+  price:190,
+  unlocked:false,
+  description:"Pure...",
+  type:"iframe",
+  src:"./media/s1.html"
+},
+{
+  id:7,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"5 hours ago",
+  price:225,
+  unlocked:false,
+  description:"A little fragment of impossible desire...",
+  type:"iframe",
+  src:"./media/s2.html"
+},
+{
+  id:8,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"8 hours ago",
+  price:175,
+  unlocked:false,
+  description:"Something beautiful waits behind the veil...",
+  type:"iframe",
+  src:"./media/s3.html"
+},
+{
+  id:9,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"Yesterday",
+  price:260,
+  unlocked:false,
+  description:"The secret has its own choreography...",
+  type:"iframe",
+  src:"./media/s4.html"
+},
+{
+  id:10,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"Yesterday",
+  price:210,
+  unlocked:false,
+  description:"A delicate ritual for dangerous eyes...",
+  type:"iframe",
+  src:"./media/s5.html"
+},
+{
+  id:11,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"2 days ago",
+  price:295,
+  unlocked:false,
+  description:"Desire enters softly and leaves a trace...",
+  type:"iframe",
+  src:"./media/s6.html"
+},
+{
+  id:12,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"3 days ago",
+  price:145,
+  unlocked:false,
+  description:"A private vision from the other side...",
+  type:"iframe",
+  src:"./media/s7.html"
+},
+{
+  id:13,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"4 days ago",
+  price:235,
+  unlocked:false,
+  description:"The mask slips. The fantasy remains...",
+  type:"iframe",
+  src:"./media/s8.html"
+},
+{
+  id:14,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"6 days ago",
+  price:280,
+  unlocked:false,
+  description:"Beauty becomes stranger when nobody is watching...",
+  type:"iframe",
+  src:"./media/s9.html"
+},
+{
+  id:15,
+  creator:"Sylvia Bataille",
+  avatar:"🌹",
+  date:"1 week ago",
+  price:199,
+  unlocked:false,
+  description:"One final glimpse before the curtain falls...",
+  type:"iframe",
+  src:"./media/s10.html"
+},
+{
+  id:16,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"2 hours ago",
+  price:185,
+  unlocked:false,
+  description:"A Polaroid from the edge of the room...",
+  type:"iframe",
+  src:"./media/m1.html"
+},
+{
+  id:17,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"4 hours ago",
+  price:240,
+  unlocked:false,
+  description:"Light, lacquer, skin, and a private geometry...",
+  type:"iframe",
+  src:"./media/m2.html"
+},
+{
+  id:18,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"7 hours ago",
+  price:165,
+  unlocked:false,
+  description:"An instant suspended between pose and accident...",
+  type:"iframe",
+  src:"./media/m3.html"
+},
+{
+  id:19,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"Yesterday",
+  price:275,
+  unlocked:false,
+  description:"The room becomes a stage for one impossible glance...",
+  type:"iframe",
+  src:"./media/m4.html"
+},
+{
+  id:20,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"Yesterday",
+  price:215,
+  unlocked:false,
+  description:"A secret composition captured in an instant...",
+  type:"iframe",
+  src:"./media/m5.html"
+},
+{
+  id:21,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"2 days ago",
+  price:295,
+  unlocked:false,
+  description:"Furniture, body, shadow — everything becomes theatrical...",
+  type:"iframe",
+  src:"./media/m6.html"
+},
+{
+  id:22,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"3 days ago",
+  price:150,
+  unlocked:false,
+  description:"A flash of colour from a very private universe...",
+  type:"iframe",
+  src:"./media/m7.html"
+},
+{
+  id:23,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"4 days ago",
+  price:230,
+  unlocked:false,
+  description:"The camera catches what the mirror refuses to reveal...",
+  type:"iframe",
+  src:"./media/m8.html"
+},
+{
+  id:24,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"6 days ago",
+  price:270,
+  unlocked:false,
+  description:"An elegant accident in saturated light...",
+  type:"iframe",
+  src:"./media/m9.html"
+},
+{
+  id:25,
+  creator:"Carlo Mollino",
+  avatar:"📷",
+  date:"1 week ago",
+  price:195,
+  unlocked:false,
+  description:"One last Polaroid before the image disappears...",
+  type:"iframe",
+  src:"./media/m10.html"
+},
+{
+  id:26,
+  creator:"De Rougemont",
+  avatar:"💄",
+  date:"1 week ago",
+  price:5,
+  unlocked:false,
+  description:"Love...",
+  type:"iframe",
+  src:"./media/d1.html"
+},
+{
+  id:27,
+  creator:"De Rougemont",
+  avatar:"💄",
+  date:"1 week ago",
+  price:10,
+  unlocked:false,
+  description:"A secret kept between two glances...",
+  type:"iframe",
+  src:"./media/d2.html"
+},
+{
+  id:28,
+  creator:"De Rougemont",
+  avatar:"💄",
+  date:"6 days ago",
+  price:15,
+  unlocked:false,
+  description:"Something I never meant to reveal...",
+  type:"iframe",
+  src:"./media/d3.html"
+},
+{
+  id:29,
+  creator:"De Rougemont",
+  avatar:"💄",
+  date:"5 days ago",
+  price:20,
+  unlocked:false,
+  description:"A little closer than I should...",
+  type:"iframe",
+  src:"./media/d4.html"
+},
+{
+  id:30,
+  creator:"De Rougemont",
+  avatar:"💄",
+  date:"3 days ago",
+  price:30,
+  unlocked:false,
+  description:"The fragment I kept for myself...",
+  type:"iframe",
+  src:"./media/d5.html"
+},
+{
+  id:31,
+  creator:"De Rougemont",
+  avatar:"💄",
+  date:"Yesterday",
+  price:40,
+  unlocked:false,
+  description:"Love leaves strange traces...",
+  type:"iframe",
+  src:"./media/d6.html"
+},
+];
+
+const STARTING_CREDITS = 300;
+const REFILL_TIME = 10 * 60 * 1000;
+
+let credits =
+parseInt(localStorage.getItem("vault_credits"))
+|| STARTING_CREDITS;
+
+let refillTimestamp =
+parseInt(localStorage.getItem("vault_refill_time"));
+
+if(!refillTimestamp){
+
+  refillTimestamp = Date.now() + REFILL_TIME;
+
+  localStorage.setItem(
+    "vault_refill_time",
+    refillTimestamp
+  );
+
+}
+
+const savedUnlocked =
+JSON.parse(localStorage.getItem("vault_unlocked")) || [];
+
+posts.forEach(post=>{
+  if(savedUnlocked.includes(post.id)){
+    post.unlocked = true;
+  }
+});
+
+/* RANDOMIZE FEED ORDER — locked events first, unlocked events after */
+function shufflePosts(list){
+  for(let i=list.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [list[i],list[j]]=[list[j],list[i]];
+  }
+  return list;
+}
+
+const lockedPosts = shufflePosts(posts.filter(post => !post.unlocked));
+const unlockedPosts = shufflePosts(posts.filter(post => post.unlocked));
+
+posts.length = 0;
+posts.push(...lockedPosts, ...unlockedPosts);
+
+
+
+// Clean OnlyFanatics comment system.
+// Legacy comments/storage are deliberately discarded.
+localStorage.removeItem("vault_comments");
+
+const COMMENT_POOL = [
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment turns access into a ritual rather than a simple transaction. I would leave the ambiguity intact.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment turns access into a ritual rather than a simple transaction. The hesitation is part of its charm.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment turns access into a ritual rather than a simple transaction. The interface makes that tension unusually visible.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment turns access into a ritual rather than a simple transaction. It works because the mechanism remains obvious.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment turns access into a ritual rather than a simple transaction. The fragment feels stronger for not being fully resolved.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The fragment turns access into a ritual rather than a simple transaction. The delay changes the viewer’s position.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment turns access into a ritual rather than a simple transaction. The format makes the contradiction impossible to miss.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment turns access into a ritual rather than a simple transaction. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. The hesitation is part of its charm.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. The interface makes that tension unusually visible.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. It works because the mechanism remains obvious.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. The delay changes the viewer’s position.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. I like the fact that the screen does not explain itself.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'I like the tension between display and concealment here. The interface makes that tension unusually visible.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'I like the tension between display and concealment here. It works because the mechanism remains obvious.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'I like the tension between display and concealment here. The fragment feels stronger for not being fully resolved.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'I like the tension between display and concealment here. The delay changes the viewer’s position.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'I like the tension between display and concealment here. The format makes the contradiction impossible to miss.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'I like the tension between display and concealment here. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'I like the tension between display and concealment here. It turns a simple gesture into a small social ritual.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'I like the tension between display and concealment here. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The interface promises intimacy while keeping the object strangely distant. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The interface promises intimacy while keeping the object strangely distant. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The interface promises intimacy while keeping the object strangely distant. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The interface promises intimacy while keeping the object strangely distant. The format makes the contradiction impossible to miss.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The interface promises intimacy while keeping the object strangely distant. I like the fact that the screen does not explain itself.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The interface promises intimacy while keeping the object strangely distant. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The interface promises intimacy while keeping the object strangely distant. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The interface promises intimacy while keeping the object strangely distant. I would leave the ambiguity intact.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This is less a post than a small apparatus for producing expectation. The fragment feels stronger for not being fully resolved.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This is less a post than a small apparatus for producing expectation. The delay changes the viewer’s position.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This is less a post than a small apparatus for producing expectation. The format makes the contradiction impossible to miss.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This is less a post than a small apparatus for producing expectation. I like the fact that the screen does not explain itself.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This is less a post than a small apparatus for producing expectation. It turns a simple gesture into a small social ritual.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This is less a post than a small apparatus for producing expectation. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This is less a post than a small apparatus for producing expectation. I would leave the ambiguity intact.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This is less a post than a small apparatus for producing expectation. The hesitation is part of its charm.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment survives precisely because it refuses to explain itself completely. The format makes the contradiction impossible to miss.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment survives precisely because it refuses to explain itself completely. I like the fact that the screen does not explain itself.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment survives precisely because it refuses to explain itself completely. It turns a simple gesture into a small social ritual.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment survives precisely because it refuses to explain itself completely. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment survives precisely because it refuses to explain itself completely. I would leave the ambiguity intact.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The fragment survives precisely because it refuses to explain itself completely. The hesitation is part of its charm.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment survives precisely because it refuses to explain itself completely. The interface makes that tension unusually visible.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment survives precisely because it refuses to explain itself completely. It works because the mechanism remains obvious.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'There is something theatrical about the act of unlocking this image. I like the fact that the screen does not explain itself.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'There is something theatrical about the act of unlocking this image. It turns a simple gesture into a small social ritual.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'There is something theatrical about the act of unlocking this image. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'There is something theatrical about the act of unlocking this image. I would leave the ambiguity intact.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'There is something theatrical about the act of unlocking this image. The hesitation is part of its charm.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'There is something theatrical about the act of unlocking this image. The interface makes that tension unusually visible.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'There is something theatrical about the act of unlocking this image. It works because the mechanism remains obvious.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'There is something theatrical about the act of unlocking this image. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The platform gives the private fragment a public choreography. It turns a simple gesture into a small social ritual.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The platform gives the private fragment a public choreography. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The platform gives the private fragment a public choreography. I would leave the ambiguity intact.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The platform gives the private fragment a public choreography. The hesitation is part of its charm.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The platform gives the private fragment a public choreography. The interface makes that tension unusually visible.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The platform gives the private fragment a public choreography. It works because the mechanism remains obvious.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The platform gives the private fragment a public choreography. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The platform gives the private fragment a public choreography. The delay changes the viewer’s position.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The withheld image acquires a curious authority simply by remaining withheld. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The withheld image acquires a curious authority simply by remaining withheld. I would leave the ambiguity intact.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The withheld image acquires a curious authority simply by remaining withheld. The hesitation is part of its charm.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The withheld image acquires a curious authority simply by remaining withheld. The interface makes that tension unusually visible.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The withheld image acquires a curious authority simply by remaining withheld. It works because the mechanism remains obvious.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The withheld image acquires a curious authority simply by remaining withheld. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The withheld image acquires a curious authority simply by remaining withheld. The delay changes the viewer’s position.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The withheld image acquires a curious authority simply by remaining withheld. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The threshold is doing more work here than the spectacle itself. I would leave the ambiguity intact.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The threshold is doing more work here than the spectacle itself. The hesitation is part of its charm.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The threshold is doing more work here than the spectacle itself. The interface makes that tension unusually visible.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The threshold is doing more work here than the spectacle itself. It works because the mechanism remains obvious.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The threshold is doing more work here than the spectacle itself. The fragment feels stronger for not being fully resolved.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The threshold is doing more work here than the spectacle itself. The delay changes the viewer’s position.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The threshold is doing more work here than the spectacle itself. The format makes the contradiction impossible to miss.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The threshold is doing more work here than the spectacle itself. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'I would keep the interruption; it makes the viewing act conscious of itself. The hesitation is part of its charm.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'I would keep the interruption; it makes the viewing act conscious of itself. The interface makes that tension unusually visible.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'I would keep the interruption; it makes the viewing act conscious of itself. It works because the mechanism remains obvious.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'I would keep the interruption; it makes the viewing act conscious of itself. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'I would keep the interruption; it makes the viewing act conscious of itself. The delay changes the viewer’s position.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'I would keep the interruption; it makes the viewing act conscious of itself. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'I would keep the interruption; it makes the viewing act conscious of itself. I like the fact that the screen does not explain itself.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'I would keep the interruption; it makes the viewing act conscious of itself. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This feels like an archive pretending to be a feed. The interface makes that tension unusually visible.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This feels like an archive pretending to be a feed. It works because the mechanism remains obvious.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This feels like an archive pretending to be a feed. The fragment feels stronger for not being fully resolved.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This feels like an archive pretending to be a feed. The delay changes the viewer’s position.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This feels like an archive pretending to be a feed. The format makes the contradiction impossible to miss.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This feels like an archive pretending to be a feed. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This feels like an archive pretending to be a feed. It turns a simple gesture into a small social ritual.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This feels like an archive pretending to be a feed. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The economy of attention is visible here, which makes the interface unusually interesting. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The economy of attention is visible here, which makes the interface unusually interesting. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The economy of attention is visible here, which makes the interface unusually interesting. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The economy of attention is visible here, which makes the interface unusually interesting. The format makes the contradiction impossible to miss.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The economy of attention is visible here, which makes the interface unusually interesting. I like the fact that the screen does not explain itself.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The economy of attention is visible here, which makes the interface unusually interesting. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The economy of attention is visible here, which makes the interface unusually interesting. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The economy of attention is visible here, which makes the interface unusually interesting. I would leave the ambiguity intact.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The small promise of access creates more suspense than a full reveal would. The fragment feels stronger for not being fully resolved.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The small promise of access creates more suspense than a full reveal would. The delay changes the viewer’s position.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The small promise of access creates more suspense than a full reveal would. The format makes the contradiction impossible to miss.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The small promise of access creates more suspense than a full reveal would. I like the fact that the screen does not explain itself.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The small promise of access creates more suspense than a full reveal would. It turns a simple gesture into a small social ritual.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The small promise of access creates more suspense than a full reveal would. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The small promise of access creates more suspense than a full reveal would. I would leave the ambiguity intact.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The small promise of access creates more suspense than a full reveal would. The hesitation is part of its charm.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment has enough ambiguity to resist becoming mere content. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment has enough ambiguity to resist becoming mere content. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment has enough ambiguity to resist becoming mere content. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment has enough ambiguity to resist becoming mere content. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment has enough ambiguity to resist becoming mere content. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The fragment has enough ambiguity to resist becoming mere content. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment has enough ambiguity to resist becoming mere content. The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment has enough ambiguity to resist becoming mere content. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'I like how the screen becomes part of the fiction rather than a neutral container. The format makes the contradiction impossible to miss.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'I like how the screen becomes part of the fiction rather than a neutral container. I like the fact that the screen does not explain itself.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'I like how the screen becomes part of the fiction rather than a neutral container. It turns a simple gesture into a small social ritual.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'I like how the screen becomes part of the fiction rather than a neutral container. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'I like how the screen becomes part of the fiction rather than a neutral container. I would leave the ambiguity intact.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'I like how the screen becomes part of the fiction rather than a neutral container. The hesitation is part of its charm.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'I like how the screen becomes part of the fiction rather than a neutral container. The interface makes that tension unusually visible.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'I like how the screen becomes part of the fiction rather than a neutral container. It works because the mechanism remains obvious.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The act of waiting changes the meaning of the thing being waited for. I like the fact that the screen does not explain itself.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The act of waiting changes the meaning of the thing being waited for. It turns a simple gesture into a small social ritual.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The act of waiting changes the meaning of the thing being waited for. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The act of waiting changes the meaning of the thing being waited for. I would leave the ambiguity intact.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The act of waiting changes the meaning of the thing being waited for. The hesitation is part of its charm.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The act of waiting changes the meaning of the thing being waited for. The interface makes that tension unusually visible.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The act of waiting changes the meaning of the thing being waited for. It works because the mechanism remains obvious.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The act of waiting changes the meaning of the thing being waited for. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This is a neat collision between desire, interface, and documentation. It turns a simple gesture into a small social ritual.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This is a neat collision between desire, interface, and documentation. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This is a neat collision between desire, interface, and documentation. I would leave the ambiguity intact.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This is a neat collision between desire, interface, and documentation. The hesitation is part of its charm.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This is a neat collision between desire, interface, and documentation. The interface makes that tension unusually visible.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This is a neat collision between desire, interface, and documentation. It works because the mechanism remains obvious.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This is a neat collision between desire, interface, and documentation. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This is a neat collision between desire, interface, and documentation. The delay changes the viewer’s position.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The polished surface and the withheld interior produce a productive contradiction. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The polished surface and the withheld interior produce a productive contradiction. I would leave the ambiguity intact.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The polished surface and the withheld interior produce a productive contradiction. The hesitation is part of its charm.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The polished surface and the withheld interior produce a productive contradiction. The interface makes that tension unusually visible.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The polished surface and the withheld interior produce a productive contradiction. It works because the mechanism remains obvious.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The polished surface and the withheld interior produce a productive contradiction. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The polished surface and the withheld interior produce a productive contradiction. The delay changes the viewer’s position.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The polished surface and the withheld interior produce a productive contradiction. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The post makes curiosity feel almost architectural. I would leave the ambiguity intact.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The post makes curiosity feel almost architectural. The hesitation is part of its charm.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The post makes curiosity feel almost architectural. The interface makes that tension unusually visible.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The post makes curiosity feel almost architectural. It works because the mechanism remains obvious.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The post makes curiosity feel almost architectural. The fragment feels stronger for not being fully resolved.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The post makes curiosity feel almost architectural. The delay changes the viewer’s position.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The post makes curiosity feel almost architectural. The format makes the contradiction impossible to miss.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The post makes curiosity feel almost architectural. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The boundary between audience and participant is deliberately unstable here. The hesitation is part of its charm.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The boundary between audience and participant is deliberately unstable here. The interface makes that tension unusually visible.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The boundary between audience and participant is deliberately unstable here. It works because the mechanism remains obvious.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The boundary between audience and participant is deliberately unstable here. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The boundary between audience and participant is deliberately unstable here. The delay changes the viewer’s position.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The boundary between audience and participant is deliberately unstable here. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The boundary between audience and participant is deliberately unstable here. I like the fact that the screen does not explain itself.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The boundary between audience and participant is deliberately unstable here. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The interface does not merely present the fragment; it stages the desire to reach it. The interface makes that tension unusually visible.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The interface does not merely present the fragment; it stages the desire to reach it. It works because the mechanism remains obvious.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The interface does not merely present the fragment; it stages the desire to reach it. The fragment feels stronger for not being fully resolved.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The interface does not merely present the fragment; it stages the desire to reach it. The delay changes the viewer’s position.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The interface does not merely present the fragment; it stages the desire to reach it. The format makes the contradiction impossible to miss.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The interface does not merely present the fragment; it stages the desire to reach it. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The interface does not merely present the fragment; it stages the desire to reach it. It turns a simple gesture into a small social ritual.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The interface does not merely present the fragment; it stages the desire to reach it. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The most interesting element may be the distance created by the lock. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The most interesting element may be the distance created by the lock. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The most interesting element may be the distance created by the lock. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The most interesting element may be the distance created by the lock. The format makes the contradiction impossible to miss.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The most interesting element may be the distance created by the lock. I like the fact that the screen does not explain itself.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The most interesting element may be the distance created by the lock. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The most interesting element may be the distance created by the lock. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The most interesting element may be the distance created by the lock. I would leave the ambiguity intact.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This could be read as a miniature theatre of spectatorship. The fragment feels stronger for not being fully resolved.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This could be read as a miniature theatre of spectatorship. The delay changes the viewer’s position.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This could be read as a miniature theatre of spectatorship. The format makes the contradiction impossible to miss.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This could be read as a miniature theatre of spectatorship. I like the fact that the screen does not explain itself.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This could be read as a miniature theatre of spectatorship. It turns a simple gesture into a small social ritual.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This could be read as a miniature theatre of spectatorship. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This could be read as a miniature theatre of spectatorship. I would leave the ambiguity intact.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This could be read as a miniature theatre of spectatorship. The hesitation is part of its charm.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment gains intensity because the platform refuses immediate transparency. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment gains intensity because the platform refuses immediate transparency. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment gains intensity because the platform refuses immediate transparency. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment gains intensity because the platform refuses immediate transparency. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment gains intensity because the platform refuses immediate transparency. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The fragment gains intensity because the platform refuses immediate transparency. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment gains intensity because the platform refuses immediate transparency. The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment gains intensity because the platform refuses immediate transparency. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'I like that the interface makes the conditions of looking impossible to ignore. The format makes the contradiction impossible to miss.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'I like that the interface makes the conditions of looking impossible to ignore. I like the fact that the screen does not explain itself.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'I like that the interface makes the conditions of looking impossible to ignore. It turns a simple gesture into a small social ritual.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'I like that the interface makes the conditions of looking impossible to ignore. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'I like that the interface makes the conditions of looking impossible to ignore. I would leave the ambiguity intact.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'I like that the interface makes the conditions of looking impossible to ignore. The hesitation is part of its charm.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'I like that the interface makes the conditions of looking impossible to ignore. The interface makes that tension unusually visible.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'I like that the interface makes the conditions of looking impossible to ignore. It works because the mechanism remains obvious.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. I like the fact that the screen does not explain itself.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. It turns a simple gesture into a small social ritual.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. I would leave the ambiguity intact.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. The hesitation is part of its charm.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. The interface makes that tension unusually visible.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. It works because the mechanism remains obvious.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'There is a useful friction between the casual feed and the ceremonial act of access. It turns a simple gesture into a small social ritual.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'There is a useful friction between the casual feed and the ceremonial act of access. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'There is a useful friction between the casual feed and the ceremonial act of access. I would leave the ambiguity intact.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'There is a useful friction between the casual feed and the ceremonial act of access. The hesitation is part of its charm.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'There is a useful friction between the casual feed and the ceremonial act of access. The interface makes that tension unusually visible.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'There is a useful friction between the casual feed and the ceremonial act of access. It works because the mechanism remains obvious.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'There is a useful friction between the casual feed and the ceremonial act of access. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'There is a useful friction between the casual feed and the ceremonial act of access. The delay changes the viewer’s position.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The image feels more consequential because the interface makes us negotiate for it. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The image feels more consequential because the interface makes us negotiate for it. I would leave the ambiguity intact.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The image feels more consequential because the interface makes us negotiate for it. The hesitation is part of its charm.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The image feels more consequential because the interface makes us negotiate for it. The interface makes that tension unusually visible.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The image feels more consequential because the interface makes us negotiate for it. It works because the mechanism remains obvious.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The image feels more consequential because the interface makes us negotiate for it. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The image feels more consequential because the interface makes us negotiate for it. The delay changes the viewer’s position.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The image feels more consequential because the interface makes us negotiate for it. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This is a good example of how withholding can become a visual device. I would leave the ambiguity intact.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This is a good example of how withholding can become a visual device. The hesitation is part of its charm.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This is a good example of how withholding can become a visual device. The interface makes that tension unusually visible.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This is a good example of how withholding can become a visual device. It works because the mechanism remains obvious.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This is a good example of how withholding can become a visual device. The fragment feels stronger for not being fully resolved.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This is a good example of how withholding can become a visual device. The delay changes the viewer’s position.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This is a good example of how withholding can become a visual device. The format makes the contradiction impossible to miss.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This is a good example of how withholding can become a visual device. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. The hesitation is part of its charm.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. The interface makes that tension unusually visible.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. It works because the mechanism remains obvious.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. The delay changes the viewer’s position.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. I like the fact that the screen does not explain itself.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The viewer is given a role before being given the object. The interface makes that tension unusually visible.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The viewer is given a role before being given the object. It works because the mechanism remains obvious.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The viewer is given a role before being given the object. The fragment feels stronger for not being fully resolved.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The viewer is given a role before being given the object. The delay changes the viewer’s position.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The viewer is given a role before being given the object. The format makes the contradiction impossible to miss.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The viewer is given a role before being given the object. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The viewer is given a role before being given the object. It turns a simple gesture into a small social ritual.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The viewer is given a role before being given the object. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The distinction between preview and possession is wonderfully unstable here. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The distinction between preview and possession is wonderfully unstable here. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The distinction between preview and possession is wonderfully unstable here. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The distinction between preview and possession is wonderfully unstable here. The format makes the contradiction impossible to miss.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The distinction between preview and possession is wonderfully unstable here. I like the fact that the screen does not explain itself.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The distinction between preview and possession is wonderfully unstable here. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The distinction between preview and possession is wonderfully unstable here. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The distinction between preview and possession is wonderfully unstable here. I would leave the ambiguity intact.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The interface turns curiosity into a small performance. The fragment feels stronger for not being fully resolved.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The interface turns curiosity into a small performance. The delay changes the viewer’s position.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The interface turns curiosity into a small performance. The format makes the contradiction impossible to miss.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The interface turns curiosity into a small performance. I like the fact that the screen does not explain itself.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The interface turns curiosity into a small performance. It turns a simple gesture into a small social ritual.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The interface turns curiosity into a small performance. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The interface turns curiosity into a small performance. I would leave the ambiguity intact.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The interface turns curiosity into a small performance. The hesitation is part of its charm.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment seems to know that the viewer is watching the act of watching. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment seems to know that the viewer is watching the act of watching. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment seems to know that the viewer is watching the act of watching. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment seems to know that the viewer is watching the act of watching. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment seems to know that the viewer is watching the act of watching. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The fragment seems to know that the viewer is watching the act of watching. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment seems to know that the viewer is watching the act of watching. The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment seems to know that the viewer is watching the act of watching. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This has the strange quality of a document that has learned how to seduce. The format makes the contradiction impossible to miss.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This has the strange quality of a document that has learned how to seduce. I like the fact that the screen does not explain itself.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This has the strange quality of a document that has learned how to seduce. It turns a simple gesture into a small social ritual.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This has the strange quality of a document that has learned how to seduce. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This has the strange quality of a document that has learned how to seduce. I would leave the ambiguity intact.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This has the strange quality of a document that has learned how to seduce. The hesitation is part of its charm.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This has the strange quality of a document that has learned how to seduce. The interface makes that tension unusually visible.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This has the strange quality of a document that has learned how to seduce. It works because the mechanism remains obvious.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The visible surface is almost more mysterious than whatever might be behind it. I like the fact that the screen does not explain itself.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The visible surface is almost more mysterious than whatever might be behind it. It turns a simple gesture into a small social ritual.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The visible surface is almost more mysterious than whatever might be behind it. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The visible surface is almost more mysterious than whatever might be behind it. I would leave the ambiguity intact.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The visible surface is almost more mysterious than whatever might be behind it. The hesitation is part of its charm.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The visible surface is almost more mysterious than whatever might be behind it. The interface makes that tension unusually visible.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The visible surface is almost more mysterious than whatever might be behind it. It works because the mechanism remains obvious.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The visible surface is almost more mysterious than whatever might be behind it. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The lock creates a pause that ordinary scrolling usually eliminates. It turns a simple gesture into a small social ritual.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The lock creates a pause that ordinary scrolling usually eliminates. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The lock creates a pause that ordinary scrolling usually eliminates. I would leave the ambiguity intact.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The lock creates a pause that ordinary scrolling usually eliminates. The hesitation is part of its charm.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The lock creates a pause that ordinary scrolling usually eliminates. The interface makes that tension unusually visible.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The lock creates a pause that ordinary scrolling usually eliminates. It works because the mechanism remains obvious.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The lock creates a pause that ordinary scrolling usually eliminates. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The lock creates a pause that ordinary scrolling usually eliminates. The delay changes the viewer’s position.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'There is an interesting politics of visibility embedded in such a simple mechanism. I would leave the ambiguity intact.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The hesitation is part of its charm.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The interface makes that tension unusually visible.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'There is an interesting politics of visibility embedded in such a simple mechanism. It works because the mechanism remains obvious.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The delay changes the viewer’s position.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The platform language and the archival feeling are oddly compatible. I would leave the ambiguity intact.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The platform language and the archival feeling are oddly compatible. The hesitation is part of its charm.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The platform language and the archival feeling are oddly compatible. The interface makes that tension unusually visible.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The platform language and the archival feeling are oddly compatible. It works because the mechanism remains obvious.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The platform language and the archival feeling are oddly compatible. The fragment feels stronger for not being fully resolved.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The platform language and the archival feeling are oddly compatible. The delay changes the viewer’s position.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The platform language and the archival feeling are oddly compatible. The format makes the contradiction impossible to miss.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The platform language and the archival feeling are oddly compatible. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This makes consumption visible instead of pretending it is neutral. The hesitation is part of its charm.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This makes consumption visible instead of pretending it is neutral. The interface makes that tension unusually visible.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This makes consumption visible instead of pretending it is neutral. It works because the mechanism remains obvious.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This makes consumption visible instead of pretending it is neutral. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This makes consumption visible instead of pretending it is neutral. The delay changes the viewer’s position.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This makes consumption visible instead of pretending it is neutral. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This makes consumption visible instead of pretending it is neutral. I like the fact that the screen does not explain itself.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This makes consumption visible instead of pretending it is neutral. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment becomes an event because access is staged. The interface makes that tension unusually visible.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment becomes an event because access is staged. It works because the mechanism remains obvious.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment becomes an event because access is staged. The fragment feels stronger for not being fully resolved.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment becomes an event because access is staged. The delay changes the viewer’s position.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment becomes an event because access is staged. The format makes the contradiction impossible to miss.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The fragment becomes an event because access is staged. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment becomes an event because access is staged. It turns a simple gesture into a small social ritual.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment becomes an event because access is staged. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The feed wants speed; the lock introduces duration. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The feed wants speed; the lock introduces duration. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The feed wants speed; the lock introduces duration. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The feed wants speed; the lock introduces duration. The format makes the contradiction impossible to miss.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The feed wants speed; the lock introduces duration. I like the fact that the screen does not explain itself.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The feed wants speed; the lock introduces duration. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The feed wants speed; the lock introduces duration. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The feed wants speed; the lock introduces duration. I would leave the ambiguity intact.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The interface creates a tiny ceremony around an otherwise ordinary image. The fragment feels stronger for not being fully resolved.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The interface creates a tiny ceremony around an otherwise ordinary image. The delay changes the viewer’s position.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The interface creates a tiny ceremony around an otherwise ordinary image. The format makes the contradiction impossible to miss.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The interface creates a tiny ceremony around an otherwise ordinary image. I like the fact that the screen does not explain itself.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The interface creates a tiny ceremony around an otherwise ordinary image. It turns a simple gesture into a small social ritual.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The interface creates a tiny ceremony around an otherwise ordinary image. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The interface creates a tiny ceremony around an otherwise ordinary image. I would leave the ambiguity intact.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The interface creates a tiny ceremony around an otherwise ordinary image. The hesitation is part of its charm.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The contrast between immediacy and delay is doing most of the conceptual work. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The contrast between immediacy and delay is doing most of the conceptual work. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The contrast between immediacy and delay is doing most of the conceptual work. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The contrast between immediacy and delay is doing most of the conceptual work. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The contrast between immediacy and delay is doing most of the conceptual work. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The contrast between immediacy and delay is doing most of the conceptual work. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The contrast between immediacy and delay is doing most of the conceptual work. The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The contrast between immediacy and delay is doing most of the conceptual work. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This is compelling precisely because the object remains partly outside the screen. The format makes the contradiction impossible to miss.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This is compelling precisely because the object remains partly outside the screen. I like the fact that the screen does not explain itself.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This is compelling precisely because the object remains partly outside the screen. It turns a simple gesture into a small social ritual.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This is compelling precisely because the object remains partly outside the screen. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This is compelling precisely because the object remains partly outside the screen. I would leave the ambiguity intact.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This is compelling precisely because the object remains partly outside the screen. The hesitation is part of its charm.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This is compelling precisely because the object remains partly outside the screen. The interface makes that tension unusually visible.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This is compelling precisely because the object remains partly outside the screen. It works because the mechanism remains obvious.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. I like the fact that the screen does not explain itself.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. It turns a simple gesture into a small social ritual.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. I would leave the ambiguity intact.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. The hesitation is part of its charm.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. The interface makes that tension unusually visible.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. It works because the mechanism remains obvious.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The apparatus is simple, but it makes desire legible. It turns a simple gesture into a small social ritual.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The apparatus is simple, but it makes desire legible. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The apparatus is simple, but it makes desire legible. I would leave the ambiguity intact.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The apparatus is simple, but it makes desire legible. The hesitation is part of its charm.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The apparatus is simple, but it makes desire legible. The interface makes that tension unusually visible.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The apparatus is simple, but it makes desire legible. It works because the mechanism remains obvious.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The apparatus is simple, but it makes desire legible. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The apparatus is simple, but it makes desire legible. The delay changes the viewer’s position.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. I would leave the ambiguity intact.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. The hesitation is part of its charm.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. The interface makes that tension unusually visible.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. It works because the mechanism remains obvious.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. The delay changes the viewer’s position.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The threshold gives the image a social life before the image is even revealed. I would leave the ambiguity intact.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The threshold gives the image a social life before the image is even revealed. The hesitation is part of its charm.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The threshold gives the image a social life before the image is even revealed. The interface makes that tension unusually visible.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The threshold gives the image a social life before the image is even revealed. It works because the mechanism remains obvious.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The threshold gives the image a social life before the image is even revealed. The fragment feels stronger for not being fully resolved.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The threshold gives the image a social life before the image is even revealed. The delay changes the viewer’s position.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The threshold gives the image a social life before the image is even revealed. The format makes the contradiction impossible to miss.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The threshold gives the image a social life before the image is even revealed. I like the fact that the screen does not explain itself.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The fragment turns access into a ritual rather than a simple transaction. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'I like the tension between display and concealment here. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The interface promises intimacy while keeping the object strangely distant. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This is less a post than a small apparatus for producing expectation. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment survives precisely because it refuses to explain itself completely. The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'There is something theatrical about the act of unlocking this image. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The platform gives the private fragment a public choreography. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The withheld image acquires a curious authority simply by remaining withheld. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The threshold is doing more work here than the spectacle itself. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'I would keep the interruption; it makes the viewing act conscious of itself. The format makes the contradiction impossible to miss.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This feels like an archive pretending to be a feed. I like the fact that the screen does not explain itself.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The economy of attention is visible here, which makes the interface unusually interesting. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The small promise of access creates more suspense than a full reveal would. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The fragment has enough ambiguity to resist becoming mere content. I would leave the ambiguity intact.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'I like how the screen becomes part of the fiction rather than a neutral container. The hesitation is part of its charm.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The act of waiting changes the meaning of the thing being waited for. The interface makes that tension unusually visible.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'This is a neat collision between desire, interface, and documentation. It works because the mechanism remains obvious.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The polished surface and the withheld interior produce a productive contradiction. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The post makes curiosity feel almost architectural. The delay changes the viewer’s position.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The boundary between audience and participant is deliberately unstable here. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The interface does not merely present the fragment; it stages the desire to reach it. I like the fact that the screen does not explain itself.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The most interesting element may be the distance created by the lock. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'This could be read as a miniature theatre of spectatorship. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment gains intensity because the platform refuses immediate transparency. I would leave the ambiguity intact.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'I like that the interface makes the conditions of looking impossible to ignore. The hesitation is part of its charm.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. The interface makes that tension unusually visible.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'There is a useful friction between the casual feed and the ceremonial act of access. It works because the mechanism remains obvious.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The image feels more consequential because the interface makes us negotiate for it. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This is a good example of how withholding can become a visual device. The delay changes the viewer’s position.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The viewer is given a role before being given the object. I like the fact that the screen does not explain itself.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The distinction between preview and possession is wonderfully unstable here. It turns a simple gesture into a small social ritual.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The interface turns curiosity into a small performance. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment seems to know that the viewer is watching the act of watching. I would leave the ambiguity intact.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'This has the strange quality of a document that has learned how to seduce. The hesitation is part of its charm.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The visible surface is almost more mysterious than whatever might be behind it. The interface makes that tension unusually visible.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The lock creates a pause that ordinary scrolling usually eliminates. It works because the mechanism remains obvious.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The platform language and the archival feeling are oddly compatible. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This makes consumption visible instead of pretending it is neutral. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment becomes an event because access is staged. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The feed wants speed; the lock introduces duration. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The interface creates a tiny ceremony around an otherwise ordinary image. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The contrast between immediacy and delay is doing most of the conceptual work. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'This is compelling precisely because the object remains partly outside the screen. The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The viewer is never entirely sure whether they are consuming an image or participating in its construction. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The apparatus is simple, but it makes desire legible. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment does not need a grand explanation; the mechanism around it already tells a story. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The threshold gives the image a social life before the image is even revealed. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The fragment turns access into a ritual rather than a simple transaction. The format makes the contradiction impossible to miss.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The locked surface is part of the message; the threshold matters as much as what lies behind it. I like the fact that the screen does not explain itself.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'I like the tension between display and concealment here. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The interface promises intimacy while keeping the object strangely distant. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This is less a post than a small apparatus for producing expectation. I would leave the ambiguity intact.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The gesture is modest, but the distinction between seeing and possessing becomes very sharp. The hesitation is part of its charm.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The fragment survives precisely because it refuses to explain itself completely. The interface makes that tension unusually visible.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'There is something theatrical about the act of unlocking this image. It works because the mechanism remains obvious.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The platform gives the private fragment a public choreography. The fragment feels stronger for not being fully resolved.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The withheld image acquires a curious authority simply by remaining withheld. The delay changes the viewer’s position.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The threshold is doing more work here than the spectacle itself. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'I would keep the interruption; it makes the viewing act conscious of itself. I like the fact that the screen does not explain itself.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This feels like an archive pretending to be a feed. It turns a simple gesture into a small social ritual.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The economy of attention is visible here, which makes the interface unusually interesting. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The small promise of access creates more suspense than a full reveal would. I would leave the ambiguity intact.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The fragment has enough ambiguity to resist becoming mere content. The hesitation is part of its charm.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'I like how the screen becomes part of the fiction rather than a neutral container. The interface makes that tension unusually visible.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The act of waiting changes the meaning of the thing being waited for. It works because the mechanism remains obvious.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'This is a neat collision between desire, interface, and documentation. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The polished surface and the withheld interior produce a productive contradiction. The delay changes the viewer’s position.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'The post makes curiosity feel almost architectural. The format makes the contradiction impossible to miss.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The boundary between audience and participant is deliberately unstable here. I like the fact that the screen does not explain itself.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The interface does not merely present the fragment; it stages the desire to reach it. It turns a simple gesture into a small social ritual.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The most interesting element may be the distance created by the lock. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'This could be read as a miniature theatre of spectatorship. I would leave the ambiguity intact.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The fragment gains intensity because the platform refuses immediate transparency. The hesitation is part of its charm.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'I like that the interface makes the conditions of looking impossible to ignore. The interface makes that tension unusually visible.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The promise of exclusivity becomes part of the artwork rather than just its packaging. It works because the mechanism remains obvious.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'There is a useful friction between the casual feed and the ceremonial act of access. The fragment feels stronger for not being fully resolved.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The image feels more consequential because the interface makes us negotiate for it. The delay changes the viewer’s position.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'This is a good example of how withholding can become a visual device. The format makes the contradiction impossible to miss.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'The feed format makes the fragment feel fleeting, while the lock makes it feel preserved. I like the fact that the screen does not explain itself.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The viewer is given a role before being given the object. It turns a simple gesture into a small social ritual.'},
+  {handle:'jules_monnerot', name:'Jules Monnerot', text:'The distinction between preview and possession is wonderfully unstable here. The restraint keeps it from becoming ordinary promotional material.'},
+  {handle:'pierre_klossowski', name:'Pierre Klossowski', text:'The interface turns curiosity into a small performance. I would leave the ambiguity intact.'},
+  {handle:'georges_ambrosino', name:'Georges Ambrosino', text:'The fragment seems to know that the viewer is watching the act of watching. The hesitation is part of its charm.'},
+  {handle:'jean_rollin', name:'Jean Rollin', text:'This has the strange quality of a document that has learned how to seduce. The interface makes that tension unusually visible.'},
+  {handle:'georges_bataille', name:'Georges Bataille', text:'The visible surface is almost more mysterious than whatever might be behind it. It works because the mechanism remains obvious.'},
+  {handle:'roger_caillois', name:'Roger Caillois', text:'The lock creates a pause that ordinary scrolling usually eliminates. The fragment feels stronger for not being fully resolved.'},
+  {handle:'michel_leiris', name:'Michel Leiris', text:'There is an interesting politics of visibility embedded in such a simple mechanism. The delay changes the viewer’s position.'},
+  {handle:'denis_de_rougemont', name:'Denis de Rougemont', text:'The platform language and the archival feeling are oddly compatible. The format makes the contradiction impossible to miss.'}
+];
+
+const COMMENT_ROTATION_SIZE = 50;
+const COMMENTS_VISIBLE_STEP = 10;
+const commentRotations = {};
+
+function getStoredComments(){
+  return JSON.parse(
+    localStorage.getItem("onlyfanatics_comments_v2")
+  ) || {};
+}
+
+function saveStoredComments(data){
+  localStorage.setItem(
+    "onlyfanatics_comments_v2",
+    JSON.stringify(data)
+  );
+}
+
+function shuffleCopy(array){
+  const copy = [...array];
+  for(let i=copy.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]] = [copy[j],copy[i]];
+  }
+  return copy;
+}
+
+function getCommentRotation(postId){
+  if(!commentRotations[postId]){
+    commentRotations[postId] = shuffleCopy(COMMENT_POOL)
+      .slice(0, COMMENT_ROTATION_SIZE);
+  }
+  return commentRotations[postId];
+}
+
+const commentObservers = {};
+const commentVisibleCounts = {};
+
+function renderGeneratedComments(postId, container, visibleCount){
+  const stored = getStoredComments()[postId] || [];
+  const generated = getCommentRotation(postId);
+
+  const all = [
+    ...stored.map(c => ({handle:"user", name:c.name, text:c.text})),
+    ...generated
+  ];
+
+  const nextCount = Math.min(visibleCount, all.length);
+  commentVisibleCounts[postId] = nextCount;
+
+  container.innerHTML = all.slice(0, nextCount).map(c => `
+    <div class="comment">
+      <strong>@${escapeHTML(c.handle)}</strong>
+      <small>${escapeHTML(c.name)}</small>
+      <p>${escapeHTML(c.text)}</p>
+    </div>
+  `).join("");
+
+  const sentinel = document.createElement("div");
+  sentinel.className = "comments-lazy-sentinel";
+  sentinel.setAttribute("aria-hidden", "true");
+  sentinel.style.height = "1px";
+  sentinel.style.width = "100%";
+  sentinel.style.pointerEvents = "none";
+  container.appendChild(sentinel);
+
+  if(commentObservers[postId]){
+    commentObservers[postId].disconnect();
+  }
+
+  if(nextCount < all.length && "IntersectionObserver" in window){
+    commentObservers[postId] = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if(!entry.isIntersecting) return;
+
+        observer.disconnect();
+        const current = commentVisibleCounts[postId] || COMMENTS_VISIBLE_STEP;
+        renderGeneratedComments(
+          postId,
+          container,
+          Math.min(current + COMMENTS_VISIBLE_STEP, all.length)
+        );
+      });
+    }, {
+      root:container,
+      rootMargin:"0px 0px 500px 0px",
+      threshold:0
+    });
+
+    commentObservers[postId].observe(sentinel);
+  } else if(nextCount < all.length){
+    // Fallback: keep a modest initial render, then load the rest without a button.
+    renderGeneratedComments(
+      postId,
+      container,
+      Math.min(nextCount + COMMENTS_VISIBLE_STEP, all.length)
+    );
+  }
+}
+
+
+
+function renderFeed(){
+
+  const feed = document.getElementById("feed");
+
+  feed.innerHTML = "";
+
+  Object.values(commentObservers).forEach(observer => observer.disconnect());
+  Object.keys(commentObservers).forEach(key => delete commentObservers[key]);
+  Object.keys(commentVisibleCounts).forEach(key => delete commentVisibleCounts[key]);
+
+  posts.forEach(post=>{
+
+const media =
+  post.type === "video"
+  ?
+  `
+  <video
+    ${post.unlocked ? "controls" : ""}
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="none"
+    data-lazy-src="${post.src}"
+    class="${post.unlocked ? "" : "blurred"}"
+  ></video>
+  `
+  :
+  post.type === "image"
+  ?
+  `
+  <img
+    data-lazy-src="${post.src}"
+    class="${post.unlocked ? "" : "blurred"}"
+    alt="${post.creator}"
+    loading="lazy"
+  >
+  `
+  :
+  post.type === "iframe"
+  ?
+  `
+  <iframe
+    data-lazy-src="${post.src}"
+    class="${post.unlocked ? "" : "blurred"}"
+    allow="autoplay; fullscreen"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+  `
+  :
+  `
+  <div class="text-media ${post.unlocked ? "" : "blurred"}">
+    ${escapeHTML(post.src)}
+  </div>
+  `;
+
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+      <div class="card-top">
+
+        <div class="creator">
+
+          <div class="avatar">${post.avatar || "👤"}</div>
+
+          <div>
+            <h3>${post.creator}</h3>
+            <p>${post.date}</p>
+          </div>
+
+        </div>
+
+      </div>
+
+<div class="media-area">
+
+  ${media}
+
+  ${
+    !post.unlocked
+          ?
+          `
+          <div class="lock-layer">
+
+            <div class="lock-box">
+
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                d="M7 11V8C7 5.2 9.2 3 12 3C14.8 3 17 5.2 17 8V11"
+                stroke="#0ea5e9"
+                stroke-width="2"/>
+
+                <rect
+                x="5"
+                y="11"
+                width="14"
+                height="10"
+                rx="3"
+                fill="#0ea5e9"/>
+              </svg>
+
+              <h2>Unlock Exclusive Content</h2>
+
+              <p>
+                Unlock this content for
+                <strong>${post.price} credits</strong>
+              </p>
+
+              <button
+              class="unlock-btn"
+              onclick="unlockPost(${post.id})">
+
+                Unlock Now
+
+              </button>
+
+            </div>
+
+          </div>
+          `
+          :
+          ""
+        }
+
+      </div>
+
+      <div class="content">
+
+        <div class="description">
+          ${post.description}
+        </div>
+
+        <div class="reactions">
+
+          <button class="reaction" onclick="react(this)">
+            ❤️ <span>12</span>
+          </button>
+
+          <button class="reaction" onclick="react(this)">
+            🔥 <span>7</span>
+          </button>
+
+          <button class="reaction" onclick="react(this)">
+            😮 <span>5</span>
+          </button>
+
+          <button class="reaction" onclick="react(this)">
+            😍 <span>3</span>
+          </button>
+
+        </div>
+
+        <div class="comments" id="comments-${post.id}"></div>
+
+        <div class="comment-form">
+
+          <input
+          type="text"
+          id="name-${post.id}"
+          placeholder="Your name">
+
+          <textarea
+          id="text-${post.id}"
+          placeholder="Write a comment..."></textarea>
+
+          <button
+          class="post-btn"
+          onclick="addComment(${post.id})">
+
+            Post Comment
+
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+    feed.appendChild(card);
+
+    const commentsContainer = card.querySelector(`#comments-${post.id}`);
+    renderGeneratedComments(post.id, commentsContainer, COMMENTS_VISIBLE_STEP);
+
+  });
+
+  initLazyMedia();
+}
+
+let lazyMediaObserver;
+
+function initLazyMedia(){
+  if(lazyMediaObserver){
+    lazyMediaObserver.disconnect();
+  }
+
+  const lazyElements = document.querySelectorAll("[data-lazy-src]");
+
+  if(!("IntersectionObserver" in window)){
+    lazyElements.forEach(el => loadLazyMedia(el));
+    return;
+  }
+
+  lazyMediaObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const el = entry.target;
+
+      if(entry.isIntersecting){
+        loadLazyMedia(el);
+
+        if(el.tagName === "VIDEO"){
+          el.play().catch(()=>{});
+        }
+      }else if(el.tagName === "VIDEO"){
+        el.pause();
+      }
+    });
+  }, {
+    root:null,
+    rootMargin:"0px",
+    threshold:0.01
+  });
+
+  lazyElements.forEach(el => lazyMediaObserver.observe(el));
+}
+
+function loadLazyMedia(el){
+  const src = el.dataset.lazySrc;
+  if(!src) return;
+
+  if(el.tagName === "VIDEO"){
+    el.src = src;
+    el.load();
+  }else{
+    el.src = src;
+  }
+
+  delete el.dataset.lazySrc;
+}
+
+function showCreditsModal(price){
+  const modal = document.getElementById("creditsModal");
+  const message = document.getElementById("creditsModalMessage");
+
+  message.innerHTML = `You have <strong>${credits} credits</strong>, but this fragment costs <strong>${price} credits</strong>.`;
+  modal.classList.add("show");
+
+  setTimeout(() => {
+    const button = modal.querySelector(".credits-modal-btn");
+    if(button) button.focus();
+  }, 0);
+}
+
+function closeCreditsModal(){
+  document.getElementById("creditsModal").classList.remove("show");
+}
+
+document.getElementById("creditsModal").addEventListener("click", closeCreditsModal);
+document.addEventListener("keydown", event => {
+  if(event.key === "Escape") closeCreditsModal();
+});
+
+function unlockPost(id){
+
+  const post = posts.find(p=>p.id===id);
+
+  if(post.unlocked) return;
+
+  if(credits < post.price){
+    showCreditsModal(post.price);
+    return;
+  }
+
+  credits -= post.price;
+
+  post.unlocked = true;
+
+  localStorage.setItem(
+    "vault_unlocked",
+    JSON.stringify(
+      posts
+        .filter(p=>p.unlocked)
+        .map(p=>p.id)
+    )
+  );
+
+  localStorage.setItem(
+    "vault_credits",
+    credits
+  );
+
+  updateCredits();
+  renderFeed();
+
+}
+
+function updateCredits(){
+  document.getElementById("credits").innerText = credits;
+}
+
+function updateTimer(){
+
+  const now = Date.now();
+
+  let remaining = refillTimestamp - now;
+
+  if(remaining <= 0){
+
+    credits = STARTING_CREDITS;
+
+    localStorage.setItem(
+      "vault_credits",
+      credits
+    );
+
+    refillTimestamp =
+    Date.now() + REFILL_TIME;
+
+    localStorage.setItem(
+      "vault_refill_time",
+      refillTimestamp
+    );
+
+    remaining = REFILL_TIME;
+
+    updateCredits();
+
+  }
+
+  const minutes =
+  Math.floor(remaining / 1000 / 60);
+
+  const seconds =
+  Math.floor((remaining / 1000) % 60);
+
+  document.getElementById("timer").innerText =
+    `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+
+}
+
+setInterval(updateTimer,1000);
+
+function initializeReactionCounters(){
+      document.querySelectorAll(".reaction").forEach(btn => {
+        const span = btn.querySelector("span");
+
+        // Independent starting values and independent timing for every reaction.
+        const count = Math.floor(Math.random() * 450) + 20;
+        const growth = Math.floor(Math.random() * 4) + 1;
+        const pause = Math.floor(Math.random() * 2200) + 900;
+
+        btn.dataset.count = count;
+        btn.dataset.growth = growth;
+        btn.dataset.pause = pause;
+        btn.dataset.nextTick = Date.now() + pause;
+        span.innerText = count;
+      });
+    }
+
+    function updateReactionCounters(){
+      const now = Date.now();
+
+      document.querySelectorAll(".reaction").forEach(btn => {
+        const nextTick = parseInt(btn.dataset.nextTick || "0", 10);
+
+        // Stay still during the pause, then jump by this reaction's own amount.
+        if(now >= nextTick){
+          let count = parseInt(btn.dataset.count || "0", 10);
+          const growth = parseInt(btn.dataset.growth || "1", 10);
+          const pause = parseInt(btn.dataset.pause || "1800", 10);
+
+          count += growth;
+          btn.dataset.count = count;
+          btn.querySelector("span").innerText = count;
+
+          // Randomize the next pause so the reactions never move in sync.
+          btn.dataset.nextTick = now + Math.floor(pause * (0.7 + Math.random() * 0.8));
+        }
+      });
+    }
+
+    function react(btn){
+      let count = parseInt(btn.dataset.count || btn.querySelector("span").innerText, 10);
+      count += 1;
+      btn.dataset.count = count;
+      btn.querySelector("span").innerText = count;
+
+      // Immediate visual feedback without changing the layout.
+      btn.classList.remove("clicked");
+      void btn.offsetWidth;
+      btn.classList.add("clicked");
+
+      const emoji = btn.childNodes[0]?.textContent?.trim() || "❤️";
+      showReactionFeedback(emoji, btn);
+    }
+
+    let reactionToastTimer;
+
+    function showReactionFeedback(emoji, btn){
+      const toast = document.getElementById("reactionToast");
+      if(!toast || !btn) return;
+
+      toast.textContent = emoji + " +1";
+      const rect = btn.getBoundingClientRect();
+
+      toast.style.left = (rect.left + rect.width / 2) + "px";
+      toast.style.top = Math.max(8, rect.top - 34) + "px";
+
+      toast.classList.remove("show");
+      void toast.offsetWidth;
+      toast.classList.add("show");
+
+      clearTimeout(reactionToastTimer);
+      reactionToastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 700);
+    }
+
+    // Check frequently, but each counter has its own longer pause.
+    setInterval(updateReactionCounters, 250);
+
+    function addComment(id){
+
+  const name =
+  document.getElementById(`name-${id}`).value || "Anonymous";
+
+  const text =
+  document.getElementById(`text-${id}`).value;
+
+  if(!text.trim()) return;
+
+  const comments =
+  getStoredComments();
+
+  if(!comments[id]){
+    comments[id] = [];
+  }
+
+  comments[id].unshift({
+    name,
+    text
+  });
+
+  saveStoredComments(comments);
+
+  renderFeed();
+
+}
+
+function escapeHTML(str){
+
+  return str
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;");
+
+}
+
+document.addEventListener("keydown", (e) => {
+  if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "e"){
+    e.preventDefault();
+    localStorage.removeItem("vault_unlocked");
+    localStorage.removeItem("vault_credits");
+    localStorage.removeItem("vault_refill_time");
+    localStorage.removeItem("onlyfanatics_comments_v2");
+    location.reload();
+  }
+});
+
+renderFeed();
+initializeReactionCounters();
+updateCredits();
+updateTimer();
+
+</script>
+
+<div id="reactionToast" class="reaction-toast" aria-live="polite"></div>
+</body>
+</html>

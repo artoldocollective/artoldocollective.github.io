@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ANTISITE / FIRST SEAL</title>
+<meta content="noindex, nofollow" name="robots">
+  <style>
+    body {
+      background: #000;
+      color: #d0d0d0;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #container {
+      width: 600px;
+      text-align: center;
+    }
+
+    h1 {
+      font-weight: normal;
+      letter-spacing: 2px;
+      color: #ffffff;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.6;
+    }
+
+input {
+  background: black;
+  border: 1px solid #444;
+  color: white;
+  padding: 10px;
+  font-family: monospace;
+  text-align: center;
+  width: 60%;
+  display: inline-block;
+  vertical-align: middle;
+
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input:focus {
+  outline: 1px solid white;   /* your custom focus ring */
+  outline-offset: 0;
+  box-shadow: none;           /* kills Safari glow */
+}
+
+    button {
+      padding: 10px 20px;
+      background: black;
+      border: 1px solid #666;
+      color: white;
+      cursor: pointer;
+      font-family: monospace;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    #msg {
+      margin-top: 20px;
+      color: #888;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div id="container">
+
+  <h1>ANTISITE / FIRST SEAL</h1>
+
+  <p>
+    You are not entering a website.<br>
+    You are entering a structure of memory.
+  </p>
+
+  <p>
+    Solve the threshold:
+  </p>
+
+  <p style="font-style:italic;color:#aaa;">
+    “What has no body, but becomes present when remembered?”
+  </p>
+
+  <div style="margin-top:20px;">
+
+    <input id="answer" placeholder="Your answer...">
+
+    <button onclick="check()">UNLOCK</button>
+
+  </div>
+
+  <div id="msg"></div>
+
+</div>
+
+<script>
+function check() {
+  const v = document.getElementById("answer").value.trim().toLowerCase();
+  const msg = document.getElementById("msg");
+
+  // correct answer
+  if (v === "name") {
+    msg.innerHTML = "The gate opens...";
+    setTimeout(() => {
+      window.location.href = "https://github.com/TUO_REPO";
+    }, 2000);
+  } else {
+    msg.innerHTML = "Nothing responds. The structure remains closed.";
+  }
+}
+</script>
+
+</body>
+</html>

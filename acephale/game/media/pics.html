@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta content="noindex, nofollow" name="robots">
+<meta name="theme-color" content="#000">
+<title>OnlyFanatics</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+
+  /* scrollbar backup */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.page {
+  width: 100vw;
+  height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+}
+
+/* ACTUAL IMAGE — aspect ratio is preserved */
+.document {
+  display: block;
+
+  width: auto;
+  height: auto;
+
+  max-width: calc(100vw - 50px);
+  max-height: calc(100dvh - 50px);
+
+  border-radius: 25px;
+
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Hide scrollbars, but keep scrolling enabled */
+html,
+body {
+  overflow: auto;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE / old Edge */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari, newer Edge, Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+</style>
+</head>
+<body>
+  <main class="page">
+    <img
+      class="document"
+      src=""
+      alt='OnlyFanatics'
+      draggable="false"
+    >
+  </main>
+<script>
+(()=>{
+'use strict';
+const state={"effect":"cursorBulb","trigger":"pointermove","throttle":180,"amount":32,"size":34,"spread":260,"duration":1600,"gravity":0.55,"rotation":720,"blur":0,"opacity":1,"blend":"normal","rainbow":false,"colors":["#ffffff","#ff2e88","#00d9ff","#ffcc00"],"softness":18,"turbulence":30,"overlap":78,"permanentOverlay":false,"lightRadius":150,"lightFeather":90,"maskDarkness":92,"cursorMode":"none","cursorSize":38,"cursorGlow":18,"cursorBase64":""};
+const init=()=>{
+ const sizeScale=Math.max(.35,Math.min(2.8,state.size/34));
+ const spreadScale=Math.max(.45,Math.min(2.8,state.spread/260));
+ const radius=Math.max(24,state.lightRadius*sizeScale);
+ const feather=Math.max(0,(state.lightFeather+state.softness*.9)*spreadScale);
+ const opticalBlur=Math.max(0,state.blur+state.softness*.018);
+
+ const field=document.createElement('div');
+ field.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:2147482998';
+ document.body.appendChild(field);
+
+ 
+ field.style.background='rgba(0,0,0,'+Math.max(0,Math.min(1,(state.maskDarkness/100)*state.opacity))+')';
+ field.style.setProperty('--mx','50%');field.style.setProperty('--my','50%');
+ field.style.setProperty('--radius',radius+'px');field.style.setProperty('--feather',feather+'px');
+ field.style.filter='blur('+opticalBlur+'px)';
+ const mask='radial-gradient(circle at var(--mx) var(--my),transparent 0,transparent var(--radius),rgba(0,0,0,.35) calc(var(--radius) + var(--feather)*.35),#000 calc(var(--radius) + var(--feather)))';
+ field.style.webkitMaskImage=mask;field.style.maskImage=mask;
+ 
+
+ const cursor=document.createElement('div');
+ cursor.style.cssText='position:fixed;pointer-events:none;z-index:2147483000;display:none;transform:translate(-50%,-50%)';
+ document.body.appendChild(cursor);
+
+ function paintCursor(){
+   const m=state.cursorMode||'system',sz=state.cursorSize||38,g=state.cursorGlow||18;
+   document.documentElement.style.cursor=m==='system'?'default':'none';
+   cursor.style.display=(m==='system'||m==='none')?'none':'block';
+   cursor.style.width=sz+'px';cursor.style.height=sz+'px';
+   cursor.innerHTML='';cursor.style.border='0';cursor.style.borderRadius='50%';
+   cursor.style.background='transparent';cursor.style.boxShadow='none';
+   if(m==='dot'){cursor.style.background=state.colors[0];cursor.style.width=cursor.style.height=Math.max(5,sz*.25)+'px';cursor.style.boxShadow='0 0 '+g+'px '+state.colors[0]}
+   if(m==='ring'){cursor.style.border='2px solid '+state.colors[0];cursor.style.boxShadow='0 0 '+g+'px '+state.colors[0]}
+   if(m==='cross'){cursor.innerHTML='<svg viewBox="0 0 100 100" width="100%" height="100%"><path d="M50 0V100M0 50H100" stroke="'+state.colors[0]+'" stroke-width="4"/></svg>'}
+   if(m==='image'&&state.cursorBase64){cursor.innerHTML='<img src="'+state.cursorBase64+'" style="width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 '+g+'px '+state.colors[0]+')">'}
+ }
+ paintCursor();
+
+ document.addEventListener('pointermove',e=>{
+   const jitter=Math.min(12,(state.turbulence||0)*.06);
+   const lx=e.clientX+Math.sin(performance.now()*.006)*jitter;
+   const ly=e.clientY+Math.cos(performance.now()*.0053)*jitter;
+   
+   field.style.setProperty('--mx',lx+'px');field.style.setProperty('--my',ly+'px');
+   
+   cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';
+ },true);
+};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+</body>
+</html>

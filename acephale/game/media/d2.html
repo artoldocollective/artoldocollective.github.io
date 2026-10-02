@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta content="noindex, nofollow" name="robots">
+<meta name="theme-color" content="#000">
+<title>OnlyFanatics</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+
+  /* scrollbar backup */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.page {
+  width: 100vw;
+  height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+}
+
+/* ACTUAL IMAGE — aspect ratio is preserved */
+.document {
+  display: block;
+
+  width: auto;
+  height: auto;
+
+  max-width: calc(100vw - 50px);
+  max-height: calc(100dvh - 50px);
+
+  border-radius: 25px;
+
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Hide scrollbars, but keep scrolling enabled */
+html,
+body {
+  overflow: auto;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE / old Edge */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari, newer Edge, Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+</style>
+</head>
+<body>
+  <main class="page">
+    <img
+      class="document"
+      src="./d2.webp"
+      alt='OnlyFanatics'
+      draggable="false"
+    >
+  </main>
+<script>
+(()=>{'use strict';
+const state={"effect":"fisheye","trigger":"pointermove","throttle":180,"amount":32,"size":34,"spread":260,"duration":1600,"gravity":0.55,"rotation":720,"blur":0,"opacity":1,"blend":"normal","rainbow":false,"colors":["#ffffff","#ff2e88","#00d9ff","#ffcc00"],"softness":18,"turbulence":30,"overlap":78,"permanentOverlay":false,"cursorGlow":18};
+const init=()=>{
+ const lens=document.createElement('div');
+ const z=Math.max(70,state.size*3.2+state.spread*.22);
+ const zoom=Math.max(1.65,1.85+state.spread/1000);
+ lens.style.cssText='position:fixed;pointer-events:none;z-index:2147483000;border-radius:50%;overflow:hidden;width:'+z+'px;height:'+z+'px;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.48);background:rgba(255,255,255,.018);box-shadow:inset 0 0 18px rgba(255,255,255,.13),inset 2px 2px 4px rgba(255,255,255,.36),inset -2px -2px 5px rgba(255,255,255,.08),0 8px 28px rgba(0,0,0,.18);-webkit-backdrop-filter:blur(1.35px) saturate(1.08) brightness(1.03);backdrop-filter:blur(1.35px) saturate(1.08) brightness(1.03);isolation:isolate';
+ const glass=document.createElement('div');
+ glass.style.cssText='position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;background:rgba(255,255,255,.025);-webkit-backdrop-filter:blur(1.25px) brightness(1.025) saturate(1.04);backdrop-filter:blur(1.25px) brightness(1.025) saturate(1.04)';
+ lens.appendChild(glass);
+ const mirror=document.createElement('div');
+ mirror.style.cssText='position:absolute;left:0;top:0;transform-origin:0 0;pointer-events:none;z-index:1;filter:contrast(1.035) saturate(1.04)';
+ lens.appendChild(mirror);
+ const glintA=document.createElement('div');
+ glintA.style.cssText='position:absolute;z-index:10;pointer-events:none;left:10%;top:7%;width:46%;height:28%;border-radius:50%;transform:rotate(-18deg);background:radial-gradient(ellipse at center,rgba(255,255,255,.46) 0%,rgba(255,255,255,.20) 38%,rgba(255,255,255,.07) 54%,transparent 74%);filter:blur(.25px);opacity:.92';
+ lens.appendChild(glintA);
+ const glintB=document.createElement('div');
+ glintB.style.cssText='position:absolute;z-index:10;pointer-events:none;right:9%;bottom:10%;width:34%;height:19%;border-radius:50%;transform:rotate(-16deg);background:radial-gradient(ellipse at center,rgba(255,255,255,.18) 0%,rgba(255,255,255,.07) 44%,transparent 76%);filter:blur(.3px);opacity:.86';
+ lens.appendChild(glintB);
+ document.body.appendChild(lens);
+
+ const rebuild=()=>{
+   mirror.innerHTML='';
+   [...document.body.children].forEach(child=>{
+     if(child===lens)return;
+     const c=child.cloneNode(true);
+     c.querySelectorAll?.('script').forEach(s=>s.remove());
+     c.querySelectorAll?.('[id]').forEach(el=>el.removeAttribute('id'));
+     if(c.id)c.removeAttribute('id');
+     mirror.appendChild(c);
+   });
+   mirror.style.width=document.documentElement.scrollWidth+'px';
+   mirror.style.height=document.documentElement.scrollHeight+'px';
+   const bs=getComputedStyle(document.body);
+   const bg=bs.backgroundColor;
+   mirror.style.background=(bg && bg!=='rgba(0, 0, 0, 0)' && bg!=='transparent') ? bg : 'transparent';
+ };
+ rebuild();
+
+ let lastRefresh=performance.now();
+ document.documentElement.style.cursor='none';
+
+ document.addEventListener('pointermove',e=>{
+   const now=performance.now();
+   if(now-lastRefresh>250){rebuild();lastRefresh=now}
+   lens.style.left=e.clientX+'px';
+   lens.style.top=e.clientY+'px';
+   const px=e.clientX+window.scrollX,py=e.clientY+window.scrollY;
+   mirror.style.transform='translate('+(z/2-px*zoom)+'px,'+(z/2-py*zoom)+'px) scale('+zoom+')';
+ },true);
+};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+</body>
+</html>

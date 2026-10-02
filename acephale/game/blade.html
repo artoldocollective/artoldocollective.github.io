@@ -1,0 +1,607 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Blade</title>
+    <meta content="noindex, nofollow" name="robots">
+    <script src="./assets/engine.js"></script>
+    <script src="assets/loader1.js"></script>
+    <script src="assets/loader2.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: transparent;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color: #fff;
+      }
+
+      /* Top HUD (no modal/overlay besides HUD) */
+#hudWrap {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.hud {
+  pointer-events: auto;
+
+  background: #c3b597;
+  color: #fff;
+
+  border: 0;
+  border-radius: 12px;
+
+  padding: 10px 16px;
+
+  font: 700 22px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 280px;
+}
+
+      .topRow {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hint { opacity: 0.85; }
+      .label { opacity: 0.9; }
+      #result {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        min-width: 2ch;
+        text-align: center;
+      }
+
+      /* Button below the result */
+#watchBtn {
+  width: 100%;
+
+  font: 700 16px/1.1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  padding: 10px 14px;
+
+  background: #fff;
+  color: #000;
+
+  border: 0;
+  border-radius: 12px;
+
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+
+  cursor: pointer;
+  display: none;
+}
+
+#watchBtn:hover {
+  opacity: 0.95;
+}
+
+#watchBtn:active {
+  transform: translateY(1px);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint,
+.label,
+#result {
+  opacity: 1;
+  font-weight: 700;
+}
+
+#result {
+  min-width: 2ch;
+  text-align: center;
+}
+
+.a-enter-vr-button,
+.a-enter-ar-button,
+.a-enter-vr,
+.a-enter-ar {
+  display: none !important;
+}
+
+
+a-scene canvas {
+  cursor: grab !important;
+}
+a-scene canvas:active {
+  cursor: grabbing !important;
+}
+
+      .no-js #loader { display: none;  }
+      .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+      .se-pre-con {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 999999;
+	background: url(./images/spinner.svg) center no-repeat #000;
+     }
+
+    </style>
+
+<script>
+
+// Wait for window load
+	$(window).load(function() {
+		// Animate loader off screen
+		$(".se-pre-con").fadeOut("slow");;
+	});
+</script>
+
+  </head>
+
+  <body>
+
+<!-- Loader -->
+
+<div class="se-pre-con"></div>
+
+<!-- Loader End -->
+
+    <!-- HUD with result + button (no modal) -->
+    <div id="hudWrap">
+      <div class="hud">
+        <div class="label">Ritualize your mind</div>
+        <div class="topRow">
+          <div class="label">Memory №</div>
+          <div id="result">—</div>
+        </div>
+
+        <button id="watchBtn" type="button">
+          Unlock secret location
+        </button>
+      </div>
+    </div>
+
+    <a-scene cursor="rayOrigin: mouse"
+      renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
+      background="transparent: true"
+      vr-mode-ui="enabled: false"
+    >
+      <a-assets>
+        <canvas id="ancientTex" width="1024" height="1024"></canvas>
+        <canvas id="groundTex" width="1024" height="1024"></canvas>
+      </a-assets>
+
+      <!-- Lights -->
+      <a-entity light="type: ambient; intensity: 0.55; color: #cfc7bb"></a-entity>
+      <a-entity light="type: directional; intensity: 1.35; color: #ffe6c7" position="4 6 3"></a-entity>
+      <a-entity light="type: point; intensity: 0.35; distance: 25; color: #b7d5ff" position="-4 2 -2"></a-entity>
+
+      <!-- Camera -->
+      <a-entity position="0 0.75 5.6" rotation="-10 0 0">
+        <a-camera wasd-controls-enabled="false" look-controls="enabled: false" fov="55"></a-camera>
+      </a-entity>
+
+      <!-- Trottola spinner -->
+      <a-entity id="trottolaRig" position="0 0.28 0" spin-quantized="faces: 16">
+        <a-cylinder
+          radius="1.8"
+          height="0.14"
+          segments-radial="160"
+          position="0 0.00 0"
+          material="src: #ancientTex; roughness: 0.97; metalness: 0.02; repeat: 3 3"
+          shadow="cast: true; receive: true"
+        ></a-cylinder>
+
+        <a-entity id="slices" position="0 0.001 0" build-slices="faces: 16; radius: 1.78"></a-entity>
+
+        <!-- underside tip -->
+        <a-cone
+          radius-bottom="0.55"
+          radius-top="0.00"
+          height="0.85"
+          segments-radial="64"
+          position="0 -0.495 0"
+          rotation="180 0 0"
+          material="src: #ancientTex; roughness: 0.96; metalness: 0.02; repeat: 2 3"
+          shadow="cast: true"
+        ></a-cone>
+
+        <!-- stick -->
+        <a-cylinder
+          radius="0.16"
+          height="0.95"
+          segments-radial="96"
+          position="0 0.545 0"
+          material="src: #ancientTex; roughness: 0.92; metalness: 0.02; repeat: 2 4"
+          shadow="cast: true"
+        ></a-cylinder>
+
+        <a-cylinder
+          radius="0.22"
+          height="0.06"
+          segments-radial="96"
+          position="0 1.045 0"
+          material="src: #ancientTex; roughness: 0.90; metalness: 0.02; repeat: 2 2"
+          shadow="cast: true"
+        ></a-cylinder>
+      </a-entity>
+
+      <script>
+        // --- VIDEO LINKS (1..16) ---
+        // Replace these with your real URLs later.
+        const videoLinks = {
+          1:  "01-wheel.html",
+          2:  "02-wheel.html",
+          3:  "03-wheel.html",
+          4:  "04-wheel.html",
+          5:  "05-wheel.html",
+          6:  "06-wheel.html",
+          7:  "01-wheel.html",
+          8:  "02-wheel.html",
+          9:  "03-wheel.html",
+          10: "04-wheel.html",
+          11: "05-wheel.html",
+          12: "06-wheel.html",
+          13: "01-wheel.html",
+          14: "02-wheel.html",
+          15: "03-wheel.html",
+          16: "04-wheel.html"
+        };
+
+        let lastResultNumber = null;
+
+        // Hook up the watch button once
+        window.addEventListener("load", () => {
+          const watchBtn = document.getElementById("watchBtn");
+          watchBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // avoid triggering a new spin
+            if (!lastResultNumber) return;
+
+            const url = videoLinks[lastResultNumber];
+            if (url) window.open(url, "_self", "noopener,noreferrer");
+          });
+        });
+
+        // --- textures ---
+        function drawAncientTexture(canvas) {
+          const ctx = canvas.getContext("2d");
+          const w = canvas.width, h = canvas.height;
+
+          ctx.fillStyle = "#6b5c48";
+          ctx.fillRect(0, 0, w, h);
+
+          for (let y = 0; y < h; y++) {
+            const n = Math.sin(y * 0.02) * 0.5 + 0.5;
+            const drift = Math.sin(y * 0.006) * 35;
+            const shade = 95 + Math.floor(n * 45);
+            ctx.fillStyle = `rgb(${shade}, ${shade-14}, ${shade-30})`;
+            ctx.fillRect(drift, y, w, 1);
+          }
+
+          ctx.globalAlpha = 0.22;
+          for (let i = 0; i < 18000; i++) {
+            const x = Math.random() * w, y = Math.random() * h;
+            const r = Math.random() * 1.5 + 0.3;
+            const v = 110 + Math.floor(Math.random() * 50);
+            ctx.fillStyle = `rgba(${v},${v-8},${v-24},1)`;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+
+          const g = ctx.createRadialGradient(w*0.5, h*0.5, 80, w*0.5, h*0.5, w*0.7);
+          g.addColorStop(0, "rgba(255,255,255,0.05)");
+          g.addColorStop(1, "rgba(0,0,0,0.38)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+        }
+
+        function drawGroundTexture(canvas) {
+          const ctx = canvas.getContext("2d");
+          const w = canvas.width, h = canvas.height;
+
+          ctx.fillStyle = "#2a2a2f";
+          ctx.fillRect(0, 0, w, h);
+
+          for (let i = 0; i < 52000; i++) {
+            const x = (Math.random()*w)|0, y = (Math.random()*h)|0;
+            const v = 60 + (Math.random()*70)|0;
+            ctx.fillStyle = `rgba(${v},${v},${v+6},0.18)`;
+            ctx.fillRect(x, y, 1, 1);
+          }
+        }
+
+        window.addEventListener("load", () => {
+          drawAncientTexture(document.querySelector("#ancientTex"));
+          drawGroundTexture(document.querySelector("#groundTex"));
+          const r = document.getElementById("result");
+          if (r) r.textContent = "—";
+        });
+
+// --- build 16 wedges ---
+AFRAME.registerComponent("build-slices", {
+  schema: {
+    faces: { type: "int", default: 16 },
+    radius: { type: "number", default: 1.78 }
+  },
+
+  init: function () {
+
+    const faces = this.data.faces;
+    const R = this.data.radius;
+
+    // exact angle size of each slice
+    const step = (Math.PI * 2) / faces;
+
+    const greek = [
+      "🦄","👻","👹","☠️",
+      "🥷🏻","🐍","💩","🗽",
+      "👽","👾","🤖","🏰",
+      "🤡","👺","🧙🏻‍♂️","🧛"
+    ];
+
+    for (let i = 0; i < faces; i++) {
+
+      // =====================================
+      // SLICE GEOMETRY
+      // =====================================
+
+      const start = i * step;
+      const end   = (i + 1) * step;
+
+      const x0 = Math.cos(start) * R;
+      const z0 = Math.sin(start) * R;
+
+      const x1 = Math.cos(end) * R;
+      const z1 = Math.sin(end) * R;
+
+      // slice triangle
+      const tri = document.createElement("a-entity");
+
+      tri.setAttribute("geometry", {
+        primitive: "triangle",
+        vertexA: "0 0 0",
+        vertexB: `${x0} 0 ${z0}`,
+        vertexC: `${x1} 0 ${z1}`
+      });
+
+      tri.setAttribute("material", {
+        src: "#ancientTex",
+        roughness: 0.96,
+        metalness: 0.02,
+        side: "double",
+        repeat: "3 3"
+      });
+
+      tri.object3D.position.y = 0.071;
+
+      this.el.appendChild(tri);
+
+      // =====================================
+      // SEPARATOR
+      // =====================================
+
+      const sep = document.createElement("a-box");
+
+      sep.setAttribute("width", "0.015");
+      sep.setAttribute("height", "0.003");
+      sep.setAttribute("depth", `${R}`);
+
+      sep.setAttribute(
+        "position",
+        `0 0.072 0`
+      );
+
+      sep.setAttribute(
+        "rotation",
+        `0 ${(-i * 360 / faces)} 0`
+      );
+
+      sep.setAttribute("material", {
+        color: "#000",
+        opacity: 0.22,
+        transparent: true
+      });
+
+      this.el.appendChild(sep);
+
+      // =====================================
+      // CENTER OF THE SLICE
+      // =====================================
+
+      // EXACT center angle of this wedge
+      const midAngle = start + (step * 0.5);
+
+      // move EXACTLY toward middle of wedge
+      // THIS is what fixes the alignment
+      const centerRadius = R * 0.63;
+
+      const cx = Math.cos(midAngle) * centerRadius;
+      const cz = Math.sin(midAngle) * centerRadius;
+
+      // =====================================
+      // INLINE SVG CIRCLE + LETTER
+      // =====================================
+
+      const letter = greek[i];
+
+      const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="256"
+           height="256"
+           viewBox="0 0 256 256">
+
+        <circle
+          cx="128"
+          cy="128"
+          r="96"
+          fill="#e8d2a8"
+          stroke="#5c4022"
+          stroke-width="10"
+        />
+
+        <text
+          x="128"
+          y="128"
+          text-anchor="middle"
+          dominant-baseline="central"
+          font-size="120"
+          fill="#2b1d0e"
+          font-family="Georgia"
+          font-weight="bold">
+          ${letter}
+        </text>
+
+      </svg>
+      `;
+
+      const texture =
+        "data:image/svg+xml;charset=utf-8," +
+        encodeURIComponent(svg);
+
+      // =====================================
+      // LABEL PLANE
+      // =====================================
+
+      const label = document.createElement("a-plane");
+
+      label.setAttribute("width", "0.42");
+      label.setAttribute("height", "0.42");
+
+      // EXACT CENTER OF SLICE
+      label.setAttribute(
+        "position",
+        `${cx} 0.12 ${cz}`
+      );
+
+      // lay flat on spinner
+      label.setAttribute(
+        "rotation",
+        `-90 0 0`
+      );
+
+      label.setAttribute("material", {
+        src: texture,
+        transparent: true,
+        shader: "flat",
+        side: "double"
+      });
+
+      this.el.appendChild(label);
+    }
+  }
+});
+        // --- spin (quantized) ---
+        AFRAME.registerComponent("spin-quantized", {
+          schema: {
+            faces: { type: "int", default: 16 },
+            minFullTurns: { type: "int", default: 6 },
+            maxFullTurns: { type: "int", default: 12 },
+            baseDurationMs: { type: "int", default: 1900 },
+            extraDurationPerTurnMs: { type: "int", default: 230 }
+          },
+
+          init: function () {
+            this.spinning = false;
+            this.step = 360 / this.data.faces;
+
+            // Spin on any pointerdown EXCEPT button clicks
+            const spin = (e) => {
+              if (e && e.target && e.target.closest && e.target.closest("#watchBtn")) return;
+              this.spinOnce();
+            };
+
+            window.addEventListener("pointerdown", spin, { passive: true });
+            this._spinHandler = spin;
+          },
+
+          remove: function () {
+            if (this._spinHandler) window.removeEventListener("pointerdown", this._spinHandler);
+          },
+
+          easeOutCubic: (t) => 1 - Math.pow(1 - t, 3),
+
+          normalizeDeg: function (deg) {
+            deg = deg % 360;
+            if (deg < 0) deg += 360;
+            return deg;
+          },
+
+          randInt: function (a, b) {
+            return Math.floor(Math.random() * (b - a + 1)) + a;
+          },
+
+          spinOnce: function () {
+            if (this.spinning) return;
+            this.spinning = true;
+
+            const faces = this.data.faces;
+            const step = this.step;
+
+            const currentY = this.normalizeDeg(this.el.object3D.rotation.y * 180 / Math.PI);
+
+            const sliceIndex = this.randInt(0, faces - 1);
+            const finalY = sliceIndex * step;
+
+            const fullTurns = this.randInt(this.data.minFullTurns, this.data.maxFullTurns);
+
+            let delta = finalY - currentY;
+            if (delta < 0) delta += 360;
+            delta += fullTurns * 360;
+
+            const duration =
+              this.data.baseDurationMs +
+              fullTurns * this.data.extraDurationPerTurnMs +
+              Math.floor(Math.random() * 250);
+
+            const startTime = performance.now();
+            const startY = currentY;
+            const targetY = startY + delta;
+
+            const tick = (now) => {
+              const t = Math.min(1, (now - startTime) / duration);
+              const e = this.easeOutCubic(t);
+              const y = startY + (targetY - startY) * e;
+
+              this.el.object3D.rotation.y = y * Math.PI / 180;
+
+              if (t < 1) requestAnimationFrame(tick);
+              else {
+                this.el.object3D.rotation.y = finalY * Math.PI / 180;
+                this.spinning = false;
+
+                const resultNumber = sliceIndex + 1;
+                lastResultNumber = resultNumber;
+
+                // HUD result
+                const el = document.getElementById("result");
+                if (el) el.textContent = String(resultNumber);
+
+                // Show button once we have a result
+                const watchBtn = document.getElementById("watchBtn");
+                if (watchBtn) watchBtn.style.display = "block";
+              }
+            };
+
+            requestAnimationFrame(tick);
+          }
+        });
+      </script>
+    </a-scene>
+  </body>
+</html>

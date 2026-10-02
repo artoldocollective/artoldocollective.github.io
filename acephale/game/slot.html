@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta content="noindex, nofollow" name="robots">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Acéphale Slot Machine</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+
+    width:100%;
+    height:100%;
+
+}
+
+body{
+
+    background:transparent;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    font-family:Arial,Helvetica,sans-serif;
+
+    color:white;
+
+}
+
+
+#machine{
+
+    width:min(95vw,700px);
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:25px;
+
+}
+
+
+h1{
+
+    font-size:clamp(28px,6vw,52px);
+
+    text-align:center;
+
+    color:#00ffff;
+
+    text-shadow:
+
+    0 0 10px cyan,
+    0 0 30px cyan,
+    0 0 60px cyan;
+
+}
+
+
+#cabinet{
+
+    width:100%;
+
+    padding:30px;
+
+    border-radius:30px;
+
+    background:#111;
+
+    border:4px solid cyan;
+
+    box-shadow:
+
+    0 0 15px cyan,
+    0 0 50px cyan inset,
+    0 0 80px cyan;
+
+}
+
+
+#slots{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:20px;
+
+}
+
+
+.reelWindow{
+
+    width:min(25vw,130px);
+
+    height:min(25vw,130px);
+
+    overflow:hidden;
+
+    position:relative;
+
+    background:#000;
+
+    border-radius:20px;
+
+    border:3px solid cyan;
+
+    box-shadow:
+
+    0 0 15px cyan inset,
+    0 0 20px cyan;
+
+}
+
+
+.reel{
+
+    position:absolute;
+
+    width:100%;
+
+    top:0;
+    left:0;
+
+}
+
+
+.symbol{
+
+    height:130px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:75px;
+
+}
+
+
+button{
+
+    padding:15px 60px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#ff00ff;
+
+    color:white;
+
+    font-size:26px;
+
+    cursor:pointer;
+
+    box-shadow:
+
+    0 0 15px magenta,
+    0 0 40px magenta;
+
+}
+
+
+button:disabled{
+
+    opacity:.4;
+
+}
+
+
+#message{
+
+    height:40px;
+
+    font-size:30px;
+
+    text-align:center;
+
+}
+
+
+#countdown{
+
+    height:60px;
+
+    font-size:55px;
+
+    color:#ffff55;
+
+    text-shadow:
+
+    0 0 20px yellow;
+
+}
+
+
+#particles{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+}
+
+
+
+@media(max-width:600px){
+
+    #slots{
+
+        gap:8px;
+
+    }
+
+
+    .reelWindow{
+
+        width:28vw;
+        height:28vw;
+
+    }
+
+
+    .symbol{
+
+        height:28vw;
+
+        font-size:16vw;
+
+    }
+
+
+}
+
+button:hover{
+
+    background:#ffff00;
+
+    color:#000;
+
+    box-shadow:
+    0 0 15px yellow,
+    0 0 40px yellow,
+    0 0 80px yellow;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div id="machine">
+
+
+<h1>
+🎰 Acéphale Slot Machine 🎰
+</h1>
+
+
+<div id="cabinet">
+
+
+<div id="slots">
+
+
+<div class="reelWindow">
+<div class="reel" id="reel1"></div>
+</div>
+
+
+<div class="reelWindow">
+<div class="reel" id="reel2"></div>
+</div>
+
+
+<div class="reelWindow">
+<div class="reel" id="reel3"></div>
+</div>
+
+
+</div>
+
+
+</div>
+
+<h2>JACKPOTS &nbsp; 💀💀💀 &nbsp; 🎲🎲🎲 &nbsp; 🎨🎨🎨 &nbsp; 🧠🧠🧠</h2>
+
+<button id="stopButton">
+ALEA
+</button>
+
+<div id="message"></div>
+
+<div id="countdown"></div>
+
+</div>
+
+
+<div id="particles"></div>
+
+
+<script>
+const SYMBOLS=[
+"🎲",
+"💀",
+"🎨",
+"🤡",
+"🤖",
+"👽",
+"👾",
+"👁️",
+"💩",
+"🔥",
+"🧠",
+"💎"
+];
+
+
+const REPEAT=20;
+const SYMBOL_HEIGHT=130;
+
+
+const reelElements=[
+document.getElementById("reel1"),
+document.getElementById("reel2"),
+document.getElementById("reel3")
+];
+
+
+const stopButton=document.getElementById("stopButton");
+const message=document.getElementById("message");
+const countdown=document.getElementById("countdown");
+const particles=document.getElementById("particles");
+
+
+
+function createReel(element){
+
+    element.innerHTML="";
+
+    for(let r=0;r<REPEAT;r++){
+
+        SYMBOLS.forEach(symbol=>{
+
+            let item=document.createElement("div");
+
+            item.className="symbol";
+            item.textContent=symbol;
+
+            element.appendChild(item);
+
+        });
+
+    }
+
+}
+
+
+reelElements.forEach(createReel);
+
+
+
+const reels=reelElements.map(el=>({
+
+    element:el,
+    position:0,
+    speed:0,
+    targetSpeed:35,
+    state:"idle",
+    target:null,
+    finalPosition:0,
+    stopped:false
+
+}));
+
+
+// RANDOM INITIAL SYMBOLS
+reels.forEach(r=>{
+
+    let randomIndex =
+        Math.floor(Math.random()*SYMBOLS.length);
+
+    r.position =
+        randomIndex * SYMBOL_HEIGHT;
+
+    r.element.style.transform =
+        `translateY(${-r.position}px)`;
+
+});
+
+
+const STRIP_LENGTH=
+SYMBOLS.length*REPEAT*SYMBOL_HEIGHT;
+
+
+let spinning=false;
+let result=[];
+let stopTimeout = null;
+
+
+function randomSymbol(){
+
+return SYMBOLS[
+Math.floor(Math.random()*SYMBOLS.length)
+];
+
+}
+
+
+
+function getSymbolIndex(symbol){
+
+return SYMBOLS.indexOf(symbol);
+
+}
+
+
+
+
+
+/* =========================
+   RESET / SPIN
+========================= */
+
+
+function startSpin(){
+
+
+    message.textContent="";
+    countdown.textContent="";
+
+
+    spinning=true;
+
+
+    reels.forEach(r=>{
+
+
+        r.speed=15;
+
+        r.state="accelerating";
+
+        r.stopped=false;
+
+        r.target=null;
+
+        r.finalPosition=0;
+
+
+    });
+
+
+}
+
+
+
+function hardRestart(){
+
+
+    reels.forEach(r=>{
+
+
+        r.position=0;
+
+        r.speed=0;
+
+        r.state="idle";
+
+        r.target=null;
+
+        r.stopped=false;
+
+
+        r.element.style.transform="translateY(0px)";
+
+
+    });
+
+
+    spinning=false;
+
+    result=[];
+
+
+    startSpin();
+
+
+}
+
+
+
+
+
+/* DOUBLE CLICK RESET */
+
+stopButton.addEventListener(
+"dblclick",
+(e)=>{
+
+    e.preventDefault();
+
+    hardRestart();
+
+}
+);
+
+
+
+
+
+
+
+/* =========================
+   ANIMATION
+========================= */
+
+
+function updateReel(reel){
+
+
+    if(reel.state==="accelerating"){
+
+
+        reel.speed+=0.35;
+
+
+        if(reel.speed>=reel.targetSpeed){
+
+
+            reel.speed=reel.targetSpeed;
+
+            reel.state="spinning";
+
+
+        }
+
+        // Move the reel while it accelerates
+        reel.position+=reel.speed;
+
+
+    }
+
+
+    else if(reel.state==="spinning"){
+
+
+        reel.position+=reel.speed;
+
+
+    }
+
+
+    else if(reel.state==="stopping"){
+
+
+        updateStopping(reel);
+
+
+    }
+
+
+
+    if(
+        (reel.state==="accelerating" || reel.state==="spinning") &&
+        reel.position>=STRIP_LENGTH
+    ){
+
+        reel.position%=STRIP_LENGTH;
+
+    }
+
+
+
+    reel.element.style.transform=
+    `translateY(${-reel.position}px)`;
+
+
+}
+
+
+
+
+function animationLoop(){
+
+    requestAnimationFrame(animationLoop);
+
+    reels.forEach(updateReel);
+
+}
+
+
+animationLoop();
+
+startSpin();
+
+
+
+
+
+
+/* =========================
+   RESULT
+========================= */
+
+function chooseResult(){
+
+    let chance=Math.random();
+
+    if(chance < 0.25)
+        return ["🎲","🎲","🎲"];
+
+    if(chance < 0.50)
+        return ["💀","💀","💀"];
+
+    if(chance < 0.75)
+        return ["🎨","🎨","🎨"];
+
+    return ["🧠","🧠","🧠"];
+
+}
+
+
+stopButton.onclick=function(){
+
+    if(!spinning) return;
+
+    result = chooseResult();
+
+    // Cancel any previous watchdog
+    clearTimeout(stopTimeout);
+
+    // Emergency stop after 20 seconds
+    stopTimeout = setTimeout(()=>{
+
+        if(!spinning) return;
+
+        reels.forEach((r,i)=>{
+
+            if(!r.stopped){
+
+                r.position = r.finalPosition || r.position;
+
+                r.speed = 0;
+                r.state = "locked";
+                r.stopped = true;
+
+            }
+
+        });
+
+        checkFinished();
+
+    },20000);
+
+    reels.forEach((r,i)=>{
+
+        setTimeout(()=>{
+
+            stopReel(r,result[i]);
+
+        },900+i*800);
+
+    });
+
+};
+
+
+
+
+
+
+function stopReel(reel, target){
+
+    reel.state = "stopping";
+    reel.target = target;
+
+    // Current symbol index on the reel
+    const currentIndex =
+        Math.floor(reel.position / SYMBOL_HEIGHT);
+
+    // Desired symbol (0..11)
+    const targetIndex =
+        getSymbolIndex(target);
+
+    // Position within one symbol cycle
+    const currentCycleIndex =
+        currentIndex % SYMBOLS.length;
+
+    // Number of symbols to move forward to reach the target
+    let offset =
+        targetIndex - currentCycleIndex;
+
+    if(offset < 0)
+        offset += SYMBOLS.length;
+
+    // Make the reel spin several full turns before stopping
+    const extraTurns =
+        (3 + Math.floor(Math.random()*2)) * SYMBOLS.length;
+
+    const finalIndex =
+        currentIndex + extraTurns + offset;
+
+    reel.finalPosition =
+        finalIndex * SYMBOL_HEIGHT;
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   FAST STOP PHYSICS
+========================= */
+
+
+function updateStopping(reel){
+
+
+
+let distance=
+reel.finalPosition-reel.position;
+
+
+
+// 70% FASTER BRAKING
+
+if(Math.abs(distance)>250){
+
+
+
+    reel.speed*=0.82;
+
+
+
+    if(reel.speed<12){
+
+        reel.speed=12;
+
+    }
+
+
+
+    reel.position+=reel.speed;
+
+
+
+}
+
+
+
+else{
+
+
+
+    // faster magnetic lock
+
+    reel.position += distance*0.45;
+
+
+
+    if(Math.abs(distance)<2){
+
+
+
+        reel.position=
+        reel.finalPosition;
+
+
+        reel.speed=0;
+
+
+        reel.state="locked";
+
+
+        reel.stopped=true;
+
+
+
+        checkFinished();
+
+
+
+    }
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+function checkFinished(){
+
+    if(!reels.every(r=>r.stopped)) return;
+
+    clearTimeout(stopTimeout);
+
+    spinning = false;
+
+    // Use the symbols that were actually selected.
+    result = reels.map(r => r.target);
+
+    evaluateResult();
+
+}
+
+
+
+
+
+/* =========================
+   UNLOCKS
+========================= */
+
+
+function evaluateResult(){
+
+    const [a,b,c] = result;
+
+    if(a==="🎲" && b==="🎲" && c==="🎲"){
+        win("🎲 RITUAL DICE UNLOCKED","dice.html");
+        return;
+    }
+
+    if(a==="💀" && b==="💀" && c==="💀"){
+        win("💀 WHEEL OF FORTUNE UNLOCKED","blade.html");
+        return;
+    }
+
+    if(a==="🎨" && b==="🎨" && c==="🎨"){
+        win("🎨 MAGIC PAINTING UNLOCKED","pencil.html");
+        return;
+    }
+
+if(a==="🧠" && b==="🧠" && c==="🧠"){
+    win("🧠 SOCIAL MACHINE UNLOCKED","machine.html");
+    return;
+}
+
+    message.textContent="❌ TRY AGAIN";
+
+    setTimeout(startSpin,2000);
+
+}
+
+
+
+
+
+function win(text,page){
+
+
+message.textContent=text;
+
+
+jackpot();
+
+
+let sec=5;
+
+countdown.textContent=sec;
+
+
+
+let timer=setInterval(()=>{
+
+
+sec--;
+
+countdown.textContent=sec;
+
+
+
+if(sec<=0){
+
+
+clearInterval(timer);
+
+window.location.href=page;
+
+
+}
+
+
+},1000);
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   PARTICLES
+========================= */
+
+
+function jackpot(){
+
+createParticles();
+
+}
+
+
+
+
+function createParticles(){
+
+
+let icons=["✨","⭐","💥","◆","✦"];
+
+
+
+for(let i=0;i<80;i++){
+
+
+let p=document.createElement("div");
+
+
+p.textContent=
+icons[Math.floor(Math.random()*icons.length)];
+
+
+
+p.style.position="fixed";
+p.style.left="50%";
+p.style.top="50%";
+
+p.style.fontSize=
+(15+Math.random()*25)+"px";
+
+
+
+particles.appendChild(p);
+
+
+
+let x=(Math.random()-0.5)*800;
+
+let y=(Math.random()-0.5)*800;
+
+
+
+p.animate([
+
+{
+transform:"translate(0,0)",
+opacity:1
+},
+
+{
+transform:`translate(${x}px,${y}px)`,
+opacity:0
+}
+
+],
+{
+duration:1000+Math.random()*1000
+}
+
+).onfinish=()=>p.remove();
+
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   AUDIO
+========================= */
+
+
+let audioContext=null;
+
+
+function initAudio(){
+
+if(!audioContext)
+
+audioContext=new AudioContext();
+
+
+if(audioContext.state==="suspended")
+
+audioContext.resume();
+
+
+}
+
+
+
+
+
+function beep(freq,duration,volume=.05){
+
+
+initAudio();
+
+
+let osc=audioContext.createOscillator();
+
+let gain=audioContext.createGain();
+
+
+osc.frequency.value=freq;
+
+gain.gain.value=volume;
+
+
+osc.connect(gain);
+
+gain.connect(audioContext.destination);
+
+
+
+osc.start();
+
+
+
+gain.gain.exponentialRampToValueAtTime(
+
+0.001,
+
+audioContext.currentTime+duration
+
+);
+
+
+
+osc.stop(
+
+audioContext.currentTime+duration
+
+);
+
+
+}
+
+
+
+
+
+document.addEventListener(
+"click",
+initAudio,
+{once:true}
+);
+</script>
+
+
+</body>
+
+</html>

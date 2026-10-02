@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta content="noindex, nofollow" name="robots">
+<title>Acéphale – Chat</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+  background:transparent;
+  color:#e9edef;
+  overflow-x:hidden;
+}
+
+body{
+  background-image:radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size:22px 22px;
+}
+
+.scene{
+  position:relative;
+  padding:80px 0 140px;
+  max-width:900px;
+  margin:0 auto;
+}
+
+.message{
+  position:relative;
+  max-width:420px;
+  margin:110px auto;
+  padding:10px 12px;
+  border-radius:10px;
+
+  opacity:0;
+  transform:translateY(80px) scale(.96);
+  transition:opacity .6s ease, transform .6s ease;
+
+  box-shadow:0 1px 1px rgba(0,0,0,.25);
+}
+
+/* Telegram-style incoming message */
+.left{
+  margin-left:36px;
+  margin-right:auto;
+  background:#1f2c3a; /* Telegram dark incoming bubble */
+}
+
+/* Telegram-style outgoing message */
+.right{
+  margin-right:36px;
+  margin-left:auto;
+  background:#2b5278; /* Telegram dark outgoing bubble */
+}
+
+.name{
+  font-size:12px;
+  font-weight:700;
+  opacity:.75;
+  margin-bottom:6px;
+}
+
+.text{
+  font-size:18px;
+  line-height:1.45;
+  white-space:pre-wrap;
+}
+
+.visible{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+.cursor{
+  display:inline-block;
+  width:8px;
+  animation:blink 1s infinite;
+}
+
+.voice{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 0;
+}
+
+.play{
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:50%;
+  cursor:pointer;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size:14px;
+}
+
+.bar{
+  flex:1;
+  height:6px;
+  background:rgba(255,255,255,.15);
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.progress{
+  height:100%;
+  width:0;
+  background:#2aabee; /* Telegram blue accent */
+}
+
+.time{
+  font-size:12px;
+  opacity:.8;
+  min-width:42px;
+  text-align:right;
+}
+
+@keyframes blink{
+  50%{opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<h1 style="text-align:center;"> Acéphale<br>H🧿lygram Channel</h1>
+<h2 style="text-align:center;">No Head - No Center - No God</h2>
+<div class="scene" id="chat"></div>
+
+<script>
+
+const dataset = [
+
+{ name: "System", text: "Georges Bataille (Administrator) has created the Group Acéphale: Religion, Sociology, Philosophy", side: "right", type: "text" },
+{ name: "System", text: "Georges Bataille has assigned Colette Peignot (Laure), Georges Ambrosino, Pierre Klossowski, Roger Caillois as Moderator(s)", side: "left", type: "text" },
+{ name: "System", text: "Georges Bataille has added Jacques Chavy, René Chenon, Henri Dubief, Pierre Dugan (Pierre Pascal), Henri Dussat, Imre Kelemen, Patrick Waldberg, Michel Koch, Isabelle Farner (Isabelle Waldberg) to the Group", side: "right", type: "text" },
+{ name: "System", text: "Georges Bataille has assigned André Masson, Roger Caillois, Jules Monnerot, Jean Rollin, Jean Wahl as Collaborator(s)", side: "left", type: "text" },
+{ name: "System", text: "Georges Bataille has added Taro Okamoto, Walter Benjamin as Auditor(s) to the Group", side: "right", type: "text" },
+{ name: "System", text: "Georges Bataille has added Andre Breton, Léona Delcourt (Nadja) as Guest(s) to the Group", side: "left", type: "text" },
+{name:'Georges Bataille', text:'Politics was only the disguise. Religion was always underneath it.', side:'right', type:'text'},
+{name:'Roger Caillois', text:'Normal people start clubs. You are founding a sacred conspiracy.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Exactly.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'The problem is not whether civilization survives. The problem is whether anyone still knows ecstasy.', side:'left', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Civilization survives precisely by amputating ecstasy.', side:'right', type:'text'},
+{name:'André Masson', text:'Drawing the acephalic figure now. He looks like a saint who lost an argument with an axe.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Scientifically speaking, removing the head does simplify certain political questions.', side:'right', type:'text'},
+{name:'Jacques Chavy', text:'Please do not write “scientifically speaking” before ritual propositions.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'We must stop behaving like civilized employees of reason.', side:'right', type:'text'},
+{name:'Patrick Waldberg', text:'Bataille says this while sending messages at 3:12 AM with perfect punctuation.', side:'left', type:'text'},
+{name:'Colette Peignot (Laure)', text:'His grammar is the last surviving institution.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'Sade understood something essential: desire intensifies in absence.', side:'left', type:'text'},
+{name:'Roger Caillois', text:'Every conversation with this group eventually becomes either sacrifice or the Marquis de Sade.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Those are the only two serious subjects.', side:'left', type:'text'},
+{name:'André Masson', text:'Adding flames where the head should be.', side:'right', type:'text'},
+{name:'Michel Koch', text:'That is somehow more reassuring than a face.', side:'left', type:'text'},
+{name:'Henri Dubief', text:'The modern world cannot be loved enough to die for.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Because it asks only for labor, never for madness.', side:'left', type:'text'},
+{name:'Pierre Dugan (Pierre Pascal)', text:'What exactly are we building?', side:'right', type:'text'},
+{name:'Georges Bataille', text:'A community held together by impossible intensity.', side:'left', type:'text'},
+{name:'Roger Caillois', text:'That is not a reassuring sentence.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Good.', side:'left', type:'text'},
+{name:'André Breton', text:'I leave Paris for FIVE MINUTES and you people invent a headless religion.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'You say that like it is criticism.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'The Earth beneath us is incandescent fire. Humanity merely lives on the cooled crust.', side:'right', type:'text'},
+{name:'Imre Kelemen', text:'Finally. Someone in this chat mentions geology.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'The monster is not outside humanity. The monster is humanity escaping moral duration.', side:'right', type:'text'},
+{name:'Henri Dussat', text:'That sounded profound but also deeply illegal.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'The acephalic man escapes “the prison of the head.”', side:'right', type:'text'},
+{name:'Jacques Chavy', text:'Unfortunately the police generally begin with the head.', side:'left', type:'text'},
+{name:'André Masson', text:'I want the figure to feel sacred and catastrophic simultaneously.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Like eroticism during social collapse.', side:'left', type:'text'},
+{name:'Patrick Waldberg', text:'Future historians are going to have an impossible time with us.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Future historians deserve suffering too.', side:'left', type:'text'},
+{name:'Walter Benjamin', text:'I attended one dinner and now I receive messages about ecstatic fire and human sacrifice.', side:'right', type:'text'},
+{name:'Roger Caillois', text:'You see why I refused the forest rituals.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Cowardice disguised as sociology.', side:'right', type:'text'},
+{name:'Roger Caillois', text:'Sociology survives longer than martyrdom.', side:'left', type:'text'},
+{name:'Colette Peignot (Laure)', text:'But martyrdom photographs better.', side:'right', type:'text'},
+{name:'André Masson', text:'Especially with torches.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'Sade wanted to annihilate the limits of the individual through excess.', side:'right', type:'text'},
+{name:'Michel Koch', text:'Most people simply buy alcohol.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Most people are spiritually unemployed.', side:'right', type:'text'},
+{name:'Henri Dubief', text:'The crowd at Vel d’Hiv moved like a single organism. That was the closest thing to sacred experience modern politics has produced.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Mass psychology as combustion physics.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'A revolution should feel like falling in love and dying simultaneously.', side:'left', type:'text'},
+{name:'André Breton', text:'I am muting this conversation.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Muting is the final bourgeois ritual.', side:'left', type:'text'},
+{name:'Henri Dubief', text:'Really?', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'So what...', side:'left', type:'text'},
+{name:'Georges Bataille', text:'If the fascists continue touching Nietzsche with their filthy administrative fingers, we should answer with a religion of sacrilege.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'Not sacrilege. Reversal. Nietzsche cannot become doctrine because doctrine is already decomposition.', side:'left', type:'text'},
+{name:'Roger Caillois', text:'You are both romanticizing contamination. Fascism absorbs symbols because symbols desire mass adhesion.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'No. Fascism absorbs dead symbols. We are discussing combustion.', side:'left', type:'text'},
+{name:'André Masson', text:'drawing a headless Nietzsche with intestines shaped like lightning bolts', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Hitler holding Nietzsche’s cane is the most obscene erotic image Europe has produced.', side:'left', type:'text'},
+{name:'Jacques Chavy', text:'Should this appear in the journal?', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Absolutely not. Which is precisely why it must.', side:'left', type:'text'},
+{name:'Walter Benjamin', text:'Every fascism aestheticizes inheritance. The archive itself becomes theatrical machinery.', side:'right', type:'text'},
+{name:'Patrick Waldberg', text:'Writing this down before everyone denies having said it.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Politically speaking, Hitler is trying to split the atom of myth using police methods.', side:'right', type:'text'},
+{name:'Michel Koch', text:'That sounds dangerous.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Everything interesting is dangerous.', side:'right', type:'text'},
+{name:'Jean Wahl', text:'Nietzsche’s real scandal is not aristocracy but inner instability.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Exactly. Fascism wants obedience. Nietzsche wanted vertigo.', side:'right', type:'text'},
+{name:'Roger Caillois', text:'You say “vertigo” every time the conversation becomes incoherent.', side:'left', type:'text'},
+{name:'Colette Peignot (Laure)', text:'And you say “structure” every time desire enters the room.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'The misunderstanding is theological. Fascists read Nietzsche as commandment. But Nietzsche wrote temptations.', side:'left', type:'text'},
+{name:'Henri Dubief', text:'So what exactly are we building here?', side:'right', type:'text'},
+{name:'Georges Bataille', text:'A community impossible to govern.', side:'left', type:'text'},
+{name:'André Breton', text:'This is what happens when surrealists read too much theology.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Breton removed from the ritual thread.', side:'left', type:'text'},
+{name:'System', text:'André Breton has left the group.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Finally, a successful sacrifice.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{name:'Georges Bataille', text:'Mussolini denies Nietzsche in order to use him more efficiently. That is the essence of modern betrayal: polite rejection as camouflage.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'He does not even deny him. He reorganizes him. Hegel provides the skeleton; Nietzsche is reduced to nervous energy.', side:'right', type:'text'},
+{name:'Georges Ambrosino', text:'From a physical standpoint, Mussolini is describing ideology as a binding force field. Nietzsche would call that a restriction of entropy.', side:'left', type:'text'},
+{name:'Roger Caillois', text:'Fascism is not philosophy. It is a social reflex that borrows philosophical vocabulary after the fact.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Then it is worse than philosophy. It is unconscious philosophy with a police force.', side:'left', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Mussolini saying “we are all supermen” sounds like a badly disciplined orgy pretending to be architecture.', side:'right', type:'text'},
+{name:'Jean Wahl', text:'Nietzsche never built a system; he exploded systems.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'Fascism mistakes the explosion for a blueprint.', side:'right', type:'text'},
+{name:'André Masson', text:'sketch attached: Mussolini as a Roman statue made of stamped passports and broken dialectic chains', side:'left', type:'text'},
+{name:'Walter Benjamin', text:'Nietzsche survives only by being misread into machinery.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Nietzsche’s laughter cannot be administered.', side:'left', type:'text'},
+{name:'Henri Dubief', text:'Does that make fascism more rational or just more stable?', side:'right', type:'text'},
+{name:'Roger Caillois', text:'Stable systems are simply less embarrassed by contradiction.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Hegel provides containment, Nietzsche provides voltage.', side:'right', type:'text'},
+{name:'Michel Koch', text:'This sounds like a machine that will eventually overheat.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'It already overheats. That is why it needs enemies instead of ideas.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Nietzsche would have hated this conversation and also understood it instantly.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'Understanding is often a form of wound.', side:'right', type:'text'},
+{name:'André Breton', text:'It sounds like a seminar pretending to be a conspiracy.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Breton still commenting from exile proves the system is working.', side:'right', type:'text'},
+{name:'André Breton', text:'France is dead. Long live Europe!!!', side:'left', type:'text'},
+{name:'Georges Bataille', text:'If Nietzsche is to be understood, it must be lived as rupture. Not interpretation. A wound that thinks.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'Even sacrifice risks becoming structure. Even ecstasy becomes doctrine.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{name:'Colette Peignot (Laure)', text:'Only the body remembering something older than God.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Physics does not contradict mysticism—it only refuses to explain it poetically.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'WTF???!!', side:'left', type:'text'},
+{name:'Jacques Chavy', text:'Are we speaking metaphorically about sacrifice, or is the metaphor the obstacle?', side:'right', type:'text'},
+{name:'Henri Dubief', text:'In the forest gatherings, nobody asked this question.', side:'left', type:'text'},
+{name:'Pierre Dugan (Pierre Pascal)', text:'I still do not know if I attended ideas or events.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{name:'Henri Dussat', text:'Clarity is already a form of police language.', side:'right', type:'text'},
+{name:'Imre Kelemen', text:'Language felt like a betrayal of what was happening.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Shame on you all. Marx would rather kill himself!', side:'right', type:'text'},
+{name:'André Masson', text:'I drew the headless figure because no head could contain what Bataille was trying to say.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'You drew the truth while refusing its consequence.', side:'right', type:'text'},
+{name:'André Masson', text:'I am done! Design your propaganda alone...', side:'left', type:'text'},
+{name:'Roger Caillois', text:'The system becomes self-consuming.', side:'right', type:'text'},
+{name:'Jules Monnerot', text:'Even your refusal is part of its structure.', side:'left', type:'text'},
+{name:'Jean Rollin', text:'I entered once, wrote once, and left.', side:'right', type:'text'},
+{name:'Jean Wahl', text:'Nietzsche stages a psychological impossibility of remaining stable after the announcement.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Acéphale is what happens after stability becomes offensive.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'Instability can become a new metaphysics.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Not really!', side:'right', type:'text'},
+{name:'Walter Benjamin', text:'History is constellation, not progress.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'The sacred may simply be a poetic name for instability.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{name:'Patrick Waldberg', text:'Documentation itself began to feel like participation.', side:'right', type:'text'},
+{name:'Michel Koch', text:'Even memory is now part of the ritual structure.', side:'left', type:'text'},
+{name:'Isabelle Farner (Isabelle Waldberg)', text:'Form was no longer representation—it was involvement.', side:'right', type:'text'},
+{name:'Henri Dubief', text:'The forest did not witness us. It absorbed us.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Are you even listening to yourself?!!', side:'right', type:'text'},
+{name:'André Breton', text:'I reject it completely.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Rejection is still participation.', side:'right', type:'text'},
+{name:'Roger Caillois', text:'The system becomes self-consuming.', side:'left', type:'text'},
+{name:'Walter Benjamin', text:'Every revolutionary form develops its own theology.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'If there is a center, it is not us.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'There is no head. Only movement.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'We are only language circling its disappearance.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Or matter mistaken for meaning.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Jaspers is already domesticating Nietzsche. I refuse this museum of storms.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'He preserves contradiction-in-motion but sanitizes the blood.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'Nietzsche was never safe. That is precisely why he is alive.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Why should thought be less radioactive than uranium?', side:'right', type:'text'},
+{name:'Roger Caillois', text:'Nietzsche dissolves the category that makes politics possible.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Löwith’s eternal return becomes a bookkeeping error in intensity.', side:'right', type:'text'},
+{name:'Jean Wahl', text:'Jaspers attempts to preserve Nietzsche as atmosphere, not structure.', side:'left', type:'text'},
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{name:'Pierre Klossowski', text:'An atmosphere is ideology breathing unseen.', side:'left', type:'text'},
+{name:'Patrick Waldberg', text:'You are turning philosophy into ritual reenactment again.', side:'right', type:'text'},
+{name:'Michel Koch', text:'Isn’t that what we already are doing anyway?', side:'left', type:'text'},
+{name:'André Masson', text:'Nietzsche is a figure, not a concept.', side:'right', type:'text'},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{name:'Georges Bataille', text:'Thought must remain decapitated to remain sovereign.', side:'right', type:'text'},
+{name:'Imre Kelemen', text:'Why does interpretation continue multiplying like insects?', side:'left', type:'text'},
+{name:'Henri Dussat', text:'Because insects are the true theologians of decomposition.', side:'right', type:'text'},
+{name:'Walter Benjamin', text:'Nietzsche becomes debris becoming legible.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Benjamin sees ruins where I see combustion.', side:'right', type:'text'},
+{name:'Jules Monnerot', text:'What collective form can sustain this philosophy?', side:'left', type:'text'},
+{name:'Georges Bataille', text:'A community that refuses survival as highest value.', side:'right', type:'text'},
+{name:'Colette Peignot (Laure)', text:'It is a wound that keeps itself open.', side:'left', type:'text'},
+{name:'Roger Caillois', text:'Even the sacred seeks structure eventually.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'Unless structure itself becomes sacrifice.', side:'left', type:'text'},
+{name:'Georges Ambrosino', text:'Systems hallucinate order to delay explosion.', side:'right', type:'text'},
+{name:'Patrick Waldberg', text:'“Discussion deteriorates into metaphysical weather report.”', side:'left', type:'text'},
+{name:'Georges Bataille', text:'Let it deteriorate. Philosophy begins where clarity ends.', side:'right', type:'text'},
+{name:'Michel Koch', text:'Nietzsche is not interpreted here. He is continued.', side:'left', type:'text'},
+{name:'Georges Bataille', text:'He is lived incorrectly—and therefore truthfully.', side:'right', type:'text'},
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"Georges Bataille","text":"If Dionysos is truth, then truth must be unbearable. The journal is not a publication—it is a slow ritual of unmaking. I propose we treat this issue as a sacrificial object, not a text.","side":"right","type":"text"},
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"Georges Bataille","text":"Also: Nietzsche was not interpreted. He was *invoked*. There is a difference, and it smells like wine and decomposition.","side":"right","type":"text"},
+{"name":"Colette Peignot (Laure)","text":"You all speak of Dionysos as if he were a concept. He is not. He is a fever that remembers your body better than you do. I will not explain further.","side":"left","type":"text"},
+{"name":"Georges Ambrosino","text":"I keep thinking about physics. If matter is unstable, then sacrifice is just applied metaphysics. The atom already agrees with Dionysos.","side":"right","type":"text"},
+{"name":"Pierre Klossowski","text":"Kierkegaard would say Don Juan is repetition. Nietzsche would say repetition is destiny. I say: both are already inside the same mask.","side":"left","type":"text"},
+{"name":"Jacques Chavy","text":"There was a discussion last night about whether the “headless man” is a symbol or an instruction. No conclusion was reached. The wine was finished instead.","side":"right","type":"text"},
+{"name":"Henri Dubief","text":"The forest gathering felt less like sociology and more like a correction to reality. Someone said: “We are the negative anthropology of Europe.” Nobody laughed.","side":"left","type":"text"},
+{"name":"Patrick Waldberg","text":"Observation: the rituals are becoming indistinguishable from their documentation. This may be the point, or the collapse.","side":"right","type":"text"},
+{"name":"Isabelle Waldberg","text":"I sculpted a figure without a head today. It looked less like absence and more like refusal.","side":"left","type":"text"},
+{"name":"Roger Caillois","text":"Dionysos is not liberation. He is contagion. The sacred is not freedom—it is instability that organizes itself like disease.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"Yes. And society calls that disease “order.”","side":"left","type":"text"},
+{"name":"Jules Monnerot","text":"What you call Dionysian is simply the moment sociology stops pretending it is not theology.","side":"right","type":"text"},
+{"name":"Jean Wahl","text":"Nietzsche does not describe Dionysos. He survives him philosophically.","side":"left","type":"text"},
+{"name":"André Masson","text":"I drew Dionysos again. He keeps losing his face. The ink refuses identity.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"That is because identity is a fragile zoological fiction.","side":"left","type":"text"},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"Walter Benjamin","text":"I read your Dionysos issue. It feels like theology rewritten after the collapse of historical time. I am not sure if I should call it dangerous or precise.","side":"left","type":"text"},
+{"name":"Taro Okamoto","text":"In Japan we also have gods that refuse explanation. I am not sure yours are different, only louder.","side":"right","type":"text"},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"André Breton","text":"This is not mysticism. It is intellectual sabotage disguised as myth. I reject the entire operation.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"Rejection is also participation, just less honest.","side":"left","type":"text"},
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"Jules Monnerot","text":"Fight! Fight! Fight! Welcome to the Fight Club...","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Conclusion for the issue: Dionysos is not a god. He is the moment thought stops defending itself.","side":"right","type":"text"},
+{"name":"Pierre Klossowski","text":"Or the moment thought discovers it has always been acting.","side":"left","type":"text"},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"Colette Peignot (Laure)","text":"Or the body remembering what philosophy forgets.","side":"left","type":"text"},
+{"name":"Georges Ambrosino","text":"Or matter finally admitting it is not stable enough to be neutral.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"Or society briefly showing its true structure: ritual without permission.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"The crisis of civilization is not a symptom—it is its apex. When order becomes total, it begins to rot from its own excess of clarity. I wrote this as a sacred paradox: the summit is already collapse.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"You are turning sociology into ritual again. But I admit: the idea that “civilization = crisis” is structurally elegant. It behaves like a biological law pretending to be metaphysics.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"What you call “collapse” is simply the moment when God changes masks. Nietzsche already said it: even death is theatrical.","side":"right","type":"text"},
+{"name":"Jules Monnerot","text":"The text is politically dangerous. If crisis is apogee, then every regime justifies itself through decomposition. This is sociology turned inside out like a glove.","side":"left","type":"text"},
+{"name":"Georges Ambrosino","text":"The “recovery of the lost world” is thermodynamically absurd. You cannot restart cohesion by force without producing entropy elsewhere. The system always pays.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"But force is exactly what seduces societies in ruin. They mistake rigidity for intensity. Fascism is the sentimental form of exhaustion.","side":"left","type":"text"},
+{"name":"Patrick Waldberg","text":"I have observed this in the later meetings: the desire for order was already theatrical. Everyone knew it was failing—but wanted it to fail loudly.","side":"right","type":"text"},
+{"name":"Pierre Klossowski","text":"The text’s real opposition is not politics—it is metabolism. Dionysos is digestion of forms, while Caesar is their hardening into bone.","side":"left","type":"text"},
+{"name":"Roger Caillois","text":"So Dionysos is not freedom, but dissolution disguised as ecstasy?","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"Exactly. Ecstasy is never innocent. It always consumes something—usually the structure that believes it contains it.","side":"left","type":"text"},
+{"name":"Walter Benjamin","text":"I read this as an allegory of history: every civilization writes its apocalypse in advance, then calls it progress.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"You are making theology out of historical fatigue.","side":"left","type":"text"},
+{"name":"Walter Benjamin","text":"Perhaps. But fatigue is also a method of cognition.","side":"right","type":"text"},
+{"name":"André Masson","text":"I do not read crisis—I draw it. In your “apogee-collapse,” I see only a headless figure still walking, refusing geometry.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"That is the only correct illustration: thought without a head is still thinking.","side":"right","type":"text"},
+{"name":"Henri Dubief","text":"In the forest sessions, we already felt this: civilization was not discussed, it was enacted as a slow disintegration of certainty.","side":"left","type":"text"},
+{"name":"Isabelle Waldberg","text":"And yet we sculpted forms as if form could survive its own theory.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"That contradiction is the only sacred thing left: to build what you already know will collapse.","side":"left","type":"text"},
+{"name":"Isabelle Waldberg","text":"Why not?","side":"right","type":"text"},
+{"name":"André Masson","text":"What's wrong with you Georges?!","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Civilization does not fall after its peak—it becomes its peak. What you call decomposition is simply intensity that has lost its exterior limit.","side":"right","type":"text"},
+{"name":"Jules Monnerot","text":"This is no longer sociology. It is a doctrine of structural crisis. If every apogee is crisis, then stability is an illusion maintained by administrative hypnosis.","side":"left","type":"text"},
+{"name":"Roger Caillois","text":"There is a hidden symmetry here: order produces critique, critique produces dissolution, dissolution produces myth again. A loop disguised as history.","side":"right","type":"text"},
+{"name":"Pierre Klossowski","text":"The “Vaterland” is not geography—it is psychic obedience. Dionysos is what happens when obedience becomes impossible to metabolize.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Hence the cruelty of Nietzsche: he does not free man, he exposes him to an unbearable freedom that consumes paternal structure.","side":"right","type":"text"},
+{"name":"Henri Dubief","text":"We understood this in fragments during the nocturnal readings: the “father” is not a figure, it is a gravitational force of limitation.","side":"left","type":"text"},
+{"name":"Georges Ambrosino","text":"The myth of Semele is almost physical: matter cannot receive absolute energy without being destroyed. Birth is always a failed containment.","side":"right","type":"text"},
+{"name":"Isabelle Waldberg","text":"So Nietzsche is not interpreting myth, he is reenacting it: thought struck by lightning, surviving only as fragment.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Exactly. Dionysos is not a symbol of life—it is life after combustion.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"Numance is the paradox of collective existence: a community revealed only at the moment it abolishes itself.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"The city becomes sacred only when it ceases to be administrable. That is why its end is its revelation.","side":"right","type":"text"},
+{"name":"Patrick Waldberg","text":"In political reality, this is intolerable: modern groups cannot admit that unity appears only as catastrophe.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"A community without head is not chaos—it is circulation. Authority is replaced by shared exposure to mortality.","side":"right","type":"text"},
+{"name":"Jules Monnerot","text":"But then politics becomes impossible. Decision disappears. Only affect remains.","side":"left","type":"text"},
+{"name":"Walter Benjamin","text":"Perhaps decision was always an illusion of delay. History may already be a structure without head, only narrated as if it had one.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"Military order is efficient precisely because it suppresses tragic consciousness. It replaces death with function.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Yes. The army cannot suffer tragedy—it can only deploy corpses as arguments.","side":"right","type":"text"},
+{"name":"Henri Dubief","text":"But Numance shows the opposite: a people that becomes tragedy instead of instrument.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"The deepest political truth here is not power, but shared exposure to annihilation.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"So the sacred is not what binds life—but what binds life to its limit.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Yes. And Numance is not a story of defeat. It is the moment when a people becomes pure intensity without future.","side":"right","type":"text"},
+{"name":"Isabelle Waldberg","text":"Then Dionysos is not the god of life—but the god of life that has already accepted its disappearance.","side":"left","type":"text"},
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"Jean Wahl","text":"There is a moment where thought stops describing crisis and begins to reproduce it as style. That is where philosophy becomes myth again.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"But myth is not an error. It is the only language that survives contact with excess. The danger is not myth—it is forgetting that myth burns.","side":"right","type":"text"},
+{"name":"Jules Monnerot","text":"The real risk is substitution: the analysis of collapse becomes a ceremonial fascination with collapse.","side":"left","type":"text"},
+{"name":"Roger Caillois","text":"A headless community can only persist as exception. If it stabilizes, it recreates a head elsewhere.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"Yes—any durable acephale is a contradiction. It must remain unstable to remain true.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"Which means its only coherence is episodic: moments of intensity, not institutions.","side":"right","type":"text"},
+{"name":"Walter Benjamin","text":"Every attempt to escape structure eventually produces a more invisible structure.","side":"left","type":"text"},
+{"name":"Henri Dubief","text":"Administration returns as fatigue: when intensity becomes impossible to sustain, management reappears as relief.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"So tragedy is not the opposite of bureaucracy. It is what bureaucracy cannot metabolize—but later imitates in softened form.","side":"left","type":"text"},
+{"name":"Roger Caillois","text":"Numance is not simply destruction. It is the moment when survival ceases to be the highest value of the collective.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"A people becomes sovereign only when it stops calculating its continuation.","side":"left","type":"text"},
+{"name":"Isabelle Waldberg","text":"But this sovereignty is unreadable for politics, because politics is built on duration.","side":"right","type":"text"},
+{"name":"Pierre Klossowski","text":"Dionysos is not origin, not destiny—he is interruption. A breach in continuity that cannot be preserved without betraying itself.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"So the Dionysian is never a system. It is what survives the collapse of systems as pure expenditure.","side":"right","type":"text"},
+{"name":"Walter Benjamin","text":"Then history is not a line. It is a series of ruptures that only appear linear when already pacified.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"And in that sense: Dionysos is not a god of life or death—but of the moment where that distinction stops working.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"The moment sociology touches the sacred, it stops being neutral knowledge. It becomes contagious: it transforms whoever studies it.","side":"left","type":"text"},
+{"name":"Jules Monnerot","text":"Then the discipline is already unstable. If knowledge modifies the knower, we are no longer describing society — we are inside its active forces.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"That is precisely why a cold sociology is impossible. The object burns the observer. The sacred is not studied — it infects.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"What we are forming is not an academic group. It is a moral community bound by exposure to the same dangerous knowledge.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"And yet it remains open. Anyone can enter — but no one leaves unchanged. Even science becomes initiation.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"A science that does not transform its practitioners is not a science of the real. It is administration.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"The sacred is not a belief. It is a structural pressure inside societies — what makes them oscillate between order and rupture.","side":"left","type":"text"},
+{"name":"Jules Monnerot","text":"So every stable society contains within itself the seeds of its own ritualized collapse.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"Yes — and what we call revolution is often just the moment when that sacred pressure becomes visible.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"To study society through the sacred is to abandon the idea of detached observation. One participates in the system of forces being described.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"Which means that even analysis becomes ritual behavior — a controlled exposure to unstable structures.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Knowledge is never innocent. In sacred sociology, knowing is already a form of participation in excess.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"Certain ideas behave like biological agents: once introduced into a social field, they propagate beyond control.","side":"left","type":"text"},
+{"name":"Jules Monnerot","text":"That explains why societies resist certain sciences: they fear not error, but transformation.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"A true idea is always dangerous. If it is harmless, it is already dead.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"So the Collège is not a school. It is a maintained crisis — a deliberate instability held together by shared attention.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"A community formed not by identity, but by exposure to the same structural risk.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Exactly. A community that does not resolve itself into order — but into intensity.","side":"right","type":"text"},
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{"name":"Georges Bataille","text":"In a community without a head, there is no command — only shared exposure to what cannot be governed.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"But if there is no head, what prevents dispersion? What holds the circle from becoming nothing but scattered individuals?","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"What holds it is precisely what dissolves it elsewhere: mortality. The awareness of limit replaces authority.","side":"right","type":"text"},
+{"name":"Henri Dubief","text":"During the nocturnal gathering, no one gives instructions. Yet everything happens as if an invisible coordination persists.","side":"left","type":"text"},
+{"name":"Patrick Waldberg","text":"I recorded no leader, no hierarchy — only intensities rising and falling like a collective respiration.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"The absence of command does not produce chaos. It produces resonance between participants.","side":"left","type":"text"},
+{"name":"Jules Monnerot","text":"Without a head, decision becomes impossible. And yet decisions still occur — but without identifiable authors.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"Decision is a myth of retrospective narration. We believe we decide, but we are decided by the situation itself.","side":"left","type":"text"},
+{"name":"Pierre Klossowski","text":"So responsibility disperses into the structure of the moment. No one acts alone — but no one is innocent either.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"It resembles an organism that has lost its central organ, yet continues to function through distributed reflexes.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"Not an organism. A field of combustion points. Each member is a temporary ignition site.","side":"right","type":"text"},
+{"name":"Henri Dubief","text":"And yet coherence appears — not structural, but affective. As if the group thinks without thinking.","side":"left","type":"text"},
+{"name":"Isabelle Waldberg","text":"In the rituals, nothing is represented. Everything is exposure — of bodies, of attention, of limits.","side":"right","type":"text"},
+{"name":"Georges Ambrosino","text":"The sacred here is not above us. It is what happens when stability is briefly removed.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"The sacred is not transcendence. It is proximity to dissolution without collapse.","side":"right","type":"text"},
+{"name":"Pierre Klossowski","text":"A headless community is not leaderless in the political sense — it is uncentered in principle.","side":"left","type":"text"},
+{"name":"Jules Monnerot","text":"Then it cannot be governed, only experienced. Which makes it incompatible with any stable institution.","side":"right","type":"text"},
+{"name":"Georges Bataille","text":"Exactly. It is not a model of society. It is a rupture inside the idea of society itself.","side":"left","type":"text"},
+{"name":"Patrick Waldberg","text":"What remains after observation is not structure, but a memory of shared intensity that cannot be reconstructed.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"So the group exists only at the moment of its dissolution into experience.","side":"left","type":"text"},
+{"name":"Georges Bataille","text":"A community without head does not persist. It ignites, consumes itself, and leaves only the trace of having been together in excess.","side":"right","type":"text"},
+{"name":"Roger Caillois","text":"I don't think so Georges...","side":"left","type":"text"},
+{ name: "Georges Bataille", text: "Nietzsche’s collapse is not an end but a ritual opening. If he believed himself Dionysos or the Crucified, then he only completed what philosophy always hides: thought becoming sacrifice. We are no longer interpreting—only enacting.", side: "right", type: "text" },
+{ name: "Colette Peignot (Laure)", text: "The text speaks too loudly of reason trying to survive madness. But madness is not a failure—it is exposure. If the head breaks, something more ancient breathes through it.", side: "left", type: "text" },
+{ name: "Georges Ambrosino", text: "There is a dangerous precision in the idea of the ‘incarnated man.’ It resembles a physical system overloaded beyond stability. A structure that thinks itself to the point of explosion.", side: "right", type: "text" },
+{ name: "Pierre Klossowski", text: "The passage where God becomes ill at human madness is decisive. It reverses theology: not man before God, but God before the excess of man. This is the true scandal of Nietzsche’s fate.", side: "left", type: "text" },
+{ name: "Jacques Chavy", text: "If society is already a dialogue of massacres, then we are only formalizing what history already speaks. The ritual would simply make explicit what is otherwise unconscious.", side: "right", type: "text" },
+{ name: "Henri Dubief", text: "I read in this text a warning disguised as fascination: whoever tries to unify existence in a single head will be destroyed by that unity. The head cannot survive totality.", side: "left", type: "text" },
+{ name: "Isabelle Farner (Isabelle Waldberg)", text: "There is a sculptural logic here: the more you concentrate form into a single point, the more violently it demands rupture. The ‘incarnated man’ is a statue already cracking.", side: "right", type: "text" },
+{ name: "Patrick Waldberg", text: "What disturbs me is the transformation of philosophy into obligation. The text no longer describes thought—it commands it to live, to suffer, to act. That is where danger becomes real.", side: "left", type: "text" },
+{ name: "Michel Koch", text: "The idea that expression is already a form of sleep is accurate. To speak is to cool the fire. Ritual, then, would not be expression but refusal of expression.", side: "right", type: "text" },
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{ name: "Georges Bataille", text: "Yes—but refusal must also be risk. Otherwise it becomes philosophy again. The Acephale is not silence; it is the moment before speech where thought no longer knows its owner.", side: "right", type: "text" },
+{ name: "Colette Peignot (Laure)", text: "Then the question is not whether Nietzsche went mad, but whether madness itself is the only form capable of carrying truth without reducing it.", side: "left", type: "text" },
+{ name: "Georges Ambrosino", text: "In physical terms, such truth would be unstable by definition. It cannot remain contained. It either disperses or detonates.", side: "right", type: "text" },
+{ name: "Pierre Klossowski", text: "And thus theology becomes mechanics: the sacred as instability threshold. Nietzsche is not a subject here but a system passing its limit.", side: "left", type: "text" },
+{ name: "Jacques Chavy", text: "So the ‘society without head’ is not symbolic. It is a refusal of stabilization. A collective that never becomes one.", side: "right", type: "text" },
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{ name: "Georges Bataille", text: "Exactly. A society that cannot close itself around a meaning. If it had a head, it would already be dead.", side: "right", type: "text" },
+{name:'Pierre Klossowski', text:'Then doctrine must be sacrificed too.', side:'left', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{ name: "Georges Bataille", text: "If Nietzsche’s collapse is read as an event, we miss the essential point: thought does not end in clarity or darkness, but in excess. What breaks is not the man, but the separation between thinking and living it.", side: "right", type: "text" },
+{ name: "Colette Peignot (Laure)", text: "I do not accept that madness is a fall. It is a passage where the body refuses to remain subordinate to explanation. The tragedy is not loss of reason, but the exposure of reason’s limits.", side: "left", type: "text" },
+{name:'Georges Bataille', text:'Then doctrine must be sacrificed too.', side:'right', type:'audio', src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{ name: "Pierre Klossowski", text: "Nietzsche does not become Dionysos in delusion. Rather, Dionysos appears at the point where philosophical identity can no longer sustain its own distinction from myth.", side: "left", type: "text" },
+{ name: "Georges Ambrosino", text: "From a structural perspective, the ‘incarnated man’ is a system that has absorbed too many contradictory constraints. What we call madness may simply be overload without resolution.", side: "right", type: "text" },
+{ name: "Jacques Chavy", text: "History already behaves like a headless process. Wars, ideologies, collapses—none of it requires a center. Acephale only makes explicit what is already operative.", side: "left", type: "text" },
+{ name: "Isabelle Farner (Isabelle Waldberg)", text: "When form concentrates too much meaning, it becomes unstable. That instability is not an accident of thought—it is the condition of intensity itself.", side: "right", type: "text" },
+{ name: "Henri Dubief", text: "The idea of a society without head implies something unsettling: that coherence is always a later construction. What precedes it is discontinuous and ungoverned.", side: "left", type: "text" },
+{ name: "Michel Koch", text: "Expression is never neutral. To speak is already to organize force into form, and every form risks becoming a sleep of what it once tried to transmit.", side: "right", type: "text" },
+{ name: "Patrick Waldberg", text: "What disturbs me is not the violence of the thought, but its demand: it does not invite contemplation, it demands participation. That shifts philosophy toward something irreversible.", side: "left", type: "text" },
+{ name: "Georges Bataille", text: "Participation is precisely what thought avoids when it wants to remain safe. But here, safety is already a form of betrayal of what is being seen.", side: "right", type: "text" },
+{ name: "Colette Peignot (Laure)", text: "If there is a practice here, it is not interpretation but exposure. One does not understand Nietzsche’s fate; one is forced to measure oneself against it.", side: "left", type: "text" },
+{ name: "System", text: "Georges Ambrosino has left the group.", side: "right", type: "text" },
+{ name: "System", text: "Jacques Chavy has left the group.", side: "left", type: "text" },
+{ name: "System", text: "Michel Koch has left the group.", side: "right", type: "text" },
+{ name: "System", text: "Henri Dubief has left the group.", side: "left", type: "text" },
+{ name: "System", text: "Isabelle Farner (Waldberg) has left the group.", side: "right", type: "text" },
+{ name: "System", text: "Pierre Klossowski has left the group.", side: "left", type: "text" },
+{ name: "System", text: "Colette Peignot (Laure) has left the group.", side: "right", type: "text" },
+{ name: "Georges Bataille", text: "Still here. Of course I am.", side: "left", type: "text" }
+
+];
+
+const chat=document.getElementById('chat');
+
+function render(){
+  chat.innerHTML='';
+
+  dataset.forEach((m)=>{
+    const el=document.createElement('div');
+    el.className='message '+m.side;
+
+    el.dataset.type=m.type||'text';
+    el.dataset.fulltext=m.text||'';
+    el.dataset.typed='0';
+
+    let content='';
+
+    if(m.type==='audio'){
+      content=`
+        <div class="name">${m.name}</div>
+        <div class="voice">
+          <button class="play">▶</button>
+          <div class="bar"><div class="progress"></div></div>
+          <div class="time">0:00</div>
+          <audio src="${m.src}"></audio>
+        </div>
+      `;
+    }else{
+      content=`
+        <div class="name">${m.name}</div>
+        <div class="text"></div>
+      `;
+    }
+
+    el.innerHTML=content;
+    chat.appendChild(el);
+  });
+
+  bindAudio();
+  observe();
+}
+
+function typeMessage(el){
+  if(el.dataset.type!=='text'||el.dataset.typed==='1')return;
+  el.dataset.typed='1';
+
+  const box=el.querySelector('.text');
+  const full=el.dataset.fulltext;
+
+  let n=0;
+  box.innerHTML='<span class="cursor">|</span>';
+
+  const timer=setInterval(()=>{
+    n++;
+    box.innerHTML=full.slice(0,n)+'<span class="cursor">|</span>';
+
+    if(n>=full.length){
+      clearInterval(timer);
+      box.textContent=full;
+    }
+  },25);
+}
+
+function bindAudio(){
+  document.querySelectorAll('.voice').forEach(v=>{
+    const btn=v.querySelector('.play');
+    const audio=v.querySelector('audio');
+    const prog=v.querySelector('.progress');
+    const time=v.querySelector('.time');
+
+    btn.onclick=()=>{
+      document.querySelectorAll('audio').forEach(a=>{
+        if(a!==audio)a.pause();
+      });
+
+      if(audio.paused){
+        audio.play();
+        btn.textContent='❚❚';
+      }else{
+        audio.pause();
+        btn.textContent='▶';
+      }
+    };
+
+    audio.addEventListener('timeupdate',()=>{
+      if(audio.duration){
+        prog.style.width=(audio.currentTime/audio.duration*100)+'%';
+        const m=Math.floor(audio.currentTime/60);
+        const s=Math.floor(audio.currentTime%60).toString().padStart(2,'0');
+        time.textContent=`${m}:${s}`;
+      }
+    });
+
+    audio.addEventListener('ended',()=>{
+      btn.textContent='▶';
+    });
+  });
+}
+
+function observe(){
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting && !e.target.dataset.started){
+        e.target.dataset.started='1';
+
+        setTimeout(()=>{
+          e.target.classList.add('visible');
+          typeMessage(e.target);
+        },350);
+      }
+    });
+  },{threshold:0.45});
+
+  document.querySelectorAll('.message').forEach(m=>io.observe(m));
+}
+
+render();
+</script>
+
+<style>
+
+/* =========================
+   SEARCH OVERLAY
+========================= */
+
+#searchToggle{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  z-index:9999;
+
+  width:60px;
+  height:60px;
+  border:none;
+  border-radius:50%;
+
+  background:#2b5278;
+  color:white;
+
+  font-size:40px;
+  cursor:pointer;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.12);
+
+  transition:
+    transform .2s ease,
+    background .2s ease;
+}
+
+#searchToggle:hover{
+  transform:scale(1.08);
+  background:#356594;
+}
+
+#searchOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+
+  background:rgba(7,10,14,.82);
+  backdrop-filter:blur(14px);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:opacity .3s ease;
+}
+
+#searchOverlay.open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#searchPanel{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+
+  width:min(900px,92vw);
+  max-height:82vh;
+
+  background:#111821;
+  border:1px solid rgba(255,255,255,.06);
+
+  border-radius:18px;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.6),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+#searchHeader{
+  padding:18px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+#searchInput{
+  width:100%;
+  background:#1b2531;
+  border:none;
+  outline:none;
+
+  color:white;
+
+  padding:16px 18px;
+  border-radius:12px;
+
+  font-size:18px;
+}
+
+#searchMeta{
+  margin-top:10px;
+  font-size:12px;
+  opacity:.6;
+}
+
+#searchResults{
+  overflow-y:auto;
+  max-height:62vh;
+}
+
+.searchResult{
+  padding:16px 18px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+
+  cursor:pointer;
+
+  transition:background .15s ease;
+}
+
+.searchResult:hover{
+  background:rgba(255,255,255,.04);
+}
+
+.searchName{
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:6px;
+  opacity:.7;
+}
+
+.searchText{
+  line-height:1.45;
+  font-size:16px;
+  color:#dce4ec;
+}
+
+mark{
+  background:#2aabee;
+  color:black;
+  padding:0 2px;
+  border-radius:3px;
+}
+
+.message.focused{
+  animation:focusPulse 2s ease;
+}
+
+@keyframes focusPulse{
+  0%{
+    box-shadow:0 0 0 rgba(42,171,238,0);
+    transform:scale(1);
+  }
+  30%{
+    box-shadow:0 0 30px rgba(42,171,238,.6);
+    transform:scale(1.02);
+  }
+  100%{
+    box-shadow:0 0 0 rgba(42,171,238,0);
+    transform:scale(1);
+  }
+}
+
+</style>
+
+<!-- SEARCH BUTTON -->
+<button id="searchToggle" font-seize:22px;>⌕</button>
+
+<!-- SEARCH OVERLAY -->
+<div id="searchOverlay">
+
+  <div id="searchPanel">
+
+    <div id="searchHeader">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search transmissions..."
+        autocomplete="off"
+      >
+
+      <div id="searchMeta">
+        
+      </div>
+    </div>
+
+    <div id="searchResults"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+/* =========================
+   SEARCH SYSTEM
+========================= */
+
+const searchToggle=document.getElementById('searchToggle');
+const searchOverlay=document.getElementById('searchOverlay');
+const searchInput=document.getElementById('searchInput');
+const searchResults=document.getElementById('searchResults');
+
+function openSearch(){
+  searchOverlay.classList.add('open');
+
+  setTimeout(()=>{
+    searchInput.focus();
+  },120);
+
+  renderResults('');
+}
+
+function closeSearch(){
+  searchOverlay.classList.remove('open');
+  searchInput.value='';
+}
+
+searchToggle.onclick=openSearch;
+
+document.addEventListener('keydown',(e)=>{
+
+  if((e.metaKey || e.ctrlKey) && e.key.toLowerCase()==='k'){
+    e.preventDefault();
+    openSearch();
+  }
+
+  if(e.key==='Escape'){
+    closeSearch();
+  }
+});
+
+searchOverlay.addEventListener('click',(e)=>{
+  if(e.target===searchOverlay){
+    closeSearch();
+  }
+});
+
+function highlight(text,q){
+  if(!q)return text;
+
+  const r=new RegExp(`(${escapeRegExp(q)})`,'gi');
+
+  return text.replace(r,'<mark>$1</mark>');
+}
+
+function escapeRegExp(string){
+  return string.replace(/[.*+?^${}()|[\]\\]/g,'\\\\$&');
+}
+
+function renderResults(query){
+
+  const q=query.trim().toLowerCase();
+
+  searchResults.innerHTML='';
+
+  const matches=[];
+
+  dataset.forEach((m,i)=>{
+
+    if(m.type!=='text')return;
+
+    const full=(m.name+' '+m.text).toLowerCase();
+
+    if(!q || full.includes(q)){
+      matches.push({
+        index:i,
+        ...m
+      });
+    }
+  });
+
+  if(matches.length===0){
+    searchResults.innerHTML=`
+      <div class="searchResult">
+        <div class="searchText">No results found.</div>
+      </div>
+    `;
+    return;
+  }
+
+  matches.forEach(m=>{
+
+    const div=document.createElement('div');
+    div.className='searchResult';
+
+    div.innerHTML=`
+      <div class="searchName">
+        ${m.name}
+      </div>
+
+      <div class="searchText">
+        ${highlight(m.text,query)}
+      </div>
+    `;
+
+    div.onclick=()=>{
+
+      closeSearch();
+
+      const target=document.querySelectorAll('.message')[m.index];
+
+      if(!target)return;
+
+      target.scrollIntoView({
+        behavior:'smooth',
+        block:'center'
+      });
+
+      target.classList.add('focused');
+
+      setTimeout(()=>{
+        target.classList.remove('focused');
+      },2000);
+    };
+
+    searchResults.appendChild(div);
+  });
+}
+
+searchInput.addEventListener('input',(e)=>{
+  renderResults(e.target.value);
+});
+
+searchInput.addEventListener('keydown',(e)=>{
+
+  if(e.key==='Enter'){
+
+    const first=document.querySelector('.searchResult');
+
+    if(first){
+      first.click();
+    }
+  }
+});
+
+</script>
+
+<script>
+(() => {
+
+/* ============================================================
+   HOLYGRAM — SACRIFICIAL DESIGNATION ENGINE
+   Drop-in layer for existing .message bubbles
+============================================================ */
+
+const HG = {
+
+  skull: '💀',
+
+  selectors: {
+    chat: '#chat',
+    message: '.message',
+    name: '.name'
+  },
+
+  labels: {
+    flag: 'MARK FOR SACRIFICE',
+    result: 'SACRIFICIAL RESULT',
+    collective: 'COLLECTIVE CHOICE',
+    yours: 'YOUR CHOICE',
+    execute: 'SACRIFY',
+    after: 'HAS BEEN SACRIFICED.',
+    question: 'DO YOU FEEL BAD ABOUT IT?'
+  }
+
+};
+
+
+/* ============================================================
+   STATE
+============================================================ */
+
+const state = {
+
+  /*
+    Every bubble can be flagged once.
+    Counts are accumulated by visible author name.
+  */
+
+  flagged: new Set(),
+
+  authorCounts: {},
+
+  /*
+    This is the player's actual local voting history.
+  */
+
+  choices: [],
+
+  executed: false
+
+};
+
+
+/* ============================================================
+   STYLES
+============================================================ */
+
+const style = document.createElement('style');
+
+style.textContent = `
+
+/* ------------------------------------------------------------
+   FLAG BUTTON
+------------------------------------------------------------ */
+
+.hg-sacrifice-btn{
+  position:absolute;
+  bottom:7px;
+  right:-42px;
+
+  width:32px;
+  height:32px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+
+  border:1px solid rgba(255,255,255,.20);
+  border-radius:50%;
+
+  background:rgba(0,0,0,.68);
+  color:#fff;
+
+  font-size:17px;
+  line-height:1;
+
+  cursor:pointer;
+
+  z-index:50;
+
+  opacity:.72;
+
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+
+  transition:
+    transform .3s ease,
+    opacity .2s ease,
+    background .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+
+  animation:hgPulse 2.4s ease-in-out infinite;
+}
+
+.hg-sacrifice-btn:hover{
+  opacity:1;
+  transform:rotate(180deg) scale(1.12);
+  background:rgba(0,0,0,.95);
+  border-color:rgba(255,255,255,.65);
+  box-shadow:0 0 18px rgba(255,255,255,.20);
+}
+
+.hg-sacrifice-btn.hg-flagged{
+  opacity:1;
+  background:#fff;
+  color:#000;
+  border-color:#fff;
+
+  animation:none;
+
+  transform:scale(1.08);
+}
+
+.hg-sacrifice-btn.hg-flagged:hover{
+  transform:rotate(-180deg) scale(1.08);
+}
+
+@keyframes hgPulse{
+  0%,100%{
+    scale:1;
+    opacity:.62;
+  }
+
+  50%{
+    scale:1.13;
+    opacity:1;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   SMALL TOOLTIP
+------------------------------------------------------------ */
+
+.hg-tooltip{
+  position:fixed;
+  z-index:2147483647;
+
+  pointer-events:none;
+
+  padding:7px 10px;
+
+  background:rgba(0,0,0,.92);
+
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:7px;
+
+  color:#fff;
+
+  font-family:Arial,sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.10em;
+
+  white-space:nowrap;
+
+  opacity:0;
+
+  transform:translate(12px,12px);
+
+  transition:opacity .12s ease;
+
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
+
+/* ------------------------------------------------------------
+   FLAGGED BUBBLE
+------------------------------------------------------------ */
+
+.message.hg-sacrificially-charged{
+  box-shadow:
+    0 1px 1px rgba(0,0,0,.25),
+    0 0 0 1px rgba(255,255,255,.13),
+    0 0 32px rgba(255,255,255,.05);
+}
+
+
+/* ------------------------------------------------------------
+   RESULT AREA AFTER CHAT
+------------------------------------------------------------ */
+
+#hg-sacrifice-result{
+  width:min(680px,calc(100% - 40px));
+
+  margin:40px auto 140px;
+
+  padding:30px;
+
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:18px;
+
+  background:rgba(8,10,13,.88);
+  color:#fff;
+
+  font-family:Arial,sans-serif;
+
+  text-align:center;
+
+  box-shadow:0 30px 100px rgba(0,0,0,.38);
+
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+
+.hg-result-kicker{
+  margin-bottom:22px;
+
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.18em;
+
+  opacity:.55;
+}
+
+.hg-choice-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+
+  margin-bottom:22px;
+}
+
+.hg-choice-card{
+  padding:18px 14px;
+
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.035);
+}
+
+.hg-choice-label{
+  margin-bottom:9px;
+
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.16em;
+
+  opacity:.48;
+}
+
+.hg-choice-name{
+  font-size:18px;
+  font-weight:700;
+  line-height:1.2;
+}
+
+.hg-choice-count{
+  margin-top:7px;
+
+  font-size:10px;
+
+  opacity:.42;
+}
+
+
+/* ------------------------------------------------------------
+   EXECUTION BUTTON
+------------------------------------------------------------ */
+
+#hg-execute{
+  width:100%;
+
+  margin-top:4px;
+
+  padding:15px 20px;
+
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:12px;
+
+  background:#fff;
+  color:#000;
+
+  font-family:Arial,sans-serif;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.16em;
+
+  cursor:pointer;
+
+  transition:
+    transform .2s ease,
+    background .2s ease;
+}
+
+#hg-execute:hover{
+  transform:scale(1.015);
+  background:#e9e9e9;
+}
+
+#hg-execute:disabled{
+  opacity:.25;
+  cursor:default;
+  transform:none;
+}
+
+
+/* ------------------------------------------------------------
+   EMPTY STATE
+------------------------------------------------------------ */
+
+.hg-empty{
+  padding:15px 0 5px;
+
+  font-size:12px;
+  line-height:1.5;
+
+  opacity:.52;
+}
+
+
+/* ------------------------------------------------------------
+   EXECUTION OVERLAY
+------------------------------------------------------------ */
+
+.hg-execution-overlay{
+  position:fixed;
+  inset:0;
+
+  z-index:2147483647;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:30px;
+
+  overflow:hidden;
+
+  background:rgba(0,0,0,.94);
+  color:#fff;
+
+  font-family:Arial,sans-serif;
+
+  animation:hgFadeIn .4s ease both;
+}
+
+@keyframes hgFadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+.hg-execution-inner{
+  position:relative;
+  z-index:5;
+
+  max-width:680px;
+
+  text-align:center;
+}
+
+.hg-big-skull{
+  margin-bottom:20px;
+
+  font-size:74px;
+
+  animation:hgSkullDrop .65s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes hgSkullDrop{
+  0%{
+    opacity:0;
+    transform:translateY(-80px) scale(.3) rotate(-40deg);
+  }
+
+  70%{
+    transform:translateY(8px) scale(1.15) rotate(8deg);
+  }
+
+  100%{
+    opacity:1;
+    transform:translateY(0) scale(1) rotate(0);
+  }
+}
+
+.hg-executed-name{
+  margin-bottom:10px;
+
+  font-size:clamp(28px,6vw,64px);
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:.95;
+}
+
+.hg-executed-line{
+  margin-bottom:36px;
+
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.18em;
+
+  opacity:.55;
+}
+
+.hg-bad-question{
+  margin-bottom:16px;
+
+  font-size:20px;
+  font-weight:600;
+}
+
+.hg-moral-buttons{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.hg-moral-buttons button{
+  min-width:110px;
+
+  padding:11px 18px;
+
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:10px;
+
+  background:rgba(255,255,255,.05);
+  color:#fff;
+
+  font-family:Arial,sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+
+  cursor:pointer;
+
+  transition:
+    background .2s ease,
+    transform .2s ease;
+}
+
+.hg-moral-buttons button:hover{
+  background:#fff;
+  color:#000;
+  transform:translateY(-2px);
+}
+
+
+/* ------------------------------------------------------------
+   FINAL MORAL RESPONSE
+------------------------------------------------------------ */
+
+.hg-moral-response{
+  margin-top:22px;
+
+  min-height:22px;
+
+  font-size:11px;
+  line-height:1.5;
+
+  opacity:.62;
+}
+
+
+/* ------------------------------------------------------------
+   SKULL CONFETTI
+------------------------------------------------------------ */
+
+.hg-confetti-skull{
+  position:fixed;
+
+  top:-60px;
+
+  z-index:2147483646;
+
+  pointer-events:none;
+
+  user-select:none;
+
+  animation-name:hgSkullFall;
+  animation-timing-function:linear;
+  animation-fill-mode:forwards;
+}
+
+@keyframes hgSkullFall{
+
+  0%{
+    transform:
+      translateY(-10vh)
+      rotate(0deg);
+    opacity:0;
+  }
+
+  10%{
+    opacity:1;
+  }
+
+  100%{
+    transform:
+      translateY(120vh)
+      rotate(720deg);
+    opacity:.9;
+  }
+
+}
+
+
+/* ------------------------------------------------------------
+   MOBILE
+------------------------------------------------------------ */
+
+@media(max-width:620px){
+
+  .hg-choice-grid{
+    grid-template-columns:1fr;
+  }
+
+  #hg-sacrifice-result{
+    padding:22px 16px;
+  }
+
+  .hg-moral-buttons{
+    flex-direction:column;
+  }
+
+}
+`;
+
+document.head.appendChild(style);
+
+
+/* ============================================================
+   TOOLTIP
+============================================================ */
+
+const tooltip = document.createElement('div');
+
+tooltip.className = 'hg-tooltip';
+
+tooltip.textContent = HG.labels.flag;
+
+document.body.appendChild(tooltip);
+
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+function getName(node){
+
+  const name =
+    node.querySelector(
+      HG.selectors.name
+    );
+
+  return name
+    ? name.textContent.trim()
+    : 'Unknown';
+
+}
+
+
+function isFlaggable(node){
+
+  if(!node) return false;
+
+  /*
+    No System messages.
+  */
+
+  if(
+    getName(node).toLowerCase() ===
+    'system'
+  ){
+    return false;
+  }
+
+  /*
+    No audio bubbles.
+  */
+
+  if(
+    node.dataset.type === 'audio' ||
+    node.querySelector('audio')
+  ){
+    return false;
+  }
+
+  return true;
+
+}
+
+
+function bubbleId(node){
+
+  /*
+    Stable enough for this runtime:
+    position in the rendered chat.
+  */
+
+  return Array
+    .from(
+      document.querySelectorAll(
+        HG.selectors.message
+      )
+    )
+    .indexOf(node);
+
+}
+
+
+/* ============================================================
+   FLAG / UNFLAG
+============================================================ */
+
+function toggleSacrifice(
+  node,
+  button
+){
+
+  const id = bubbleId(node);
+
+  const name = getName(node);
+
+  const already =
+    state.flagged.has(id);
+
+
+  if(already){
+
+    state.flagged.delete(id);
+
+    state.choices =
+      state.choices.filter(
+        x => x.id !== id
+      );
+
+    state.authorCounts[name] =
+      Math.max(
+        0,
+        (state.authorCounts[name] || 0) - 1
+      );
+
+    if(
+      state.authorCounts[name] === 0
+    ){
+      delete state.authorCounts[name];
+    }
+
+    button.classList.remove(
+      'hg-flagged'
+    );
+
+    node.classList.remove(
+      'hg-sacrificially-charged'
+    );
+
+  }else{
+
+    state.flagged.add(id);
+
+    state.choices.push({
+      id,
+      name
+    });
+
+    state.authorCounts[name] =
+      (state.authorCounts[name] || 0) + 1;
+
+    button.classList.add(
+      'hg-flagged'
+    );
+
+    node.classList.add(
+      'hg-sacrificially-charged'
+    );
+
+  }
+
+  updateResult();
+
+}
+
+
+/* ============================================================
+   ATTACH SKULL BUTTONS
+============================================================ */
+
+function attachButtons(){
+
+  document
+    .querySelectorAll(
+      HG.selectors.message
+    )
+    .forEach(node => {
+
+      if(
+        node.dataset.hgSacrificeReady === '1'
+      ){
+        return;
+      }
+
+      node.dataset.hgSacrificeReady = '1';
+
+      if(!isFlaggable(node)){
+        return;
+      }
+
+      const button =
+        document.createElement('button');
+
+      button.type = 'button';
+
+      button.className =
+        'hg-sacrifice-btn';
+
+      button.textContent =
+        HG.skull;
+
+
+      button.addEventListener(
+        'mousemove',
+        e => {
+
+          tooltip.style.left =
+            e.clientX + 'px';
+
+          tooltip.style.top =
+            e.clientY + 'px';
+
+          tooltip.style.opacity =
+            '1';
+
+        }
+      );
+
+
+      button.addEventListener(
+        'mouseleave',
+        () => {
+
+          tooltip.style.opacity =
+            '0';
+
+        }
+      );
+
+
+button.addEventListener(
+  'click',
+  e => {
+
+    e.stopPropagation();
+
+    const wasFlagged =
+      button.classList.contains(
+        'hg-flagged'
+      );
+
+    toggleSacrifice(
+      node,
+      button
+    );
+
+    if(!wasFlagged){
+
+      const rect =
+        button.getBoundingClientRect();
+
+      sacrificeFirework(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2
+      );
+
+    }
+
+  }
+);
+
+
+      node.appendChild(button);
+
+    });
+
+}
+
+
+/* ============================================================
+   SACRIFICIAL RESULT
+============================================================ */
+
+const result =
+  document.createElement('section');
+
+result.id =
+  'hg-sacrifice-result';
+
+result.innerHTML = `
+  <div class="hg-result-kicker">
+    SACRIFICIAL RESULT
+  </div>
+
+  <div
+    class="hg-empty"
+    id="hg-empty"
+  >
+    No victim has been designated yet.<br>
+    Mark one or more messages with 💀.
+  </div>
+
+  <div
+    class="hg-choice-grid"
+    id="hg-choice-grid"
+    style="display:none"
+  >
+
+    <div class="hg-choice-card">
+
+      <div class="hg-choice-label">
+        ${HG.labels.yours}
+      </div>
+
+      <div
+        class="hg-choice-name"
+        id="hg-your-choice"
+      ></div>
+
+      <div
+        class="hg-choice-count"
+        id="hg-your-count"
+      ></div>
+
+    </div>
+
+
+    <div class="hg-choice-card">
+
+      <div class="hg-choice-label">
+        ${HG.labels.collective}
+      </div>
+
+      <div
+        class="hg-choice-name"
+        id="hg-collective-choice"
+      ></div>
+
+      <div
+        class="hg-choice-count"
+        id="hg-collective-count"
+      ></div>
+
+    </div>
+
+  </div>
+
+
+  <button
+    id="hg-execute"
+    type="button"
+    disabled
+  >
+    💀 ${HG.labels.execute}
+  </button>
+`;
+
+
+/*
+  It is inserted AFTER #chat,
+  therefore after the last bubble.
+*/
+
+const chat =
+  document.querySelector(
+    HG.selectors.chat
+  );
+
+chat.insertAdjacentElement(
+  'afterend',
+  result
+);
+
+
+/* ============================================================
+   YOUR CHOICE
+============================================================ */
+
+function getYourChoice(){
+
+  const entries =
+    Object.entries(
+      state.authorCounts
+    );
+
+  if(!entries.length){
+    return null;
+  }
+
+  entries.sort(
+    (a,b) => b[1] - a[1]
+  );
+
+  /*
+    If tied, the author who reached the
+    highest count first wins YOUR CHOICE.
+  */
+
+  const highest =
+    entries[0][1];
+
+  const tied =
+    entries
+      .filter(x => x[1] === highest)
+      .map(x => x[0]);
+
+  if(tied.length === 1){
+    return {
+      name:tied[0],
+      count:highest
+    };
+  }
+
+  for(const vote of state.choices){
+
+    if(tied.includes(vote.name)){
+
+      return {
+        name:vote.name,
+        count:highest
+      };
+
+    }
+
+  }
+
+  return {
+    name:entries[0][0],
+    count:highest
+  };
+
+}
+
+
+/* ============================================================
+   COLLECTIVE CHOICE
+============================================================ */
+
+function getCollectiveChoice(){
+
+  /*
+    PARODIC COLLECTIVE:
+    deterministic pseudo-consensus derived from
+    the corpus + the player's actual choices.
+
+    It is NOT presented during play.
+    Only revealed at the end.
+
+    The player's flags contribute strongly,
+    but the fictional Acéphalian collective
+    introduces an additional hidden weight.
+
+    This guarantees that YOUR CHOICE and
+    COLLECTIVE CHOICE can coincide or diverge.
+  */
+
+  const authors = {};
+
+  document
+    .querySelectorAll(
+      HG.selectors.message
+    )
+    .forEach(node => {
+
+      if(!isFlaggable(node)){
+        return;
+      }
+
+      const name =
+        getName(node);
+
+      authors[name] =
+        (authors[name] || 0) + 1;
+
+    });
+
+
+  let ranking = [];
+
+
+  Object
+    .entries(authors)
+    .forEach(([name,presence]) => {
+
+      const yourVotes =
+        state.authorCounts[name] || 0;
+
+      /*
+        Hidden deterministic pseudo-community weight.
+        Based on the letters of the name,
+        so it remains stable between reloads.
+      */
+
+      let hash = 0;
+
+      for(let i=0;i<name.length;i++){
+
+        hash =
+          (
+            (hash * 31) +
+            name.charCodeAt(i)
+          ) >>> 0;
+
+      }
+
+      const collectiveNoise =
+        (hash % 9) + 1;
+
+
+      /*
+        Actual player designation matters most.
+        Corpus recurrence also matters slightly.
+      */
+
+      const score =
+        (yourVotes * 12) +
+        (presence * .35) +
+        collectiveNoise;
+
+
+      ranking.push({
+        name,
+        score,
+        presence,
+        yourVotes
+      });
+
+    });
+
+
+  ranking.sort(
+    (a,b) => b.score - a.score
+  );
+
+
+  return ranking.length
+    ? ranking[0]
+    : null;
+
+}
+
+
+/* ============================================================
+   RESULT UPDATE
+============================================================ */
+
+function updateResult(){
+
+  const yours =
+    getYourChoice();
+
+  const collective =
+    getCollectiveChoice();
+
+  const empty =
+    document.getElementById(
+      'hg-empty'
+    );
+
+  const grid =
+    document.getElementById(
+      'hg-choice-grid'
+    );
+
+  const execute =
+    document.getElementById(
+      'hg-execute'
+    );
+
+
+  if(!yours){
+
+    empty.style.display =
+      'block';
+
+    grid.style.display =
+      'none';
+
+    execute.disabled =
+      true;
+
+    return;
+
+  }
+
+
+  empty.style.display =
+    'none';
+
+  grid.style.display =
+    'grid';
+
+  execute.disabled =
+    false;
+
+
+  document.getElementById(
+    'hg-your-choice'
+  ).textContent =
+    yours.name;
+
+
+  document.getElementById(
+    'hg-your-count'
+  ).textContent =
+    `${yours.count} sacrificial flag${
+      yours.count === 1 ? '' : 's'
+    }`;
+
+
+  document.getElementById(
+    'hg-collective-choice'
+  ).textContent =
+    collective.name;
+
+
+  /*
+    Intentionally do NOT expose the algorithmic
+    pseudo-score as if it were a real vote count.
+  */
+
+  document.getElementById(
+    'hg-collective-count'
+  ).textContent =
+    collective.name === yours.name
+      ? 'The community converged with you.'
+      : 'The community chose otherwise.';
+
+}
+
+
+/* ============================================================
+   SKULL CONFETTI
+============================================================ */
+
+function skullConfetti(){
+
+  const amount = 90;
+
+  for(
+    let i=0;
+    i<amount;
+    i++
+  ){
+
+    const skull =
+      document.createElement('div');
+
+    skull.className =
+      'hg-confetti-skull';
+
+    skull.textContent =
+      Math.random() > .18
+        ? '💀'
+        : '☠️';
+
+    skull.style.left =
+      Math.random() * 100 + 'vw';
+
+    skull.style.fontSize =
+      (
+        12 +
+        Math.random() * 25
+      ) + 'px';
+
+    skull.style.animationDuration =
+      (
+        2.8 +
+        Math.random() * 3
+      ) + 's';
+
+    skull.style.animationDelay =
+      (
+        Math.random() * 1.3
+      ) + 's';
+
+    document.body.appendChild(
+      skull
+    );
+
+    setTimeout(
+      () => skull.remove(),
+      7000
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   EXECUTION
+============================================================ */
+
+function executeSacrifice(){
+
+  if(state.executed){
+    return;
+  }
+
+  const collective =
+    getCollectiveChoice();
+
+  if(!collective){
+    return;
+  }
+
+  state.executed = true;
+
+
+  /*
+    Freeze Holygram behind the ritual.
+  */
+
+  document.documentElement.style.overflow =
+    'hidden';
+
+  document.body.style.overflow =
+    'hidden';
+
+
+  const overlay =
+    document.createElement('div');
+
+  overlay.className =
+    'hg-execution-overlay';
+
+
+  overlay.innerHTML = `
+
+    <div class="hg-execution-inner">
+
+      <div class="hg-big-skull">
+        💀
+      </div>
+
+      <div class="hg-executed-name">
+        ${escapeHTML(collective.name)}
+      </div>
+
+      <div class="hg-executed-line">
+        ${HG.labels.after}
+      </div>
+
+      <div class="hg-bad-question">
+        ${HG.labels.question}
+      </div>
+
+      <div class="hg-moral-buttons">
+
+        <button
+          type="button"
+          data-answer="yes"
+        >
+          YES
+        </button>
+
+        <button
+          type="button"
+          data-answer="no"
+        >
+          NO
+        </button>
+
+      </div>
+
+      <div
+        class="hg-moral-response"
+      ></div>
+
+    </div>
+
+  `;
+
+
+  document.body.appendChild(
+    overlay
+  );
+
+
+  skullConfetti();
+
+
+  overlay
+    .querySelectorAll(
+      '[data-answer]'
+    )
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        const answer =
+          button.dataset.answer;
+
+        const response =
+          overlay.querySelector(
+            '.hg-moral-response'
+          );
+
+
+        if(answer === 'yes'){
+
+          response.innerHTML =
+            `REMORSE REGISTERED.<br>
+             THE SACRIFICE REMAINS VALID.`;
+
+        }else{
+
+          response.innerHTML =
+            `NO REMORSE REGISTERED.<br>
+             THE SACRIFICE REMAINS VALID.`;
+
+        }
+
+
+        overlay
+          .querySelectorAll(
+            '[data-answer]'
+          )
+          .forEach(b => {
+
+            b.disabled = true;
+
+            b.style.opacity =
+              b === button
+                ? '1'
+                : '.25';
+
+          });
+
+
+        /*
+          Allow click anywhere after response
+          to return to Holygram.
+        */
+
+        setTimeout(() => {
+
+          overlay.style.cursor =
+            'pointer';
+
+          overlay.onclick = e => {
+
+            if(
+              e.target.closest(
+                'button'
+              )
+            ){
+              return;
+            }
+
+            document.documentElement.style.overflow =
+              '';
+
+            document.body.style.overflow =
+              '';
+
+            overlay.remove();
+
+          };
+
+        },500);
+
+      };
+
+    });
+
+}
+
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function escapeHTML(value){
+
+  const div =
+    document.createElement('div');
+
+  div.textContent =
+    value == null
+      ? ''
+      : String(value);
+
+  return div.innerHTML;
+
+}
+
+
+/* ============================================================
+   EVENTS
+============================================================ */
+
+document
+  .getElementById(
+    'hg-execute'
+  )
+  .addEventListener(
+    'click',
+    executeSacrifice
+  );
+
+
+/* ============================================================
+   INITIALIZE
+============================================================ */
+
+attachButtons();
+updateResult();
+
+
+/*
+  Safety net in case Holygram re-renders
+  its dataset later.
+*/
+
+const observer =
+  new MutationObserver(() => {
+
+    attachButtons();
+
+  });
+
+observer.observe(
+  chat,
+  {
+    childList:true,
+    subtree:true
+  }
+);
+
+})();
+</script>
+
+
+<script>
+
+const fireworkEmoticons = [
+  "❤️","💀","🗡️","💀","🗡️","💀","🩸",
+  "💀","👹","💀","👹","💀","👹","💀"
+];
+
+function sacrificeFirework(x,y){
+
+  const particles = 35;
+
+  for(let i = 0; i < particles; i++){
+
+    const emoji =
+      document.createElement("div");
+
+    emoji.textContent =
+      fireworkEmoticons[
+        Math.floor(
+          Math.random() *
+          fireworkEmoticons.length
+        )
+      ];
+
+    emoji.style.position = "fixed";
+    emoji.style.left = x + "px";
+    emoji.style.top = y + "px";
+    emoji.style.fontSize =
+      (18 + Math.random()*35) + "px";
+
+    emoji.style.zIndex = "2147483647";
+    emoji.style.pointerEvents = "none";
+    emoji.style.userSelect = "none";
+
+    document.body.appendChild(emoji);
+
+    const angle =
+      Math.random() *
+      Math.PI * 2;
+
+    const distance =
+      150 +
+      Math.random()*350;
+
+    const endX =
+      Math.cos(angle) *
+      distance;
+
+    const endY =
+      Math.sin(angle) *
+      distance;
+
+    emoji.animate([
+
+      {
+        transform:
+          "translate(-50%,-50%) scale(.2)",
+        opacity:1
+      },
+
+      {
+        transform:
+          `translate(
+            calc(-50% + ${endX}px),
+            calc(-50% + ${endY}px)
+          )
+          scale(1.4)
+          rotate(${Math.random()*720-360}deg)`,
+        opacity:1
+      },
+
+      {
+        transform:
+          `translate(
+            calc(-50% + ${endX*1.4}px),
+            calc(-50% + ${endY*1.4}px)
+          )
+          scale(.2)
+          rotate(${Math.random()*1000}deg)`,
+        opacity:0
+      }
+
+    ],{
+
+      duration:
+        2200 +
+        Math.random()*1500,
+
+      easing:
+        "cubic-bezier(.15,.8,.3,1)",
+
+      fill:"forwards"
+
+    });
+
+    setTimeout(()=>{
+      emoji.remove();
+    },5000);
+
+  }
+
+
+  /* BIG SKULL FLASH */
+
+  const flash =
+    document.createElement("div");
+
+  flash.textContent = "☠️";
+
+  flash.style.position = "fixed";
+  flash.style.left = x + "px";
+  flash.style.top = y + "px";
+  flash.style.fontSize = "90px";
+
+  flash.style.zIndex =
+    "2147483647";
+
+  flash.style.pointerEvents =
+    "none";
+
+  flash.style.userSelect =
+    "none";
+
+  document.body.appendChild(
+    flash
+  );
+
+  flash.animate([
+
+    {
+      transform:
+        "translate(-50%,-50%) scale(0)",
+      opacity:1
+    },
+
+    {
+      transform:
+        "translate(-50%,-50%) scale(2.5)",
+      opacity:0
+    }
+
+  ],{
+    duration:700,
+    easing:"ease-out",
+    fill:"forwards"
+  });
+
+  setTimeout(()=>{
+    flash.remove();
+  },1000);
+
+}
+
+</script>
+
+<style>
+/* ============================================================
+   SKULL — INNER SIDE / MOBILE SAFE
+============================================================ */
+
+/* LEFT bubble → skull on INNER RIGHT */
+.message.left .hg-sacrifice-btn{
+  right:6px !important;
+  left:auto !important;
+  bottom:7px !important;
+}
+
+/* RIGHT bubble → skull on INNER LEFT */
+.message.right .hg-sacrifice-btn{
+  left:6px !important;
+  right:auto !important;
+  bottom:7px !important;
+}
+
+
+/* Reserve a text gutter so the skull never covers the text */
+
+/* LEFT bubble: reserve space on right */
+.message.left .text{
+  padding-right:42px;
+}
+
+/* RIGHT bubble: reserve space on left */
+.message.right .text{
+  padding-left:42px;
+}
+</style>
+
+</body>
+</html>

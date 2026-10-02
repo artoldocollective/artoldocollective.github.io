@@ -1,0 +1,5786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta content="noindex, nofollow" name="robots">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toy Tonic</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color: transparent;
+}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+background: transparent;
+font-family:Inter,Arial,sans-serif;
+color:white;
+}
+
+/* APP */
+
+#app{
+height:100vh;
+overflow-y:scroll;
+scroll-snap-type:y mandatory;
+scrollbar-width:none;
+}
+
+#app::-webkit-scrollbar{
+display:none;
+}
+
+/* TOP */
+
+.topbar{
+position:fixed;
+top:0;
+left:0;
+right:0;
+height:74px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 18px;
+z-index:999;
+background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:500;
+font-size:22px;
+letter-spacing:.08em;
+}
+
+.logo-dot{
+width:14px;
+height:14px;
+border-radius:50%;
+background:#ff2d55;
+box-shadow:0 0 24px #ff2d55;
+animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.3);}
+100%{transform:scale(1);}
+}
+
+.top-actions{
+display:flex;
+gap:10px;
+}
+
+.nav-btn{
+width:44px;
+height:44px;
+border-radius:50%;
+border:none;
+background:rgba(30,30,30,.9);
+display:flex;
+align-items:center;
+justify-content:center;
+backdrop-filter:blur(12px);
+cursor:pointer;
+}
+
+.nav-btn svg{
+width:22px;
+height:22px;
+fill:white;
+}
+
+/* REEL */
+
+.reel{
+position:relative;
+height:100vh;
+overflow:hidden;
+scroll-snap-align:start;
+background:#000;
+}
+
+.reel video{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.overlay{
+position:absolute;
+inset:0;
+background:
+linear-gradient(to top,
+rgba(0,0,0,.85),
+rgba(0,0,0,.05) 40%,
+rgba(0,0,0,.25));
+z-index:1;
+}
+
+/* SIDE */
+
+.side{
+position:absolute;
+right:12px;
+bottom:150px;
+z-index:20;
+display:flex;
+flex-direction:column;
+gap:18px;
+}
+
+.action{
+display:flex;
+flex-direction:column;
+align-items:center;
+position:relative;
+}
+
+.circle{
+width:58px;
+height:58px;
+border-radius:50%;
+background:rgba(25,25,25,.88);
+display:flex;
+align-items:center;
+justify-content:center;
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,.08);
+cursor:pointer;
+transition:.18s;
+overflow:hidden;
+}
+
+.circle:hover{
+transform:scale(1.08);
+}
+
+.circle svg{
+width:28px;
+height:28px;
+fill:white;
+}
+
+.count{
+margin-top:6px;
+font-size:13px;
+font-weight:700;
+}
+
+/* BOTTOM */
+
+.bottom{
+position:absolute;
+left:16px;
+bottom:95px;
+z-index:20;
+width:72%;
+}
+
+.user{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:12px;
+}
+
+.avatar{
+width:42px;
+height:42px;
+border-radius:50%;
+border:2px solid white;
+object-fit:cover;
+}
+
+.follow{
+padding:8px 16px;
+border-radius:999px;
+border:none;
+background:white;
+font-weight:700;
+cursor:pointer;
+transition:.2s;
+}
+
+.following{
+background:#ff2d55;
+color:white;
+}
+
+.caption{
+line-height:1.45;
+color:#eee;
+margin-top:10px;
+}
+
+.reactions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:16px;
+}
+
+.react{
+padding:10px 14px;
+border-radius:999px;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(12px);
+display:flex;
+align-items:center;
+gap:8px;
+cursor:pointer;
+transition:.15s;
+position:relative;
+overflow:hidden;
+}
+
+.react:hover{
+transform:scale(1.08);
+background:rgba(255,255,255,.22);
+box-shadow:0 0 20px rgba(255,255,255,.15);
+}
+
+.react-count{
+font-size:12px;
+font-weight:700;
+}
+
+/* EMOJI FLOAT */
+
+.float-emoji{
+position:absolute;
+font-size:34px;
+pointer-events:none;
+animation:floatUp 2s forwards ease-out;
+filter:drop-shadow(0 0 12px rgba(255,255,255,.45));
+z-index:9999;
+}
+
+@keyframes floatUp{
+0%{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+100%{
+opacity:0;
+transform:translateY(-220px) scale(1.8) rotate(18deg);
+}
+}
+
+/* COMMENTS */
+
+.comments{
+position:absolute;
+left:0;
+right:0;
+bottom:-100%;
+height:68%;
+background:#111;
+border-top-left-radius:28px;
+border-top-right-radius:28px;
+z-index:1000;
+transition:.35s;
+display:flex;
+flex-direction:column;
+}
+
+.comments.open{
+bottom:0;
+}
+
+.comments-header{
+height:70px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 18px;
+font-size:18px;
+font-weight:500;
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.close{
+width:38px;
+height:38px;
+
+border:none;
+border-radius:50%;
+
+background:#222;
+
+cursor:pointer;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+padding:0;
+}
+
+.close svg{
+width:28px;
+height:28px;
+
+stroke:white;
+stroke-width:3;
+
+fill:none;
+
+stroke-linecap:round;
+}
+
+.comment-list{
+flex:1;
+overflow:auto;
+padding:16px;
+}
+
+.comment{
+margin-bottom:18px;
+}
+
+.comment strong{
+display:block;
+margin-bottom:2px;
+}
+
+.historical-name{
+display:block;
+font-size:11px;
+opacity:.58;
+margin-bottom:5px;
+}
+
+.historical-body{
+line-height:1.4;
+}
+
+.comment-input{
+padding:14px;
+display:flex;
+gap:10px;
+border-top:1px solid rgba(255,255,255,.08);
+}
+
+.comment-input input{
+flex:1;
+height:52px;
+border:none;
+border-radius:999px;
+padding:0 18px;
+background:#222;
+color:white;
+outline:none;
+}
+
+.comment-input button{
+width:90px;
+border:none;
+border-radius:999px;
+background:#ff2d55;
+color:white;
+font-weight:700;
+cursor:pointer;
+}
+
+
+/* CAMERA DENIED OVERLAY */
+
+.camera-denied-modal{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+.camera-denied-modal.show{
+  display:flex;
+  animation:cameraDeniedFade .2s ease-out;
+}
+
+.camera-denied-box{
+  width:min(100%,420px);
+  padding:30px 26px 24px;
+  border-radius:30px;
+  background:#111;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 25px 80px rgba(0,0,0,.6);
+  text-align:center;
+  animation:cameraDeniedPop .25s cubic-bezier(.2,.8,.2,1);
+}
+
+.camera-denied-icon{
+  width:72px;
+  height:72px;
+  margin:0 auto 20px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,45,85,.14);
+  border:1px solid rgba(255,45,85,.35);
+  font-size:34px;
+}
+
+.camera-denied-title{
+  margin-bottom:10px;
+  font-size:23px;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+
+.camera-denied-text{
+  color:#aaa;
+  line-height:1.5;
+  font-size:15px;
+  margin-bottom:24px;
+}
+
+.camera-denied-button{
+  width:100%;
+  height:52px;
+  border:0;
+  border-radius:16px;
+  background:#ff2d55;
+  color:white;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.18s;
+}
+
+.camera-denied-button:hover{
+  transform:scale(1.02);
+  background:#ff4165;
+}
+
+@keyframes cameraDeniedFade{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes cameraDeniedPop{
+  from{opacity:0;transform:translateY(10px) scale(.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:76px;
+display:flex;
+align-items:center;
+justify-content:space-around;
+background:rgba(10,10,10,.96);
+backdrop-filter:blur(18px);
+border-top:1px solid rgba(255,255,255,.06);
+z-index:999;
+}
+
+.nav-item{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:4px;
+font-size:11px;
+font-weight:700;
+color:#aaa;
+}
+
+.nav-item.active{
+color:white;
+}
+
+.nav-item svg{
+width:24px;
+height:24px;
+fill:currentColor;
+}
+
+.create{
+width:58px;
+height:42px;
+border-radius:16px;
+background:#ff2d55;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:500;
+cursor:pointer;
+box-shadow:0 0 24px rgba(255,45,85,.5);
+animation:createGlow 2s infinite;
+}
+
+@keyframes createGlow{
+0%{transform:scale(1);}
+50%{transform:scale(1.08);}
+100%{transform:scale(1);}
+}
+
+/* CAMERA */
+
+.camera-modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.96);
+z-index:9999;
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+.camera-box{
+width:min(100%,520px);
+background:#111;
+border-radius:30px;
+overflow:hidden;
+border:1px solid rgba(255,255,255,.08);
+}
+
+.camera-top{
+height:70px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 18px;
+font-weight:500;
+font-size:18px;
+}
+
+#preview{
+width:100%;
+height:65vh;
+object-fit:cover;
+background:black;
+}
+
+.camera-controls{
+display:flex;
+gap:10px;
+padding:16px;
+}
+
+.camera-controls button{
+flex:1;
+height:54px;
+border:none;
+border-radius:16px;
+background:#ff2d55;
+color:white;
+font-weight:500;
+font-size:18px;
+cursor:pointer;
+}
+
+.toast{
+position:fixed;
+left:50%;
+bottom:-120px;
+transform:translateX(-50%);
+padding:18px 22px;
+border-radius:20px;
+background:#111;
+border:1px solid rgba(255,255,255,.08);
+z-index:99999;
+transition:.3s;
+font-weight:700;
+}
+
+.toast.show{
+bottom:100px;
+}
+
+@media(min-width:5px){
+
+#app{
+max-width:430px;
+margin:auto;
+border-left:1px solid rgba(255,255,255,.08);
+border-right:1px solid rgba(255,255,255,.08);
+}
+
+.topbar,
+.bottom-nav{
+max-width:430px;
+margin:auto;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+
+<div class="logo">
+<div class="logo-dot"></div>
+T🤡y Tonic
+</div>
+
+</div>
+
+<div id="app">
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l1.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">131</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Watch my new short series of 'The Sacred in Everyday Life'...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">35</span></div>
+<div class="react">😂 <span class="react-count">31</span></div>
+<div class="react">😁 <span class="react-count">53</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l2.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">204</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Watching the sacred emerge from the routines of ordinary life...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">8</span></div>
+<div class="react">😂 <span class="react-count">22</span></div>
+<div class="react">😁 <span class="react-count">32</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l3.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">277</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+A small gesture can reveal an entire social world...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">25</span></div>
+<div class="react">😂 <span class="react-count">13</span></div>
+<div class="react">😁 <span class="react-count">11</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l4.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">350</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Looking for the strange inside the familiar...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">42</span></div>
+<div class="react">😂 <span class="react-count">4</span></div>
+<div class="react">😁 <span class="react-count">43</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l5.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">423</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The everyday has rituals of its own...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">15</span></div>
+<div class="react">😂 <span class="react-count">27</span></div>
+<div class="react">😁 <span class="react-count">21</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l6.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">49</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Observing the sacred hiding in ordinary gestures...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">32</span></div>
+<div class="react">😂 <span class="react-count">18</span></div>
+<div class="react">😁 <span class="react-count">52</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l7.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">122</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+A short study of habits, gestures, and invisible rites...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">49</span></div>
+<div class="react">😂 <span class="react-count">9</span></div>
+<div class="react">😁 <span class="react-count">31</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l8.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">195</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Where ordinary life begins to look slightly uncanny...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">22</span></div>
+<div class="react">😂 <span class="react-count">32</span></div>
+<div class="react">😁 <span class="react-count">10</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l9.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">268</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Finding intensity in the smallest everyday encounters...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">39</span></div>
+<div class="react">😂 <span class="react-count">23</span></div>
+<div class="react">😁 <span class="react-count">41</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l10.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">341</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The familiar becomes strange when we look closely...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">12</span></div>
+<div class="react">😂 <span class="react-count">14</span></div>
+<div class="react">😁 <span class="react-count">20</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l11.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">414</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Notes on the rituals of everyday existence...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">29</span></div>
+<div class="react">😂 <span class="react-count">5</span></div>
+<div class="react">😁 <span class="react-count">51</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l12.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">487</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Watching ordinary gestures acquire a different meaning...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">46</span></div>
+<div class="react">😂 <span class="react-count">28</span></div>
+<div class="react">😁 <span class="react-count">30</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l13.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">113</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The sacred does not always announce itself...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">19</span></div>
+<div class="react">😂 <span class="react-count">20</span></div>
+<div class="react">😁 <span class="react-count">9</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l14.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">186</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+A little ethnography of the everyday...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">36</span></div>
+<div class="react">😂 <span class="react-count">10</span></div>
+<div class="react">😁 <span class="react-count">40</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l15.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">259</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Looking at everyday life from an unusual angle...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">9</span></div>
+<div class="react">😂 <span class="react-count">33</span></div>
+<div class="react">😁 <span class="react-count">19</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l16.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">332</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The strange intimacy of ordinary gestures...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">26</span></div>
+<div class="react">😂 <span class="react-count">24</span></div>
+<div class="react">😁 <span class="react-count">50</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l17.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">405</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Everyday life, observed as if it were a ritual...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">43</span></div>
+<div class="react">😂 <span class="react-count">15</span></div>
+<div class="react">😁 <span class="react-count">29</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l18.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">478</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Small gestures, hidden meanings, unexpected rituals...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">16</span></div>
+<div class="react">😂 <span class="react-count">6</span></div>
+<div class="react">😁 <span class="react-count">60</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l19.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">104</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The distance between the ordinary and the sacred...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">33</span></div>
+<div class="react">😂 <span class="react-count">29</span></div>
+<div class="react">😁 <span class="react-count">39</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l20.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">177</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+An observation from the margins of everyday life...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">50</span></div>
+<div class="react">😂 <span class="react-count">20</span></div>
+<div class="react">😁 <span class="react-count">18</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l21.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">250</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+When a banal gesture becomes socially charged...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">23</span></div>
+<div class="react">😂 <span class="react-count">11</span></div>
+<div class="react">😁 <span class="react-count">49</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l22.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">323</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+A study of the rituals we perform without noticing...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">40</span></div>
+<div class="react">😂 <span class="react-count">34</span></div>
+<div class="react">😁 <span class="react-count">28</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l23.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">396</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The everyday is full of things we usually overlook...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">13</span></div>
+<div class="react">😂 <span class="react-count">25</span></div>
+<div class="react">😁 <span class="react-count">59</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l24.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">469</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Watching the ordinary become unfamiliar...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">30</span></div>
+<div class="react">😂 <span class="react-count">16</span></div>
+<div class="react">😁 <span class="react-count">38</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l25.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">95</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Fragments from an ethnography of everyday life...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">47</span></div>
+<div class="react">😂 <span class="react-count">7</span></div>
+<div class="react">😁 <span class="react-count">17</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l26.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">168</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The sacred can hide inside the most banal routine...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">20</span></div>
+<div class="react">😂 <span class="react-count">30</span></div>
+<div class="react">😁 <span class="react-count">48</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l27.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">241</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Looking for ritual where nobody expects to find it...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">37</span></div>
+<div class="react">😂 <span class="react-count">21</span></div>
+<div class="react">😁 <span class="react-count">27</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l28.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">314</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+A closer look at the social life of ordinary gestures...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">10</span></div>
+<div class="react">😂 <span class="react-count">12</span></div>
+<div class="react">😁 <span class="react-count">58</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l29.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">387</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Everyday life as a field of strange encounters...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">27</span></div>
+<div class="react">😂 <span class="react-count">3</span></div>
+<div class="react">😁 <span class="react-count">37</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l30.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">460</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The final observation: nothing everyday is quite innocent...
+
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">44</span></div>
+<div class="react">😂 <span class="react-count">26</span></div>
+<div class="react">😁 <span class="react-count">16</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l31.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">512</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">7</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+A gesture becomes strange when we look at it long enough...
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">51</span></div>
+<div class="react">😂 <span class="react-count">31</span></div>
+<div class="react">😁 <span class="react-count">19</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l32.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">389</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">12</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Perhaps the ordinary is only a mask worn by the unknown.
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">37</span></div>
+<div class="react">😂 <span class="react-count">22</span></div>
+<div class="react">😁 <span class="react-count">14</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l33.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">627</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">4</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The eye discovers what the habit of seeing has concealed.
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">63</span></div>
+<div class="react">😂 <span class="react-count">28</span></div>
+<div class="react">😁 <span class="react-count">21</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l34.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">451</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">9</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+Between the body and the world, there is always a secret passage.
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">48</span></div>
+<div class="react">😂 <span class="react-count">35</span></div>
+<div class="react">😁 <span class="react-count">17</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l35.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">734</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">15</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+What we call reality may simply be the longest-running fiction.
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">72</span></div>
+<div class="react">😂 <span class="react-count">41</span></div>
+<div class="react">😁 <span class="react-count">24</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l36.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">568</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">6</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+The boundary disappears the moment we decide to cross it.
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">56</span></div>
+<div class="react">😂 <span class="react-count">33</span></div>
+<div class="react">😁 <span class="react-count">18</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="reel">
+
+<video autoplay muted loop playsinline preload="none"
+data-src="./video/l37.mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">681</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">11</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar"
+src="./images/leiris.jpeg">
+
+<strong>@Michel_Leiris</strong>
+
+<button class="follow">
+Follow
+</button>
+
+</div>
+
+<div class="caption">
+And at the end, the familiar world looks back at us as a stranger.
+</div>
+
+<div class="reactions">
+
+<div class="react">🔥 <span class="react-count">68</span></div>
+<div class="react">😂 <span class="react-count">39</span></div>
+<div class="react">😁 <span class="react-count">27</span></div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+<div class="camera-modal" id="cameraModal">
+
+<div class="camera-box">
+
+<div class="camera-top">
+
+Create Reel
+
+
+<button class="close" id="closeCamera">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6L18 18"/>
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+
+</div>
+
+<video id="preview" autoplay muted playsinline></video>
+
+<div class="camera-controls">
+
+<button id="startRec">
+Record
+</button>
+
+<button id="stopRec">
+Stop
+</button>
+
+<button id="publish">
+Publish
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="toast" id="toast">
+You now follow this creator ✨
+</div>
+
+<div class="camera-denied-modal" id="cameraDeniedModal" role="dialog" aria-modal="true" aria-labelledby="cameraDeniedTitle">
+  <div class="camera-denied-box">
+    <div class="camera-denied-icon">📷</div>
+    <div class="camera-denied-title" id="cameraDeniedTitle">Camera access unavailable</div>
+    <div class="camera-denied-text">
+      Toy Tonic needs access to your camera to create a reel.
+      Please allow camera access in your browser settings and try again.
+    </div>
+    <button class="camera-denied-button" id="closeCameraDenied">Got it</button>
+  </div>
+</div>
+
+
+<div class="bottom-nav">
+
+<div class="nav-item active">
+
+<svg viewBox="0 0 24 24">
+<path d="M12 3l9 8h-3v9h-12v-9h-3z"/>
+</svg>
+
+<span>Home</span>
+
+</div>
+
+<div class="nav-item">
+
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+
+<span>Likes</span>
+
+</div>
+
+<div class="create" id="openCamera">
++
+</div>
+
+<div class="nav-item">
+
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+
+<span>Inbox</span>
+
+</div>
+
+<div class="nav-item">
+
+<svg viewBox="0 0 24 24">
+<path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.314 0-6 2.686-6 6h12c0-3.314-2.686-6-6-6z"/>
+</svg>
+
+<span>Profile</span>
+
+</div>
+
+</div>
+
+<script>
+
+const app =
+document.getElementById('app');
+
+/* AUTOPLAY */
+
+const observer =
+new IntersectionObserver((entries)=>{
+
+entries.forEach(entry=>{
+
+const video =
+entry.target.querySelector('video');
+
+if(video){
+
+if(entry.isIntersecting){
+
+/* LAZY LOAD: only fetch the video when it is near/inside view */
+if(!video.src && video.dataset.src){
+
+video.src = video.dataset.src;
+video.load();
+
+}
+
+/* Start playback after the video has been loaded */
+video.play().catch(()=>{});
+
+}else{
+
+video.pause();
+
+}
+
+}
+
+});
+
+},{
+threshold:.7,
+rootMargin:'300px 0px'
+});
+
+function observeReels(){
+
+document
+.querySelectorAll('.reel')
+.forEach(reel=>{
+
+if(!reel.dataset.lazyObserved){
+
+reel.dataset.lazyObserved='true';
+observer.observe(reel);
+
+}
+
+});
+
+}
+
+/* RANDOMIZE INITIAL REELS */
+(function shuffleInitialReels(){
+  const reels = Array.from(app.querySelectorAll(':scope > .reel'));
+  for(let i=reels.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    if(i!==j){
+      app.insertBefore(reels[j], reels[i]);
+    }
+  }
+})();
+
+observeReels();
+
+/* COMMENTS */
+
+document.addEventListener('click',(e)=>{
+
+if(e.target.closest('.comment-btn')){
+
+const reel =
+e.target.closest('.reel');
+
+reel
+.querySelector('.comments')
+.classList.add('open');
+
+}
+
+if(e.target.closest('.close')){
+
+const comments =
+e.target.closest('.comments');
+
+if(comments){
+
+comments.classList.remove('open');
+
+}
+
+}
+
+});
+
+/* COMMENT SEND */
+
+document.addEventListener('click',(e)=>{
+
+if(
+e.target.closest('.comment-input button')
+){
+
+const wrap =
+e.target.closest('.comments');
+
+const input =
+wrap.querySelector('input');
+
+if(!input.value.trim()) return;
+
+const div =
+document.createElement('div');
+
+div.className='comment';
+
+div.innerHTML=
+'<strong>@you</strong>' +
+input.value;
+
+wrap
+.querySelector('.comment-list')
+.prepend(div);
+
+input.value='';
+
+}
+
+});
+
+/* FOLLOW */
+
+const toast =
+document.getElementById('toast');
+
+document.addEventListener('click',(e)=>{
+
+if(e.target.closest('.follow')){
+
+const btn =
+e.target.closest('.follow');
+
+btn.innerText='Following';
+btn.classList.add('following');
+
+toast.classList.add('show');
+
+setTimeout(()=>{
+
+toast.classList.remove('show');
+
+},2000);
+
+}
+
+});
+
+/* FLYING EMOJIS */
+
+document.addEventListener('click',(e)=>{
+
+const react =
+e.target.closest('.react');
+
+if(react){
+
+const emoji =
+react.childNodes[0].textContent.trim();
+
+const floating =
+document.createElement('div');
+
+floating.className='float-emoji';
+
+floating.innerText=emoji;
+
+const rect =
+react.getBoundingClientRect();
+
+floating.style.left =
+rect.left + 'px';
+
+floating.style.top =
+rect.top + 'px';
+
+document.body.appendChild(floating);
+
+setTimeout(()=>{
+
+floating.remove();
+
+},2000);
+
+}
+
+});
+
+
+
+/* VIDEO SNAPSHOT AVATAR */
+
+function createVideoSnapshot(video){
+
+const canvas =
+document.createElement('canvas');
+
+canvas.width = 80;
+canvas.height = 80;
+
+const ctx =
+canvas.getContext('2d');
+
+ctx.drawImage(video,0,0,80,80);
+
+return canvas.toDataURL('image/png');
+
+}
+
+
+/* WEBCAM */
+
+const openCamera =
+document.getElementById('openCamera');
+
+const cameraModal =
+document.getElementById('cameraModal');
+
+const preview =
+document.getElementById('preview');
+
+const closeCamera =
+document.getElementById('closeCamera');
+
+const startRec =
+document.getElementById('startRec');
+
+const stopRec =
+document.getElementById('stopRec');
+
+const publish =
+document.getElementById('publish');
+
+let mediaRecorder;
+let chunks = [];
+let stream;
+let blob;
+
+openCamera.addEventListener('click',async()=>{
+
+cameraModal.style.display='flex';
+
+try{
+
+stream =
+await navigator.mediaDevices.getUserMedia({
+video:true,
+audio:true
+});
+
+preview.srcObject = stream;
+
+}catch(err){
+
+cameraModal.style.display='none';
+
+if(stream){
+  stream.getTracks().forEach(t=>t.stop());
+  stream=null;
+}
+
+document
+  .getElementById('cameraDeniedModal')
+  .classList.add('show');
+
+}
+
+});
+
+closeCamera.addEventListener('click',()=>{
+
+cameraModal.style.display='none';
+
+if(stream){
+
+stream.getTracks().forEach(t=>t.stop());
+
+}
+
+});
+
+const cameraDeniedModal =
+document.getElementById('cameraDeniedModal');
+
+const closeCameraDenied =
+document.getElementById('closeCameraDenied');
+
+function closeCameraDeniedOverlay(){
+
+cameraDeniedModal.classList.remove('show');
+
+}
+
+closeCameraDenied.addEventListener(
+'click',
+closeCameraDeniedOverlay
+);
+
+cameraDeniedModal.addEventListener('click',(e)=>{
+
+if(e.target === cameraDeniedModal){
+  closeCameraDeniedOverlay();
+}
+
+});
+
+document.addEventListener('keydown',(e)=>{
+
+if(e.key === 'Escape' &&
+   cameraDeniedModal.classList.contains('show')){
+  closeCameraDeniedOverlay();
+}
+
+});
+
+startRec.addEventListener('click',()=>{
+
+chunks=[];
+
+mediaRecorder =
+new MediaRecorder(stream);
+
+mediaRecorder.ondataavailable = e=>{
+
+if(e.data.size > 0){
+
+chunks.push(e.data);
+
+}
+
+};
+
+mediaRecorder.onstop = ()=>{
+
+blob =
+new Blob(chunks,{
+type:'video/webm'
+});
+
+};
+
+mediaRecorder.start();
+
+startRec.innerText='Recording...';
+
+});
+
+stopRec.addEventListener('click',()=>{
+
+if(mediaRecorder){
+
+mediaRecorder.stop();
+
+startRec.innerText='Record';
+
+}
+
+});
+
+publish.addEventListener('click',()=>{
+
+if(!blob) return;
+
+const url =
+URL.createObjectURL(blob);
+
+const reel =
+document.createElement('section');
+
+reel.className='reel';
+
+reel.innerHTML = `
+
+<video autoplay loop muted playsinline
+src="${url}">
+</video>
+
+<div class="overlay"></div>
+
+<div class="side">
+
+<div class="action">
+
+<div class="circle like">
+<svg viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+2 5.42 4.42 3 7.5 3c1.74 0 3.41.81
+4.5 2.09C13.09 3.81 14.76 3 16.5 3
+19.58 3 22 5.42 22 8.5c0 3.78-3.4
+6.86-8.55 11.54L12 21.35z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+<div class="action">
+
+<div class="circle comment-btn">
+<svg viewBox="0 0 24 24">
+<path d="M21 6h-18v12h4v4l4-4h10z"/>
+</svg>
+</div>
+
+<div class="count">0</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<div class="user">
+
+<img class="avatar user-snapshot"
+src="${createVideoSnapshot(preview)}">
+
+<strong>@you</strong>
+
+<button class="follow">
+Your Reel
+</button>
+
+</div>
+
+<div class="caption">
+Recorded directly with your webcam.
+</div>
+
+<div class="reactions">
+
+<div class="react">
+🔥 <span class="react-count">0</span>
+</div>
+
+<div class="react">
+😁 <span class="react-count">0</span>
+</div>
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<div class="comments-header">
+
+Comments
+
+<button class="close">
+✕
+</button>
+
+</div>
+
+<div class="comment-list"></div>
+
+<div class="comment-input">
+
+<input placeholder="Add comment...">
+
+<button>Send</button>
+
+</div>
+
+</div>
+
+`;
+
+app.prepend(reel);
+
+observeReels();
+initHistoricalComments(reel);
+
+cameraModal.style.display='none';
+
+stream.getTracks().forEach(t=>t.stop());
+
+blob=null;
+
+app.scrollTo({
+top:0,
+behavior:'smooth'
+});
+
+});
+
+
+
+/* SEARCH BUTTON */
+
+document.querySelectorAll('.nav-btn')
+.forEach(btn=>{
+
+btn.addEventListener('click',()=>{
+
+toast.innerText =
+'Search / discovery opened';
+
+toast.classList.add('show');
+
+setTimeout(()=>{
+toast.classList.remove('show');
+},17);
+
+});
+
+});
+
+/* LIKE EFFECT */
+
+document.addEventListener('click',(e)=>{
+
+const like =
+e.target.closest('.like');
+
+if(like){
+
+like.animate([
+{transform:'scale(1)'},
+{transform:'scale(1.25)'},
+{transform:'scale(1)'}
+],{
+duration:300
+});
+
+const floating =
+document.createElement('div');
+
+floating.className='float-emoji';
+
+floating.innerText='❤️';
+
+const rect =
+like.getBoundingClientRect();
+
+floating.style.left =
+(rect.left + 10) + 'px';
+
+floating.style.top =
+rect.top + 'px';
+
+document.body.appendChild(floating);
+
+setTimeout(()=>{
+floating.remove();
+},2000);
+
+}
+
+});
+
+
+
+
+
+
+/* REACTION COUNTS */
+
+document.addEventListener('click',(e)=>{
+
+const react =
+e.target.closest('.react');
+
+if(react){
+
+const count =
+react.querySelector('.react-count');
+
+if(count){
+
+let txt =
+count.innerText.replace('K','000');
+
+let num =
+parseInt(txt) || 0;
+
+num++;
+
+if(num >= 1000){
+
+count.innerText =
+(num/1000).toFixed(1)+'K';
+
+}else{
+
+count.innerText = num;
+
+}
+
+}
+
+}
+
+});
+
+
+/* LIKE COUNTS */
+
+document.addEventListener('click',(e)=>{
+
+const like =
+e.target.closest('.like');
+
+if(like){
+
+const count =
+like.parentElement.querySelector('.count');
+
+if(count){
+
+let txt = count.innerText
+.replace('K','000');
+
+let num = parseInt(txt) || 0;
+
+num++;
+
+if(num >= 1000){
+
+count.innerText =
+(num/1000).toFixed(1)+'K';
+
+}else{
+
+count.innerText = num;
+
+}
+
+}
+
+}
+
+});
+
+
+/* ===== CLEAN ACÉPHALE / COLLÈGE COMMENT SYSTEM =====
+   Exactly 500 original fictionalized comments are generated per reel.
+   Historical names are interface personas; comment wording is original,
+   not quotation text from the historical figures.
+*/
+
+const HISTORICAL_PERSONAS = [
+  {
+    name:'Georges Bataille',
+    handle:'@georges_bataille',
+    register:'sacred',
+    voice:[
+      'The sacred is never where the interface tells us to look.',
+      'Intensity is already a form of organization.',
+      'A social body is made of forces before it is made of rules.',
+      'The strange thing is how quickly play becomes serious.',
+      'Perhaps the gesture matters more than the explanation.'
+    ]
+  },
+  {
+    name:'Roger Caillois',
+    handle:'@roger_caillois',
+    register:'game',
+    voice:[
+      'This belongs somewhere between agon and ilinx.',
+      'Chance has entered the structure without announcing itself.',
+      'The game reveals the institution by pretending not to be one.',
+      'Observe the rules first. Then observe what escapes them.',
+      'The players are already constructing a sociology.'
+    ]
+  },
+  {
+    name:'Georges Ambrosino',
+    handle:'@georges_ambrosino',
+    register:'structure',
+    voice:[
+      'There is an unexpected precision hidden inside this disorder.',
+      'The system behaves differently once the observers participate.',
+      'Interesting how a small input changes the entire field.',
+      'The mechanism deserves as much attention as the spectacle.',
+      'A pattern is forming.'
+    ]
+  },
+  {
+    name:'Pierre Klossowski',
+    handle:'@pierre_klossowski',
+    register:'image',
+    voice:[
+      'The image has begun to behave like a doctrine.',
+      'A mask is never merely a mask once others recognize it.',
+      'The repetition changes the meaning of the gesture.',
+      'Every ritual eventually invents its own spectators.',
+      'The double is already inside the original.'
+    ]
+  },
+  {
+    name:'Pierre Libra',
+    handle:'@pierre_libra',
+    register:'institution',
+    voice:[
+      'The institution is already present in the smallest gesture.',
+      'One should not confuse movement with transformation.',
+      'The collective dimension changes the meaning of the object.',
+      'This is less innocent than it appears.',
+      'The form is beginning to organize its spectators.'
+    ]
+  },
+  {
+    name:'Jules Monnerot',
+    handle:'@jules_monnerot',
+    register:'collective',
+    voice:[
+      'The collective mechanism is becoming visible.',
+      'Watch how quickly a symbol acquires authority.',
+      'The group is producing more than its members intend.',
+      'There is a structure here, even where there appears to be chaos.',
+      'The social fact survives the individual explanation.'
+    ]
+  },
+  {
+    name:'Michel Leiris',
+    handle:'@michel_leiris',
+    register:'everyday',
+    voice:[
+      'I would distrust the sacred the moment it becomes too certain.',
+      'The everyday is stranger than the ritual admits.',
+      'Perhaps the embarrassment is the most interesting part.',
+      'A small gesture can disclose an entire social world.',
+      'I am watching the distance between the image and the person.'
+    ]
+  },
+  {
+    name:'Hans Mayer',
+    handle:'@hans_mayer',
+    register:'history',
+    voice:[
+      'The social atmosphere is changing before the vocabulary catches up.',
+      'The spectator is also an historical position.',
+      'The collective image contains more than its maker.',
+      'This could be read as a small history of the present.',
+      'The archive would notice the contradiction.'
+    ]
+  },
+  {
+    name:'Jean Paulhan',
+    handle:'@jean_paulhan',
+    register:'language',
+    voice:[
+      'The language around the object may be more revealing than the object.',
+      'Every vocabulary creates a small institution.',
+      'Notice what the caption permits us not to say.',
+      'The phrase has acquired a life of its own.',
+      'Perhaps the joke is carrying the argument.'
+    ]
+  },
+  {
+    name:'Jean Wahl',
+    handle:'@jean_wahl',
+    register:'philosophy',
+    voice:[
+      'The question remains more important than the answer.',
+      'There is a philosophical problem hiding inside this game.',
+      'The individual appears only through relation.',
+      'What does participation mean when the rules are unstable?',
+      'The contradiction is perhaps the point.'
+    ]
+  },
+  {
+    name:'Alexandre Kojève',
+    handle:'@alexandre_kojeve',
+    register:'recognition',
+    voice:[
+      'The desire of the spectator has entered the game.',
+      'Recognition changes the position of every participant.',
+      'The relation between player and object is decisive.',
+      'The spectacle becomes historical the moment it is recognized.',
+      'One cannot observe the system from outside it.'
+    ]
+  },
+  {
+    name:'Denis de Rougemont',
+    handle:'@denis_de_rougemont',
+    register:'myth',
+    voice:[
+      'The collective imagination is doing work here.',
+      'A myth can organize people before anyone names it a myth.',
+      'The community is always producing its own language.',
+      'The symbolic order is never neutral.',
+      'This is a curious little machine for making belief.'
+    ]
+  },
+  {
+    name:'André Masson',
+    handle:'@andre_masson',
+    register:'acéphale',
+    voice:[
+      'The image has its own ritual before anyone names it.',
+      'The figure is already moving beyond the frame.',
+      'The symbol becomes active through repetition.',
+      'The visual gesture is never merely decorative.',
+      'The image is becoming an event rather than an object.'
+    ]
+  },
+  {
+    name:'Colette Peignot',
+    handle:'@colette_peignot',
+    register:'threshold',
+    voice:[
+      'The hidden relation is usually the most active one.',
+      'A community reveals itself through what it refuses to say.',
+      'The visible ritual is never the whole ritual.',
+      'There is always another room behind the room.',
+      'What remains unspoken is still part of the gathering.'
+    ]
+  }
+];
+
+/* 500 original comment texts. These are interface fiction, not quotations. */
+const COMMENT_TEXTS = [
+  'The sacred has entered the feed.',
+  'A ritual is forming around the smallest gesture.',
+  'The spectator has become part of the mechanism.',
+  'The image is doing social work now.',
+  'This is already more collective than it looks.',
+  'The boundary between play and institution is unstable.',
+  'Someone has turned the interface into a rite.',
+  'The object has acquired a social charge.',
+  'The strange part is how ordinary the ritual looks.',
+  'The group is visible even when nobody names it.',
+  'This feels like a ceremony disguised as a post.',
+  'The caption is almost another participant.',
+  'The image has stopped being merely decorative.',
+  'There is a social force hiding in the repetition.',
+  'The rule is becoming visible through the exception.',
+  'The spectators are producing the event together.',
+  'The interface has its own little mythology.',
+  'A symbol becomes active when the group recognizes it.',
+  'The joke is carrying a surprisingly serious structure.',
+  'This is a small machine for producing intensity.',
+  'The collective is appearing through tiny details.',
+  'The game has already exceeded its rules.',
+  'The ordinary object is suddenly difficult to regard as ordinary.',
+  'The ritual begins before anyone announces it.',
+  'The image has become a meeting place.',
+  'Notice how quickly spectators become participants.',
+  'The social body is never completely visible.',
+  'The feed is behaving like a little institution.',
+  'The atmosphere matters as much as the content.',
+  'A strange consensus is forming here.',
+  'The repetition is doing more than the original gesture.',
+  'The interface is remembering what the people forget.',
+  'The collective meaning arrives after the image.',
+  'This could be read as a miniature social experiment.',
+  'The sacred is hiding in the mechanics.',
+  'The spectacle creates its own witnesses.',
+  'The comment section has become part of the work.',
+  'A small gesture can reorganize the whole scene.',
+  'The mask changes when the spectators recognize it.',
+  'The ritual has found a contemporary costume.',
+  'This is what happens when play acquires consequences.',
+  'The object is less important than the relation around it.',
+  'The group has produced a meaning nobody ordered.',
+  'The image is attracting a second image made of reactions.',
+  'There is a structure underneath the apparent chaos.',
+  'The social fact is already larger than the individual.',
+  'The interface makes the invisible relation visible.',
+  'The threshold between observer and actor has disappeared.',
+  'This is almost an ethnography of the feed.',
+  'The collective imagination is doing the heavy lifting.',
+  'The image is becoming an instrument of gathering.',
+  'The ritual has no need to call itself ritual.',
+  'Every spectator adds another layer to the event.',
+  'The form is beginning to organize attention.',
+  'A community is recognizable by what it repeats.',
+  'The feed has become a place of encounter.',
+  'The strange thing is the speed of the transformation.',
+  'The gesture becomes collective through repetition.',
+  'The symbol is acquiring authority by circulation.',
+  'The audience is not outside the spectacle.',
+  'The game is producing its own sociology.',
+  'A rule is most interesting when someone crosses it.',
+  'The atmosphere has become almost tangible.',
+  'The image carries a social memory.',
+  'This looks spontaneous, but the structure is working underneath.',
+  'The collective is not the sum of its spectators.',
+  'The post has become a little public square.',
+  'The sacred can arrive through very banal machinery.',
+  'The machine is learning the habits of the crowd.',
+  'The archive would have trouble classifying this.',
+  'A ritual survives by changing its surface.',
+  'The spectator is already implicated.',
+  'The group is inventing a vocabulary in real time.',
+  'The image is less stable than it appears.',
+  'The object has become a pretext for relation.',
+  'This is a curious form of collective attention.',
+  'The feed is creating its own temporary order.',
+  'A little disorder can reveal a large structure.',
+  'The reaction is part of the artifact.',
+  'The community appears in the intervals.',
+  'The visible event has an invisible history.',
+  'The symbolic order is never neutral.',
+  'The social field is moving beneath the image.',
+  'The interface is staging recognition.',
+  'A myth can begin with something this small.',
+  'The comment is another layer of the ritual.',
+  'The spectacle has recruited its own analysts.',
+  'This is where game and sociology start touching.',
+  'The group is producing an atmosphere before producing an argument.',
+  'The image has become a social object.',
+  'The ritual is being improvised collectively.',
+  'The feed has accidentally invented a ceremony.',
+  'There is more structure here than first appears.',
+  'The spectator changes the meaning simply by arriving.',
+  'The collective event begins in perception.',
+  'The interface is not innocent anymore.',
+  'A symbol travels differently once a crowd adopts it.'
+];
+
+/* Create exactly 500 distinct comment records per reel by combining
+   the 100 original texts with five controlled, non-semantic variants.
+   The text itself remains original and the persona supplies identity. */
+const COMMENT_VARIANTS = [
+  '',
+  ' Interesting.',
+  ' Worth watching.',
+  ' The detail matters.',
+  ' I would keep this one open.'
+];
+
+function buildCommentPool(){
+  const pool=[];
+  let index=0;
+
+  for(let round=0; round<5; round++){
+    for(let i=0;i<COMMENT_TEXTS.length;i++){
+      const person = HISTORICAL_PERSONAS[index % HISTORICAL_PERSONAS.length];
+      const text = COMMENT_TEXTS[i] + COMMENT_VARIANTS[round];
+
+      pool.push({
+        id:index++,
+        person,
+        text
+      });
+    }
+  }
+
+  return pool;
+}
+
+const MASTER_COMMENT_POOL = buildCommentPool();
+
+function renderHistoricalComment(wrap, item){
+  const div=document.createElement('div');
+  div.className='comment historical-comment';
+  div.dataset.commentId=item.id;
+
+  div.innerHTML =
+    '<strong>' + item.person.handle + '</strong>' +
+    '<span class="historical-name">' + item.person.name + '</span>' +
+    '<div class="historical-body">' + item.text + '</div>';
+
+  wrap.appendChild(div);
+}
+
+function shuffleArray(arr){
+  const copy=arr.slice();
+
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+
+  return copy;
+}
+
+function renderHistoricalComment(wrap,item){
+  const div=document.createElement('div');
+
+  div.className='comment historical-comment';
+  div.dataset.commentId=item.id;
+
+  div.innerHTML =
+    '<strong>' + item.person.handle + '</strong>' +
+    '<span class="historical-name">' + item.person.name + '</span>' +
+    '<div class="historical-body">' + item.text + '</div>';
+
+  wrap.appendChild(div);
+}
+
+/*
+  COMMENT ROTATION
+  ----------------
+  Master pool: 500 comments.
+
+  Per reel:
+  - choose 50 unique comments from the 500
+  - reveal them gradually
+  - never show more than 10 simultaneously
+  - never repeat within the current 50
+  - after those 50 have been used, choose a new 50 from the
+    remaining unused pool
+  - only after all 500 have been used may the pool reset
+*/
+
+function createCommentRotation(reel){
+
+  if(reel.dataset.rotationReady) return;
+
+  const wrap=reel.querySelector('.comment-list');
+  const counter=reel.querySelectorAll('.side .count')[1];
+
+  if(!wrap) return;
+
+  reel.dataset.rotationReady='true';
+
+  reel._unusedComments =
+    shuffleArray(MASTER_COMMENT_POOL);
+
+  reel._currentRotation=[];
+  reel._rotationIndex=0;
+  reel._visibleComments=0;
+  reel.dataset.actualCommentCount='0';
+
+  /*
+    The 500 is the available master-pool size, NOT the post's
+    displayed comment count. Start the UI counter at the actual
+    number of comments currently rendered.
+  */
+  if(counter){
+    counter.innerText='0';
+  }
+
+  /* Put only one comment into the post initially. */
+  revealNextComment(reel);
+}
+
+function createNextRotation(reel){
+
+  /*
+    If fewer than 50 remain in the current unused master pool,
+    take those first, then refill from the already-used pool only
+    after the complete 500 pool has been exhausted.
+  */
+
+  if(reel._unusedComments.length === 0){
+
+    reel._unusedComments =
+      shuffleArray(MASTER_COMMENT_POOL);
+
+  }
+
+  const amount=Math.min(50,reel._unusedComments.length);
+
+  reel._currentRotation =
+    reel._unusedComments.splice(0,amount);
+
+  reel._rotationIndex=0;
+}
+
+function revealNextComment(reel){
+
+  if(!reel._currentRotation.length ||
+     reel._rotationIndex >= reel._currentRotation.length){
+
+    createNextRotation(reel);
+  }
+
+  if(reel._rotationIndex >= reel._currentRotation.length){
+    return;
+  }
+
+  const wrap=reel.querySelector('.comment-list');
+
+  if(!wrap) return;
+
+  const item =
+    reel._currentRotation[reel._rotationIndex++];
+
+  renderHistoricalComment(wrap,item);
+
+  reel._visibleComments++;
+
+  /*
+    The social counter reflects the number of comments actually
+    present in this post's current visible/comment stream.
+    It is deliberately independent of the 500-comment master pool.
+  */
+  const counter=reel.querySelectorAll('.side .count')[1];
+
+  if(counter){
+    const actualCount = wrap.querySelectorAll('.comment').length;
+
+    reel.dataset.actualCommentCount=actualCount;
+    counter.innerText=actualCount;
+  }
+
+  /*
+    Never allow more than 10 comments to remain visible.
+    Remove the oldest one before the 11th is added.
+  */
+  while(reel._visibleComments > 10){
+
+    const first=wrap.querySelector('.comment');
+
+    if(!first) break;
+
+    first.remove();
+    reel._visibleComments--;
+  }
+
+  /* Keep the social comment count synchronized with comments actually visible. */
+  if(counter){
+    const actualCount = wrap.querySelectorAll('.comment').length;
+    reel.dataset.actualCommentCount=actualCount;
+    counter.innerText=actualCount;
+  }
+}
+
+function initHistoricalComments(reel){
+
+  if(reel.dataset.commentsReady) return;
+
+  reel.dataset.commentsReady='true';
+
+  createCommentRotation(reel);
+}
+
+function initAllHistoricalComments(){
+
+  document
+    .querySelectorAll('.reel')
+    .forEach(initHistoricalComments);
+
+}
+
+initAllHistoricalComments();
+
+/*
+  New comments appear gradually — one every 4 seconds.
+  They come from the current 50-comment rotation and can never
+  duplicate one another until the 50 are exhausted.
+*/
+setInterval(()=>{
+
+  document
+    .querySelectorAll('.reel')
+    .forEach(reel=>{
+
+      initHistoricalComments(reel);
+
+      /*
+        35% chance of a new comment on each cycle, so the feed
+        doesn't look mechanically synchronized.
+      */
+      if(Math.random() < .35){
+
+        revealNextComment(reel);
+
+      }
+
+    });
+
+},4000);
+
+/*
+  If a user opens the comment panel and reaches the bottom,
+  reveal another comment immediately, still respecting the
+  10-comment maximum.
+*/
+document.addEventListener('scroll',(e)=>{
+
+  const list=e.target.closest?.('.comment-list');
+
+  if(!list) return;
+
+  if(
+    list.scrollTop + list.clientHeight >=
+    list.scrollHeight - 80
+  ){
+
+    const reel=list.closest('.reel');
+
+    if(reel){
+      revealNextComment(reel);
+    }
+
+  }
+
+},true);
+
+/* New webcam reels receive the same 500-comment system. */
+</script>
+
+</body>
+</html>

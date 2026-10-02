@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>The Social Machine</title>
+<meta content="noindex, nofollow" name="robots">
+<style>
+body{
+    margin:0;
+    background:transparent;
+    color:#e0d0a0;
+    font-family:Arial,serif;
+    overflow:hidden;
+}
+
+
+#panel{
+
+    position:absolute;
+
+    top:20px;
+    left:20px;
+
+    width:300px;
+
+    max-height:calc(100vh - 40px);
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    background:
+    rgba(20,20,20,0.85);
+
+    backdrop-filter:blur(12px);
+
+    border:1px solid rgba(195,181,151,0.25);
+
+    border-radius:16px;
+
+    padding:20px;
+
+    box-sizing:border-box;
+
+    z-index:10;
+
+    box-shadow:
+    0 10px 40px rgba(0,0,0,.6);
+}
+
+
+#panel::-webkit-scrollbar{
+    width:6px;
+}
+
+#panel::-webkit-scrollbar-track{
+    background:rgba(255,255,255,0.05);
+}
+
+#panel::-webkit-scrollbar-thumb{
+    background:#8b572a;
+    border-radius:10px;
+}
+
+
+#panel h1{
+
+    margin-top:0;
+
+    font-size:24px;
+
+    letter-spacing:2px;
+
+}
+
+
+canvas{
+
+    display:block;
+
+    width:100vw;
+
+    height:100vh;
+
+    background:transparent;
+
+}
+.stat{
+    margin-bottom:6px;
+}
+
+button{
+
+    width:100%;
+
+    padding:14px;
+
+    margin-top:15px;
+
+background:
+linear-gradient(
+135deg,
+#c3b597,
+#c3b597
+);
+
+    color:#fff;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+button:hover{
+
+    transform:
+    translateY(-2px);
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.5);
+
+}
+
+#result{
+    margin-top:20px;
+    font-size:14px;
+    line-height:1.4;
+    color:#c3b597;
+}
+
+#panel{
+
+animation:
+appear 1s ease;
+
+}
+
+
+@keyframes appear{
+
+from{
+opacity:0;
+transform:translateY(20px);
+}
+
+to{
+opacity:1;
+transform:none;
+}
+
+}
+
+
+@media (max-width:600px){
+    body{
+        overflow:hidden;
+        width:100vw;
+        height:100vh;
+    }
+
+    canvas{
+        width:100vw;
+        max-width:100vw;
+        height:100vh;
+        display:block;
+        touch-action:none;
+        overflow:hidden;
+    }
+
+    /* Mobile controls: title + release action, with a real 100px reserve on the right. */
+    #panel{
+        top:10px;
+        animation:none;
+        left:10px;
+        width:calc(100vw - 110px);
+        max-width:none;
+        max-height:none;
+        padding:10px;
+        overflow:visible;
+    }
+
+    #panel h1{
+        display:inline-block;
+        margin:0;
+        font-size:18px;
+        line-height:1.05;
+        letter-spacing:1.5px;
+        vertical-align:middle;
+    }
+
+    #panel p,
+    #stats{
+        display:none;
+    }
+
+    #panel button{
+        position:absolute;
+        top:10px;
+        right:10px;
+        width:auto;
+        min-width:120px;
+        margin:0;
+        padding:11px 10px;
+        font-size:14px;
+        white-space:nowrap;
+    }
+
+    #result{
+        display:none;
+    }
+
+    #mobileResultOverlay{
+        display:none;
+        position:fixed;
+        left:50%;
+        top:50%;
+        width:calc(100vw - 32px);
+        max-width:620px;
+        min-height:120px;
+        max-height:70vh;
+        transform:translate(-50%,-50%);
+        box-sizing:border-box;
+        padding:22px 26px;
+        background:rgba(20,20,20,.96);
+        border:1px solid rgba(195,181,151,.25);
+        border-radius:25px;
+        z-index:100;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        overflow:auto;
+    }
+
+    #mobileResultOverlay.show{
+        display:flex;
+    }
+
+    #mobileResultContent{
+        width:100%;
+        font-size:14px;
+        line-height:1.45;
+        color:#c3b597;
+        overflow-wrap:anywhere;
+    }
+}
+
+@media (max-width:360px){
+    #panel h1{font-size:16px;}
+    #panel button{min-width:108px;font-size:13px;padding:10px 8px;}
+}
+
+</style>
+</head>
+<body>
+
+<div id="mobileResultOverlay" aria-live="polite">
+  <div id="mobileResultContent"></div>
+</div>
+
+<div id="panel">
+
+<h1>THE 🍭<br> SOCIAL<br> MACHINE</h1>
+
+<p>
+Release a Society.<br>
+Watch history happen.
+</p>
+
+<div id="stats"></div>
+
+<button onclick="resetBall()">
+Release Society
+</button>
+
+<div id="result"></div>
+
+</div>
+
+<canvas id="game" width="900" height="900"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let W;
+let H;
+
+const BOARD_OFFSET_X = 180;
+const MOBILE_BOARD_OFFSET_X = 0;
+
+const MOBILE_BOARD_W = 900;
+const MOBILE_BOARD_H = 900;
+let mobileScale = 1;
+
+const fields = [
+    0,0,0,0,0,0,0,0,0,0
+];
+
+function resize(){
+
+    const ratio = window.devicePixelRatio || 1;
+
+    canvas.width =
+    window.innerWidth * ratio;
+
+    canvas.height =
+    window.innerHeight * ratio;
+
+
+    canvas.style.width =
+    window.innerWidth+"px";
+
+    canvas.style.height =
+    window.innerHeight+"px";
+
+
+    ctx.setTransform(
+        ratio,
+        0,
+        0,
+        ratio,
+        0,
+        0
+    );
+
+
+    if(window.innerWidth <= 600){
+        W = MOBILE_BOARD_W;
+        H = MOBILE_BOARD_H;
+    }else{
+        W = window.innerWidth;
+        H = window.innerHeight;
+    }
+
+}
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+resize();
+
+// Mobile uses the same 900×900 game board as desktop, but renders it through
+// a responsive camera so the board remains a real game surface rather than
+// simply being cropped by the viewport.
+function isMobile(){
+    return window.innerWidth <= 600;
+}
+
+function updateMobileScale(){
+    if(!isMobile()){
+        mobileScale = 1;
+        return;
+    }
+
+    // Scale the same board down as the phone gets narrower.
+    mobileScale = Math.max(1.12, Math.min(1.32, window.innerWidth / 300));
+}
+
+updateMobileScale();
+window.addEventListener("resize", updateMobileScale);
+
+const gravity = 0.22;
+
+const variables = {
+ sacred:0,
+ myth:0,
+ order:0,
+ bureaucracy:0,
+ play:0,
+ violence:0,
+ collectivity:0
+};
+
+const history = [];
+
+const thinkers = [
+
+["Bataille",{sacred:10,play:5}],
+["Caillois",{play:10,order:2}],
+["Leiris",{sacred:7,violence:3}],
+["Durkheim",{order:10,collectivity:8}],
+["Mauss",{collectivity:12}],
+["Marx",{collectivity:10,violence:4}],
+["Nietzsche",{myth:10,sacred:4}],
+["Sorel",{myth:12,violence:8}],
+["Weber",{bureaucracy:10,order:6}],
+["Hobbes",{order:14}]
+
+];
+
+const pegs=[];
+
+for(let row=0; row<9; row++){
+
+    let count=8;
+
+    let offset=
+        row%2 ? 45 : 0;
+
+    for(let col=0; col<count; col++){
+
+        const thinker=
+        thinkers[
+            Math.floor(
+             Math.random()*thinkers.length
+            )
+        ];
+
+        pegs.push({
+
+x:
+W*0.15 + col*(W*0.085)+offset,
+
+y:
+120 + row*(H*0.075),
+
+            r:22,
+
+            name:thinker[0],
+
+            effect:thinker[1]
+        });
+    }
+}
+
+const ball = {
+    x:W/2,
+    y:40,
+    vx:0,
+    vy:0,
+    r:16,
+    angle:0,
+    finished:false
+};
+
+function clearVariables(){
+
+    for(let k in variables)
+        variables[k]=0;
+
+    history.length=0;
+
+    document.getElementById(
+        "result"
+    ).innerHTML="";
+    document.getElementById("panel").classList.remove("finished");
+    const mobileOverlay=document.getElementById("mobileResultOverlay");
+    if(mobileOverlay) mobileOverlay.classList.remove("show");
+}
+
+function resetBall(){
+
+    clearVariables();
+
+ball.x = isMobile()
+    ? (MOBILE_BOARD_W * 0.2) + Math.random() * (MOBILE_BOARD_W * 0.6)
+    : BOARD_OFFSET_X + W*0.2 + Math.random() * (W*0.6);
+
+    ball.y=40;
+
+ball.vx =
+(Math.random()-0.5)*4;
+
+    ball.vy=0;
+
+    ball.finished=false;
+}
+
+function applyThinker(peg){
+
+    history.push(peg.name);
+
+    for(let key in peg.effect){
+
+        variables[key]+=
+        peg.effect[key];
+    }
+
+    updateStats();
+}
+
+function updateStats(){
+
+    let html="";
+
+    for(let k in variables){
+
+        html+=
+        "<div class='stat'>"+
+        k+": "+
+        variables[k]+
+        "</div>";
+    }
+
+    document.getElementById(
+      "stats"
+    ).innerHTML=html;
+}
+
+function determineResult(){
+
+    let winner="";
+    let score=-999;
+
+    const outcomes=[
+
+["LIBERAL DEMOCRACY",
+ variables.order+
+ variables.collectivity],
+
+["TECHNOCRATIC STATE",
+ variables.order+
+ variables.bureaucracy],
+
+["REVOLUTIONARY COMMUNE",
+ variables.collectivity+
+ variables.violence],
+
+["FASCIST ACTIVATION",
+ variables.myth+
+ variables.violence+
+ variables.order],
+
+["RELIGIOUS REVIVAL",
+ variables.sacred+
+ variables.order],
+
+["PERMANENT CARNIVAL",
+ variables.play+
+ variables.sacred],
+
+["ACEPHALE SOCIETY",
+ variables.sacred+
+ variables.play+
+ variables.myth],
+
+["FRAGMENTATION",
+ variables.play+
+ variables.violence]
+
+];
+
+    outcomes.forEach(o=>{
+
+        if(o[1]>score){
+
+            score=o[1];
+            winner=o[0];
+        }
+    });
+
+    document.getElementById(
+      "result"
+    ).innerHTML=
+
+    "<span style='font-size:14px'><b>"+winner+"</b></span><br><br>" +
+
+    history.join(" → ");
+
+    if(isMobile()){
+        const overlay=document.getElementById("mobileResultOverlay");
+        const content=document.getElementById("mobileResultContent");
+        if(overlay && content){
+            content.innerHTML=document.getElementById("result").innerHTML;
+            overlay.classList.add("show");
+        }
+    }
+}
+
+function update(){
+
+    if(ball.finished) return;
+
+    ball.vy+=gravity;
+
+    ball.x+=ball.vx;
+    ball.y+=ball.vy;
+
+    ball.angle += ball.vx * 0.05;
+
+    if(ball.x<ball.r){
+
+        ball.x=ball.r;
+        ball.vx*=-0.8;
+    }
+
+    if(ball.x>W-ball.r){
+
+        ball.x=W-ball.r;
+        ball.vx*=-0.8;
+    }
+
+pegs.forEach(peg=>{
+
+    let dx=
+    ball.x-(peg.x+(isMobile() ? MOBILE_BOARD_OFFSET_X : BOARD_OFFSET_X));
+
+    let dy=
+    ball.y-peg.y;
+
+        let d=Math.sqrt(
+            dx*dx+dy*dy
+        );
+
+        let min=
+        ball.r+peg.r;
+
+        if(d<min){
+
+            applyThinker(peg);
+
+            let nx=dx/d;
+            let ny=dy/d;
+
+            let overlap=min-d;
+
+ball.x+=nx*overlap;
+ball.y+=ny*overlap;
+
+            let dot=
+            ball.vx*nx+
+            ball.vy*ny;
+
+            ball.vx-=2*dot*nx;
+            ball.vy-=2*dot*ny;
+
+            ball.vx*=0.85;
+            ball.vy*=0.85;
+
+            ball.vx+=
+            (Math.random()-0.5)*1;
+        }
+    });
+
+if(ball.y>H-40){
+
+    let field =
+    Math.floor(
+        ball.x / ((isMobile() ? MOBILE_BOARD_W : W)/10)
+    );
+
+    fields[field]++;
+
+    ball.finished=true;
+
+    determineResult();
+}
+
+}
+
+let timelineDrag = {
+    active:false,
+    startX:0,
+    offsetX:0
+};
+
+function mobileTimelinePointerDown(e){
+    if(!isMobile() || ball.finished) return;
+    const y = e.clientY;
+    if(y < window.innerHeight - 150) return;
+    timelineDrag.active = true;
+    timelineDrag.startX = e.clientX;
+    timelineDrag.offsetX = 0;
+    canvas.setPointerCapture?.(e.pointerId);
+}
+
+function mobileTimelinePointerMove(e){
+    if(!timelineDrag.active) return;
+    timelineDrag.offsetX = e.clientX - timelineDrag.startX;
+}
+
+function mobileTimelinePointerUp(e){
+    if(!timelineDrag.active) return;
+    timelineDrag.active = false;
+    canvas.releasePointerCapture?.(e.pointerId);
+}
+
+canvas.addEventListener("pointerdown", mobileTimelinePointerDown);
+canvas.addEventListener("pointermove", mobileTimelinePointerMove);
+canvas.addEventListener("pointerup", mobileTimelinePointerUp);
+canvas.addEventListener("pointercancel", mobileTimelinePointerUp);
+
+function getMobileCamera(){
+    if(!isMobile()) return {x:0,y:0};
+
+    const viewW = window.innerWidth / mobileScale;
+    const viewH = window.innerHeight / mobileScale;
+
+    const targetX = ball.x - viewW * 0.5 - (timelineDrag.active ? timelineDrag.offsetX / mobileScale : 0);
+    const targetY = ball.y - viewH * 0.48;
+
+    return {
+        x:Math.max(0, Math.min(MOBILE_BOARD_W - viewW, targetX)),
+        y:Math.max(0, Math.min(MOBILE_BOARD_H - viewH, targetY))
+    };
+}
+
+function beginMobileCamera(){
+    if(!isMobile()) return false;
+
+    const camera = getMobileCamera();
+    ctx.save();
+    ctx.translate(window.innerWidth/2, window.innerHeight/2);
+    ctx.scale(mobileScale, mobileScale);
+    ctx.translate(-(camera.x + (window.innerWidth/mobileScale)/2), -(camera.y + (window.innerHeight/mobileScale)/2));
+    return true;
+}
+
+function drawBoard(){
+
+    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+
+    const mobileCameraActive = beginMobileCamera();
+
+    ctx.fillStyle="#c3b597";
+
+    pegs.forEach(p=>{
+
+        ctx.beginPath();
+ctx.arc(
+    p.x + (isMobile() ? MOBILE_BOARD_OFFSET_X : BOARD_OFFSET_X),
+    p.y,
+    p.r,
+    0,
+    Math.PI*2
+);
+        ctx.fill();
+
+        ctx.fillStyle="white";
+
+        ctx.font="9px Arial";
+
+        ctx.textAlign="center";
+
+ctx.fillText(
+    p.name,
+    p.x + (isMobile() ? MOBILE_BOARD_OFFSET_X : BOARD_OFFSET_X),
+    p.y+4
+);
+
+        ctx.fillStyle="#c3b597";
+    });
+
+    for(let i=0;i<10;i++){
+
+ctx.strokeStyle=
+"#c3b597";
+
+        ctx.lineWidth=4;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            i*(W/10),
+            H
+        );
+
+        ctx.lineTo(
+            i*(W/10),
+            H-120
+        );
+
+        ctx.stroke();
+    }
+
+let total =
+fields.reduce(
+(a,b)=>a+b,
+0
+);
+
+
+ctx.fillStyle="#c3b597";
+
+ctx.font="12px Georgia";
+
+ctx.textAlign="center";
+
+
+for(let i=0;i<10;i++){
+
+    let percent =
+    total ?
+    Math.round(
+        fields[i]/total*100
+    )
+    :
+    0;
+
+
+    let label = percent+"%";
+
+
+    if(i===0){
+        label =
+        "ANARCHY\n"+percent+"%";
+    }
+
+        if(i===1){
+        label =
+        "LEFT-HAND\n"+percent+"%";
+    }
+
+        if(i===2){
+        label =
+        "REBELLION\n"+percent+"%";
+    }
+
+        if(i===3){
+        label =
+        "COMMUNISTIC STATE\n"+percent+"%";
+    }
+
+        if(i===4){
+        label =
+        "SOCIALISTIC STATE\n"+percent+"%";
+    }
+
+        if(i===5){
+        label =
+        "DEMOCRATIC\n REPUBLIC\n"+percent+"%";
+    }
+
+        if(i===6){
+        label =
+        "MONARCHY\n"+percent+"%";
+    }
+
+        if(i===7){
+        label =
+        "DICTATORSHIP\n"+percent+"%";
+    }
+
+        if(i===8){
+        label =
+        "CIVIL WAR\n"+percent+"%";
+    }
+        if(i===9){
+        label =
+        "RIGHT-HAND\n"+percent+"%";
+    }
+
+let lines = label.split("\n");
+
+if(isMobile()){
+    const words = lines.join(" ").split(/\s+/);
+    const wrapped = [];
+    let current = "";
+    const maxWidth = (W/10) * 0.82;
+
+    words.forEach(word=>{
+        const test = current ? current + " " + word : word;
+        if(current && ctx.measureText(test).width > maxWidth){
+            wrapped.push(current);
+            current = word;
+        }else{
+            current = test;
+        }
+    });
+    if(current) wrapped.push(current);
+    lines = wrapped;
+}
+
+const lineHeight = 14;
+const startY = H - 45 - ((lines.length - 1) * lineHeight * 0.5);
+lines.forEach((line,index)=>{
+    ctx.fillText(
+        line,
+        i*(W/10)+(W/20),
+        startY+(index*lineHeight)
+    );
+});
+
+}
+
+    if(mobileCameraActive) ctx.restore();
+}
+
+function drawBall(){
+
+    ctx.save();
+
+    if(isMobile()){
+        const camera = getMobileCamera();
+        const viewW = window.innerWidth / mobileScale;
+        const viewH = window.innerHeight / mobileScale;
+        ctx.translate(window.innerWidth/2, window.innerHeight/2);
+        ctx.scale(mobileScale, mobileScale);
+        ctx.translate(-(camera.x + viewW/2), -(camera.y + viewH/2));
+    }
+
+    ctx.translate(
+        ball.x,
+        ball.y
+    );
+
+    ctx.rotate(ball.angle);
+
+    ctx.font = "32px serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText(
+        "☠️",
+        0,
+        0
+    );
+
+    ctx.restore();
+}
+
+function drawTitle(){
+
+    if(isMobile()) return;
+
+    ctx.fillStyle="#000";
+
+    ctx.font=
+    "28px Georgia";
+
+    ctx.textAlign=
+    "center";
+
+    ctx.fillText(
+
+      "",
+
+      W/2,
+
+      40
+    );
+}
+
+function loop(){
+
+    update();
+
+    drawBoard();
+
+    drawBall();
+
+    drawTitle();
+
+    requestAnimationFrame(
+      loop
+    );
+}
+
+resetBall();
+updateStats();
+loop();
+
+</script>
+
+</body>
+</html>
