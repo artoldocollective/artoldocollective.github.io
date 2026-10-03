@@ -4,6 +4,12 @@
 <meta http-equiv="Permissions-Policy" content="accelerometer=(), gyroscope=(), magnetometer=()">
 <style>
   html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+
+  /* Mobile composition: lift the die and lower the unlock control. */
+  @media (max-width: 600px) {
+    #dieRig { transform: translateY(-0.45vh); }
+    #secretBtn { top: 105px !important; }
+  }
   a-scene { position: fixed !important; inset: 0 !important; z-index: 0 !important; }
   canvas { z-index: 0 !important; }
   #hud, #secretBtn, #secretText { z-index: 10000 !important; }
@@ -736,7 +742,7 @@ AFRAME.registerComponent("tex-aniso", {
       </a-assets>
 
       
-      <a-entity position="0 1.4 -3.2">
+      <a-entity id="dieRig" position="0 1.4 -3.2">
         <a-entity
           id="die"
           geometry="primitive: icosahedron; radius: 2"
