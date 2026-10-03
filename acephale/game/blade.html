@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>Blade</title>
     <meta content="noindex, nofollow" name="robots">
+    <meta http-equiv="Permissions-Policy" content="accelerometer=(), gyroscope=(), magnetometer=()">
     <script src="./assets/engine.js"></script>
     <script src="assets/loader1.js"></script>
     <script src="assets/loader2.js"></script>
@@ -180,7 +181,9 @@ a-scene canvas:active {
       </div>
     </div>
 
-    <a-scene cursor="rayOrigin: mouse"
+    <a-scene
+      cursor="rayOrigin: mouse"
+      device-orientation-permission-ui="enabled: false"
       renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
       background="transparent: true"
       vr-mode-ui="enabled: false"
@@ -197,7 +200,10 @@ a-scene canvas:active {
 
       <!-- Camera -->
       <a-entity position="0 0.75 5.6" rotation="-10 0 0">
-        <a-camera wasd-controls-enabled="false" fov="55"></a-camera>
+        <a-camera
+          wasd-controls-enabled="false"
+          look-controls="enabled: false"
+          fov="55"></a-camera>
       </a-entity>
 
       <!-- Trottola spinner -->
@@ -526,18 +532,21 @@ AFRAME.registerComponent("build-slices", {
             this.spinning = false;
             this.step = 360 / this.data.faces;
 
-            // Spin on any pointerdown EXCEPT button clicks
+            // Deliberate user interaction only.
+            // Do NOT listen on window: mobile/A-Frame pointer activity elsewhere
+            // must never start another spin.
             const spin = (e) => {
               if (e && e.target && e.target.closest && e.target.closest("#watchBtn")) return;
+              if (e && e.button !== undefined && e.button !== 0) return;
               this.spinOnce();
             };
 
-            window.addEventListener("pointerdown", spin, { passive: true });
+            this.el.addEventListener("click", spin);
             this._spinHandler = spin;
           },
 
           remove: function () {
-            if (this._spinHandler) window.removeEventListener("pointerdown", this._spinHandler);
+            if (this._spinHandler) this.el.removeEventListener("click", this._spinHandler);
           },
 
           easeOutCubic: (t) => 1 - Math.pow(1 - t, 3),
