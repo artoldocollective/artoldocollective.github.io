@@ -372,7 +372,7 @@ function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     isMobile = window.matchMedia("(max-width:700px)").matches;
-    cameraZoom = 1;
+    cameraZoom = isMobile ? 0.72 : 1;
 }
 resizeCanvas();
 
@@ -740,7 +740,7 @@ DRAW PLAYER
 
 function drawPlayer() {
 
-    const size = 300; // control dot size
+    const size = isMobile ? 216 : 300; // control dot size
 
     ctx.drawImage(
         playerImg,
