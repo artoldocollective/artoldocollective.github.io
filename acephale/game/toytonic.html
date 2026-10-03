@@ -597,6 +597,11 @@ font-size:18px;
 cursor:pointer;
 }
 
+.camera-controls button:disabled{
+opacity:.45;
+cursor:not-allowed;
+}
+
 .toast{
 position:fixed;
 left:50%;
@@ -4494,7 +4499,7 @@ Record
 Stop
 </button>
 
-<button id="publish">
+<button id="publish" disabled>
 Publish
 </button>
 
@@ -4828,7 +4833,8 @@ document.getElementById('publish');
 let mediaRecorder;
 let chunks = [];
 let stream;
-let blob;
+let blob = null;
+let recording = false;
 
 openCamera.addEventListener('click',async()=>{
 
@@ -4909,7 +4915,12 @@ if(e.key === 'Escape' &&
 
 startRec.addEventListener('click',()=>{
 
+if(!stream || recording) return;
+
 chunks=[];
+blob=null;
+recording=true;
+publish.disabled=true;
 
 mediaRecorder =
 new MediaRecorder(stream);
@@ -4928,9 +4939,19 @@ mediaRecorder.onstop = ()=>{
 
 blob =
 new Blob(chunks,{
-type:'video/webm'
+type: mediaRecorder.mimeType || 'video/webm'
 });
 
+recording=false;
+publish.disabled=false;
+startRec.innerText='Record';
+
+};
+
+mediaRecorder.onerror = ()=>{
+recording=false;
+publish.disabled=false;
+startRec.innerText='Record';
 };
 
 mediaRecorder.start();
@@ -4941,17 +4962,22 @@ startRec.innerText='Recording...';
 
 stopRec.addEventListener('click',()=>{
 
-if(mediaRecorder){
+if(mediaRecorder && recording){
 
 mediaRecorder.stop();
-
-startRec.innerText='Record';
 
 }
 
 });
 
 publish.addEventListener('click',()=>{
+
+if(recording){
+
+mediaRecorder.stop();
+
+return;
+}
 
 if(!blob) return;
 
@@ -5069,9 +5095,14 @@ initHistoricalComments(reel);
 
 cameraModal.style.display='none';
 
-stream.getTracks().forEach(t=>t.stop());
+if(stream){
+  stream.getTracks().forEach(t=>t.stop());
+  stream=null;
+}
 
 blob=null;
+recording=false;
+publish.disabled=true;
 
 app.scrollTo({
 top:0,
