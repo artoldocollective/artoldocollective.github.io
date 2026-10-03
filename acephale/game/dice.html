@@ -901,16 +901,6 @@ function rollNow() {
 function bindCanvasListeners() {
   if (!die.sceneEl || !die.sceneEl.canvas) return false;
 
-  die.sceneEl.canvas.addEventListener("pointerdown", function (e) {
-    if (e.isPrimary === false) return;
-    rollNow();
-  });
-
-  die.sceneEl.canvas.addEventListener("touchstart", function (e) {
-    e.preventDefault();
-    rollNow();
-  }, { passive: false });
-
   return true;
 }
 
@@ -921,12 +911,7 @@ if (die.sceneEl) {
   bindCanvasListeners();
 }
 
-// Absolute fallback (if canvas listeners fail for any reason)
-window.addEventListener("pointerdown", function (e) {
-          var t = e && e.target;
-          if (t && (t.id === "secretBtn" || t.id === "secretText" || (t.closest && (t.closest("#secretText") || t.closest("#secretBtn"))))) return;
-          rollNow();
-        });die.addEventListener("click", function () {
+die.addEventListener("click", function () {
         setHud("Rolling…");
           hideSecretUI();
         var dur = (die.components["d20-roll"] && die.components["d20-roll"].data && die.components["d20-roll"].data.duration) || 1000;

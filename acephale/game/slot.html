@@ -224,29 +224,62 @@ button:disabled{
 
 @media(max-width:600px){
 
-    #slots{
-
-        gap:8px;
-
+    #machine{
+        width:96vw;
+        gap:10px;
     }
 
+    #cabinet{
+        padding:12px;
+        border-width:2px;
+        border-radius:16px;
+    }
+
+    #slots{
+        gap:5px;
+        width:100%;
+        flex-wrap:nowrap;
+    }
 
     .reelWindow{
-
-        width:28vw;
-        height:28vw;
-
+        flex:1 1 0;
+        width:auto;
+        min-width:0;
+        height:22vw;
+        border-width:2px;
+        border-radius:12px;
     }
-
 
     .symbol{
-
-        height:28vw;
-
-        font-size:16vw;
-
+        height:22vw;
+        font-size:13vw;
     }
 
+    h1{
+        font-size:clamp(20px,6vw,30px);
+    }
+
+    #cabinet + h2{
+        font-size:13px;
+        line-height:1.15;
+        text-align:center;
+    }
+
+    button{
+        padding:9px 32px;
+        font-size:18px;
+        border-radius:10px;
+    }
+
+    #message{
+        height:28px;
+        font-size:18px;
+    }
+
+    #countdown{
+        height:38px;
+        font-size:34px;
+    }
 
 }
 
@@ -339,7 +372,7 @@ const SYMBOLS=[
 
 
 const REPEAT=20;
-const SYMBOL_HEIGHT=130;
+const SYMBOL_HEIGHT = window.innerWidth <= 600 ? window.innerWidth * 0.22 : 130;
 
 
 const reelElements=[

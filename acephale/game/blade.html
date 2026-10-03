@@ -138,6 +138,12 @@ a-scene canvas:active {
 	background: url(./images/spinner.svg) center no-repeat #000;
      }
 
+@media (max-width: 600px) {
+  #hudWrap {
+    top: 150px;
+  }
+}
+
     </style>
 
 <script>
@@ -191,7 +197,7 @@ a-scene canvas:active {
 
       <!-- Camera -->
       <a-entity position="0 0.75 5.6" rotation="-10 0 0">
-        <a-camera wasd-controls-enabled="false" look-controls="enabled: false" fov="55"></a-camera>
+        <a-camera wasd-controls-enabled="false" fov="55"></a-camera>
       </a-entity>
 
       <!-- Trottola spinner -->
