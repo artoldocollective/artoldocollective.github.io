@@ -48,12 +48,6 @@ img {
     h1 { font-size: 2rem; }
     h2 { font-size: 1.35rem; }
     h3 { font-size: 1.2rem; }
-
-    .accordion-header::after {
-        font-size: 1.5rem;
-        right: 12px;
-        bottom: 5px;
-    }
 }
 
 a {
@@ -129,6 +123,19 @@ a:hover {
 
 .accordion-header.active::after {
     transform: rotate(0deg);
+}
+
+@media (max-width: 480px) {
+    .accordion-header {
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    .accordion-header::after {
+        font-size: 1.2rem;
+        right: 12px;
+        bottom: 5px;
+    }
 }
 
 /* Content */
